@@ -1,6 +1,6 @@
 import { encodeBase32LowerCaseNoPadding } from '@oslojs/encoding';
 import { and, eq } from 'drizzle-orm';
-import { cookies } from '../lib/headers';
+import { cookies } from '../../lib/headers';
 import { cache } from 'react';
 import { db, s } from '../../db';
 import { ExpiringTokenBucket } from './rate-limit';

@@ -1,6 +1,6 @@
 'use server';
 
-import { getClientIP } from '../lib/headers';
+import { getClientIP } from '../../lib/headers';
 import { verifyEmailInput } from '../services/email';
 import {
   createPasswordResetSession,

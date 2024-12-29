@@ -1,4 +1,4 @@
-import { getClientIP } from '../lib/headers';
+import { getClientIP } from '../../lib/headers';
 import { checkEmailAvailability, verifyEmailInput } from '../services/email';
 import {
   createEmailVerificationRequest,
