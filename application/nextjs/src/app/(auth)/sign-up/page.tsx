@@ -1,5 +1,5 @@
 import { get2FARedirect, getCurrentSession, globalGETRateLimit } from '@acme/backend';
-import { Button, CardContent, CardHeader } from '@acme/ui';
+import { Button, CardContent, CardFooter, CardHeader } from '@acme/ui';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { AuthLayout, AuthTitle } from '~/modules/auth/components/layout';
@@ -31,14 +31,15 @@ export default async function Page() {
       </CardHeader>
       <CardContent>
         <SignUpForm />
-        <div className="mt-4">
-          <Link href="/sign-in">
-            <Button variant="link" className="w-full">
-              Already have an account? Sign in
-            </Button>
-          </Link>
-        </div>
       </CardContent>
+      <CardFooter className="flex flex-col gap-4">
+        <div className="flex items-center gap-2">
+          <span className="text-sm text-muted-foreground">Already have an account?</span>
+          <Button variant="link" className="p-0" asChild>
+            <Link href="/sign-in">Sign in</Link>
+          </Button>
+        </div>
+      </CardFooter>
     </AuthLayout>
   );
 }
