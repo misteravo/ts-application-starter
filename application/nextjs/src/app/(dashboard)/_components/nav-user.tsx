@@ -97,10 +97,10 @@ export function NavUser({
   );
 }
 
-function DropdownMenuLink({ children, href }: { children: React.ReactNode; href: string }) {
+function DropdownMenuLink(props: { children: React.ReactNode; href: string; prefetch?: boolean }) {
   return (
-    <Link href={href}>
-      <DropdownMenuItem className="hover:cursor-pointer">{children}</DropdownMenuItem>
+    <Link href={props.href} prefetch={props.prefetch ?? false}>
+      <DropdownMenuItem className="hover:cursor-pointer">{props.children}</DropdownMenuItem>
     </Link>
   );
 }
