@@ -1,0 +1,54 @@
+import { headers } from 'next/headers';
+import { RefillingTokenBucket } from '../services/rate-limit';
+import { checkEmailAvailability, verifyEmailInput } from '../services/email';
+import { verifyPasswordStrength } from '../services/password';
+import { createUser, verifyUsernameInput } from '../services/user';
+import {
+  createEmailVerificationRequest,
+  sendVerificationEmail,
+  setEmailVerificationRequestCookie,
+} from '../services/email-verification';
+import { createSession, generateSessionToken, setSessionTokenCookie } from '../services/session';
+
+const ipBucket = new RefillingTokenBucket<string>(3, 10);
+
+type Result = { message: string } | { redirect: string };
+
+export async function signUp({
+  username,
+  email,
+  password,
+}: {
+  username: string;
+  email: string;
+  password: string;
+}): Promise<Result> {
+  // TODO: Assumes X-Forwarded-For is always included.
+  const headersList = await headers();
+  const clientIP = headersList.get('X-Forwarded-For');
+  if (clientIP !== null && !ipBucket.check(clientIP, 1)) return { message: 'Too many requests' };
+
+  if (email === '' || password === '' || username === '') {
+    return { message: 'Please enter your username, email, and password' };
+  }
+  if (!verifyEmailInput(email)) return { message: 'Invalid email' };
+
+  const emailAvailable = await checkEmailAvailability(email);
+  if (!emailAvailable) return { message: 'Email is already used' };
+  if (!verifyUsernameInput(username)) return { message: 'Invalid username' };
+
+  const strongPassword = await verifyPasswordStrength(password);
+  if (!strongPassword) return { message: 'Weak password' };
+  if (clientIP !== null && !ipBucket.consume(clientIP, 1)) return { message: 'Too many requests' };
+
+  const user = await createUser(email, username, password);
+  const emailVerificationRequest = await createEmailVerificationRequest(user.id, user.email);
+  sendVerificationEmail(emailVerificationRequest.email, emailVerificationRequest.code);
+  await setEmailVerificationRequestCookie(emailVerificationRequest);
+
+  const sessionToken = generateSessionToken();
+  const session = await createSession(sessionToken, user.id, { twoFactorVerified: false });
+  await setSessionTokenCookie(sessionToken, session.expiresAt);
+
+  return { redirect: '/2fa/setup' };
+}

@@ -1,0 +1,35 @@
+{
+  "name": "application-starter",
+  "private": true,
+  "engines": {
+    "node": ">=20.18.1",
+    "pnpm": "^9.14.2"
+  },
+  "packageManager": "pnpm@9.15.1+sha512.1acb565e6193efbebda772702950469150cf12bcc764262e7587e71d19dc98a423dff9536e57ea44c49bdf790ff694e83c27be5faa23d67e0c033b583be4bfcf",
+  "scripts": {
+    "build": "turbo run build",
+    "clean": "git clean -xdf node_modules",
+    "clean:workspaces": "turbo run clean",
+    "db:push": "turbo -F @acme/backend push",
+    "db:studio": "turbo -F @acme/backend studio",
+    "dev": "turbo -F dev --continue",
+    "dev:next": "turbo -F @acme/nextjs dev",
+    "start:next": "pnpm -F @acme/nextjs start",
+    "format": "turbo run format --continue -- --cache --cache-location .cache/.prettiercache",
+    "format:fix": "turbo run format --continue -- --write --cache --cache-location .cache/.prettiercache",
+    "lint": "turbo run lint --continue -- --cache --cache-location .cache/.eslintcache",
+    "lint:fix": "turbo run lint --continue -- --fix --cache --cache-location .cache/.eslintcache",
+    "lint:ws": "pnpm dlx sherif@latest",
+    "postinstall": "pnpm lint:ws",
+    "typecheck": "turbo run typecheck",
+    "ui-add": "turbo run ui-add"
+  },
+  "devDependencies": {
+    "@acme/prettier-config": "workspace:*",
+    "@turbo/gen": "^2.3.3",
+    "prettier": "catalog:",
+    "turbo": "^2.3.3",
+    "typescript": "catalog:"
+  },
+  "prettier": "@acme/prettier-config"
+}
