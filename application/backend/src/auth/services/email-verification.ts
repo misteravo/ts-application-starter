@@ -55,7 +55,7 @@ export async function setEmailVerificationRequestCookie(request: EmailVerificati
   cookiesList.set('email_verification', request.id, {
     httpOnly: true,
     path: '/',
-    secure: process.env.NODE_ENV === 'production',
+    secure: false, // TODO process.env.NODE_ENV === 'production'
     sameSite: 'lax',
     expires: request.expiresAt,
   });
@@ -66,7 +66,7 @@ export async function deleteEmailVerificationRequestCookie(): Promise<void> {
   cookiesList.set('email_verification', '', {
     httpOnly: true,
     path: '/',
-    secure: process.env.NODE_ENV === 'production',
+    secure: false, // TODO process.env.NODE_ENV === 'production'
     sameSite: 'lax',
     maxAge: 0,
   });

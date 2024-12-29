@@ -108,7 +108,7 @@ export async function setPasswordResetSessionTokenCookie(token: string, expiresA
     sameSite: 'lax',
     httpOnly: true,
     path: '/',
-    secure: process.env.NODE_ENV === 'production',
+    secure: false, // TODO process.env.NODE_ENV === 'production'
   });
 }
 
@@ -119,7 +119,7 @@ export async function deletePasswordResetSessionTokenCookie() {
     sameSite: 'lax',
     httpOnly: true,
     path: '/',
-    secure: process.env.NODE_ENV === 'production',
+    secure: false, // TODO process.env.NODE_ENV === 'production'
   });
 }
 

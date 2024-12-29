@@ -81,7 +81,7 @@ export async function setSessionTokenCookie(token: string, expiresAt: Date): Pro
   cookiesList.set('session', token, {
     httpOnly: true,
     path: '/',
-    secure: process.env.NODE_ENV === 'production',
+    secure: false, // TODO process.env.NODE_ENV === 'production'
     sameSite: 'lax',
     expires: expiresAt,
   });
@@ -92,7 +92,7 @@ export async function deleteSessionTokenCookie(): Promise<void> {
   cookiesList.set('session', '', {
     httpOnly: true,
     path: '/',
-    secure: process.env.NODE_ENV === 'production',
+    secure: false, // TODO process.env.NODE_ENV === 'production'
     sameSite: 'lax',
     maxAge: 0,
   });
