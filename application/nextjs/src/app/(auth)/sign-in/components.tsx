@@ -3,7 +3,7 @@
 import { Alert, AlertDescription, Button, Input, Label } from '@acme/ui';
 import { encodeBase64 } from '@oslojs/encoding';
 import { KeyRound } from 'lucide-react';
-import Link from 'next/link';
+import { Link } from '~/components/link';
 import { useActionState, useState } from 'react';
 import { createChallenge } from '~/lib/webauthn';
 import { signInAction, signInWithPasskeyAction } from './actions';

@@ -1,6 +1,5 @@
 import { CardContent, CardHeader } from '@acme/ui';
-import Link from 'next/link';
-
+import { Link } from '~/components/link';
 import { get2FARedirect, getCurrentSession, getUserRecoverCode, globalGETRateLimit } from '@acme/backend';
 import { redirect } from 'next/navigation';
 import { AuthLayout, AuthTitle } from '~/modules/auth/components/layout';

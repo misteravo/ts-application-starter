@@ -1,11 +1,10 @@
-import { Button, CardContent, CardHeader } from '@acme/ui';
-import Link from 'next/link';
-import { Verify2FAWithSecurityKeyButton } from './components';
-
 import { get2FARedirect, getCurrentSession, getUserSecurityKeyCredentials, globalGETRateLimit } from '@acme/backend';
+import { Button, CardContent, CardHeader } from '@acme/ui';
 import { encodeBase64 } from '@oslojs/encoding';
 import { redirect } from 'next/navigation';
+import { Link } from '~/components/link';
 import { AuthLayout, AuthTitle } from '~/modules/auth/components/layout';
+import { Verify2FAWithSecurityKeyButton } from './components';
 
 export default async function Page() {
   if (!(await globalGETRateLimit())) {

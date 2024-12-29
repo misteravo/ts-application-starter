@@ -17,7 +17,8 @@ import {
   useSidebar,
 } from '@acme/ui';
 import { BadgeCheck, ChevronsUpDown, CreditCard, LogOut, Settings, Sparkles } from 'lucide-react';
-import Link from 'next/link';
+import type { ReactNode } from 'react';
+import { Link } from '~/components/link';
 
 export function NavUser({
   user,
@@ -97,9 +98,9 @@ export function NavUser({
   );
 }
 
-function DropdownMenuLink(props: { children: React.ReactNode; href: string; prefetch?: boolean }) {
+function DropdownMenuLink(props: { children: ReactNode; href: string }) {
   return (
-    <Link href={props.href} prefetch={props.prefetch ?? false}>
+    <Link href={props.href}>
       <DropdownMenuItem className="hover:cursor-pointer">{props.children}</DropdownMenuItem>
     </Link>
   );

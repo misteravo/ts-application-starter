@@ -1,16 +1,15 @@
-import { CardContent, CardFooter, CardHeader } from '@acme/ui';
-import Link from 'next/link';
-import { Verify2FAWithPasskeyButton } from './components';
-
 import {
   getCurrentPasswordResetSession,
   getPasswordReset2FARedirect,
   getUserPasskeyCredentials,
   globalGETRateLimit,
 } from '@acme/backend';
+import { CardContent, CardFooter, CardHeader } from '@acme/ui';
 import { encodeBase64 } from '@oslojs/encoding';
 import { redirect } from 'next/navigation';
+import { Link } from '~/components/link';
 import { AuthLayout, AuthTitle } from '~/modules/auth/components/layout';
+import { Verify2FAWithPasskeyButton } from './components';
 
 export default async function Page() {
   if (!(await globalGETRateLimit())) {

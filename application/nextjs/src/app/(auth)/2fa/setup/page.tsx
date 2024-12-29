@@ -1,7 +1,7 @@
 import { getCurrentSession, globalGETRateLimit } from '@acme/backend';
 import { Button, CardContent, CardDescription, CardHeader } from '@acme/ui';
-import Link from 'next/link';
 import { redirect } from 'next/navigation';
+import { Link } from '~/components/link';
 import { AuthLayout, AuthTitle } from '~/modules/auth/components/layout';
 
 export default async function Page() {

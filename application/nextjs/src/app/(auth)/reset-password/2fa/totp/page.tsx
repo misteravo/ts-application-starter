@@ -1,8 +1,7 @@
 import { Button, CardContent, CardFooter, CardHeader } from '@acme/ui';
 import { PasswordResetTOTPForm } from './components';
-
 import { getCurrentPasswordResetSession, getPasswordReset2FARedirect, globalGETRateLimit } from '@acme/backend';
-import Link from 'next/link';
+import { Link } from '~/components/link';
 import { redirect } from 'next/navigation';
 import { AuthLayout, AuthTitle } from '~/modules/auth/components/layout';
 
