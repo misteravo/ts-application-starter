@@ -10,7 +10,7 @@ import {
   parseAuthenticatorData,
   parseClientDataJSON,
 } from '@oslojs/webauthn';
-import { headers } from '../lib/headers';
+import { getClientIP } from '../lib/headers';
 import { get2FARedirect } from '../services/2fa';
 import { verifyEmailInput } from '../services/email';
 import { verifyPasswordHash } from '../services/password';
@@ -27,9 +27,8 @@ type Result = { message: string } | { redirect: string };
 export async function signIn(props: { email: string; password: string }): Promise<Result> {
   const { email, password } = props;
 
-  const headersList = await headers();
-  const clientIP = headersList.get('X-Forwarded-For');
-  if (clientIP !== null && !ipBucket.check(clientIP, 1)) return { message: 'Too many requests' };
+  const clientIP = await getClientIP();
+  if (clientIP && !ipBucket.check(clientIP, 1)) return { message: 'Too many requests' };
 
   if (email === '' || password === '') return { message: 'Please enter your email and password.' };
   if (!verifyEmailInput(email)) return { message: 'Invalid email' };

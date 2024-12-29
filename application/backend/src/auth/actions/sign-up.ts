@@ -1,4 +1,4 @@
-import { headers } from '../lib/headers';
+import { getClientIP } from '../lib/headers';
 import { checkEmailAvailability, verifyEmailInput } from '../services/email';
 import {
   createEmailVerificationRequest,
@@ -23,10 +23,8 @@ export async function signUp({
   email: string;
   password: string;
 }): Promise<Result> {
-  // TODO: Assumes X-Forwarded-For is always included.
-  const headersList = await headers();
-  const clientIP = headersList.get('X-Forwarded-For');
-  if (clientIP !== null && !ipBucket.check(clientIP, 1)) return { message: 'Too many requests' };
+  const clientIP = await getClientIP();
+  if (clientIP && !ipBucket.check(clientIP, 1)) return { message: 'Too many requests' };
 
   if (email === '' || password === '' || username === '') {
     return { message: 'Please enter your username, email, and password' };

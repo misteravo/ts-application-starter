@@ -1,6 +1,6 @@
 'use server';
 
-import { headers } from '../lib/headers';
+import { getClientIP } from '../lib/headers';
 import { verifyEmailInput } from '../services/email';
 import {
   createPasswordResetSession,
@@ -18,13 +18,9 @@ const passwordResetEmailUserBucket = new RefillingTokenBucket<number>(3, 60);
 type Result = { message: string } | { redirect: string };
 
 export async function forgotPassword({ email }: { email: string }): Promise<Result> {
-  // TODO: Assumes X-Forwarded-For is always included.
-  const headersList = await headers();
-  const clientIP = headersList.get('X-Forwarded-For');
-  if (clientIP !== null && !passwordResetEmailIPBucket.check(clientIP, 1)) {
-    return {
-      message: 'Too many requests',
-    };
+  const clientIP = await getClientIP();
+  if (clientIP && !passwordResetEmailIPBucket.check(clientIP, 1)) {
+    return { message: 'Too many requests' };
   }
 
   if (!verifyEmailInput(email)) {
