@@ -6,6 +6,7 @@ import { db, s } from '../../db';
 import { ExpiringTokenBucket } from './rate-limit';
 import { getCurrentSession } from './session';
 import { generateRandomOTP } from './utils';
+import { env } from '../../env';
 
 export async function getUserEmailVerificationRequest(userId: number, id: string) {
   const [result] = await db
@@ -55,7 +56,7 @@ export async function setEmailVerificationRequestCookie(request: EmailVerificati
   cookiesList.set('email_verification', request.id, {
     httpOnly: true,
     path: '/',
-    secure: false, // TODO process.env.NODE_ENV === 'production'
+    secure: env.COOKIE_SECURE,
     sameSite: 'lax',
     expires: request.expiresAt,
   });
@@ -66,7 +67,7 @@ export async function deleteEmailVerificationRequestCookie(): Promise<void> {
   cookiesList.set('email_verification', '', {
     httpOnly: true,
     path: '/',
-    secure: false, // TODO process.env.NODE_ENV === 'production'
+    secure: env.COOKIE_SECURE,
     sameSite: 'lax',
     maxAge: 0,
   });

@@ -8,6 +8,7 @@ import { eq } from 'drizzle-orm';
 import { db, s } from '../../db';
 import { sqlNotNull } from '../../db/utils';
 import type { User } from './user';
+import { env } from '../../env';
 
 export async function createPasswordResetSession(token: string, userId: number, email: string) {
   const sessionId = encodeHexLowerCase(sha256(new TextEncoder().encode(token)));
@@ -108,7 +109,7 @@ export async function setPasswordResetSessionTokenCookie(token: string, expiresA
     sameSite: 'lax',
     httpOnly: true,
     path: '/',
-    secure: false, // TODO process.env.NODE_ENV === 'production'
+    secure: env.COOKIE_SECURE,
   });
 }
 
@@ -119,7 +120,7 @@ export async function deletePasswordResetSessionTokenCookie() {
     sameSite: 'lax',
     httpOnly: true,
     path: '/',
-    secure: false, // TODO process.env.NODE_ENV === 'production'
+    secure: env.COOKIE_SECURE,
   });
 }
 

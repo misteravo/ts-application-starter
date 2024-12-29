@@ -6,6 +6,7 @@ import { db, s } from '../../db';
 import { sqlNotNull } from '../../db/utils';
 import { cookies } from '../../lib/headers';
 import type { User } from './user';
+import { env } from '../../env';
 
 export async function validateSessionToken(token: string): Promise<SessionValidationResult> {
   const sessionId = encodeHexLowerCase(sha256(new TextEncoder().encode(token)));
@@ -81,7 +82,7 @@ export async function setSessionTokenCookie(token: string, expiresAt: Date): Pro
   cookiesList.set('session', token, {
     httpOnly: true,
     path: '/',
-    secure: false, // TODO process.env.NODE_ENV === 'production'
+    secure: env.COOKIE_SECURE,
     sameSite: 'lax',
     expires: expiresAt,
   });
@@ -92,7 +93,7 @@ export async function deleteSessionTokenCookie(): Promise<void> {
   cookiesList.set('session', '', {
     httpOnly: true,
     path: '/',
-    secure: false, // TODO process.env.NODE_ENV === 'production'
+    secure: env.COOKIE_SECURE,
     sameSite: 'lax',
     maxAge: 0,
   });

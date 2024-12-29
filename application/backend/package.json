@@ -25,6 +25,7 @@
     "@oslojs/crypto": "^1.0.1",
     "@oslojs/encoding": "^1.1.0",
     "@oslojs/webauthn": "^1.0.0",
+    "@t3-oss/env-core": "^0.11.1",
     "@vercel/postgres": "^0.10.0",
     "bcryptjs": "^2.4.3",
     "better-sqlite3": "^11.7.0",
