@@ -10,7 +10,7 @@ import {
   parseAuthenticatorData,
   parseClientDataJSON,
 } from '@oslojs/webauthn';
-import { headers } from 'next/headers';
+import { headers } from '../lib/headers';
 import { get2FARedirect } from '../services/2fa';
 import { verifyEmailInput } from '../services/email';
 import { verifyPasswordHash } from '../services/password';

@@ -1,10 +1,10 @@
 import { sha256 } from '@oslojs/crypto/sha2';
 import { encodeBase32LowerCaseNoPadding, encodeHexLowerCase } from '@oslojs/encoding';
 import { eq } from 'drizzle-orm';
-import { cookies } from 'next/headers';
 import { cache } from 'react';
 import { db, s } from '../../db';
 import { sqlNotNull } from '../../db/utils';
+import { cookies } from '../lib/headers';
 import type { User } from './user';
 
 export async function validateSessionToken(token: string): Promise<SessionValidationResult> {

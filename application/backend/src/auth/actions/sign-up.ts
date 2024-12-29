@@ -1,14 +1,14 @@
-import { headers } from 'next/headers';
-import { RefillingTokenBucket } from '../services/rate-limit';
+import { headers } from '../lib/headers';
 import { checkEmailAvailability, verifyEmailInput } from '../services/email';
-import { verifyPasswordStrength } from '../services/password';
-import { createUser, verifyUsernameInput } from '../services/user';
 import {
   createEmailVerificationRequest,
   sendVerificationEmail,
   setEmailVerificationRequestCookie,
 } from '../services/email-verification';
+import { verifyPasswordStrength } from '../services/password';
+import { RefillingTokenBucket } from '../services/rate-limit';
 import { createSession, generateSessionToken, setSessionTokenCookie } from '../services/session';
+import { createUser, verifyUsernameInput } from '../services/user';
 
 const ipBucket = new RefillingTokenBucket<string>(3, 10);
 

@@ -1,6 +1,6 @@
 'use server';
 
-import { headers } from 'next/headers';
+import { headers } from '../lib/headers';
 import { verifyEmailInput } from '../services/email';
 import {
   createPasswordResetSession,
