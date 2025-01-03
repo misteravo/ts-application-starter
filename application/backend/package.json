@@ -41,7 +41,7 @@
     "@acme/tsconfig": "workspace:*",
     "@types/bcryptjs": "^2.4.6",
     "@types/better-sqlite3": "^7.6.12",
-    "@types/node": "^22.10.2",
+    "@types/node": "^22.10.5",
     "@types/react": "^19.0.2",
     "dotenv-cli": "^8.0.0",
     "drizzle-kit": "^0.30.1",

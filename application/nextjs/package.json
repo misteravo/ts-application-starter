@@ -34,7 +34,7 @@
     "superjson": "2.2.2",
     "uqr": "^0.1.2",
     "zod": "catalog:",
-    "zod-form-data": "^2.0.4"
+    "zod-form-data": "^2.0.5"
   },
   "devDependencies": {
     "@acme/eslint-config": "workspace:*",
@@ -42,7 +42,7 @@
     "@acme/tailwind-config": "workspace:*",
     "@acme/tsconfig": "workspace:*",
     "@types/better-sqlite3": "^7.6.12",
-    "@types/node": "^22.10.2",
+    "@types/node": "^22.10.5",
     "@types/react": "catalog:react19",
     "@types/react-dom": "catalog:react19",
     "add": "^2.0.6",
