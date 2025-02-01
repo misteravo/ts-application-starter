@@ -1,12 +1,11 @@
 'use client';
 
+import type { User } from '@acme/backend';
 import { Alert, Button, Input, Label } from '@acme/ui'; // Assuming these components are available from Shadcn
 import { decodeBase64, encodeBase64 } from '@oslojs/encoding';
 import { useActionState, useState } from 'react';
 import { createChallenge } from '~/lib/webauthn';
 import { registerSecurityKeyAction } from './actions';
-
-import type { User } from '@acme/backend';
 
 const initialRegisterSecurityKeyState = {
   message: '',
@@ -75,8 +74,8 @@ export function RegisterSecurityKey(props: {
       <form action={action} className="space-y-4">
         <Label htmlFor="form-register-credential.name">Credential name</Label>
         <Input id="form-register-credential.name" name="name" required />
-        <input type="hidden" name="attestation_object" value={encodedAttestationObject ?? ''} />
-        <input type="hidden" name="client_data_json" value={encodedClientDataJSON ?? ''} />
+        <input type="hidden" name="attestationObject" value={encodedAttestationObject ?? ''} />
+        <input type="hidden" name="clientDataJSON" value={encodedClientDataJSON ?? ''} />
         <Button disabled={encodedAttestationObject === null && encodedClientDataJSON === null}>Continue</Button>
         {formState.message && <Alert variant="destructive">{formState.message}</Alert>}
       </form>
