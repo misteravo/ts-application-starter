@@ -34,3 +34,9 @@ To get started with the application, follow these steps:
    ```bash
    pnpm build
    ```
+
+4. **Run the Production Server**: To run the production server, run:
+
+   ```bash
+   pnpm start
+   ```
