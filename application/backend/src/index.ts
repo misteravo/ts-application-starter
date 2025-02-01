@@ -17,3 +17,4 @@ export * from './auth/actions/sign-up';
 export * from './auth/actions/verify-email';
 
 export * from './auth/actions/2fa/passkey';
+export * from './auth/actions/2fa/security-key';

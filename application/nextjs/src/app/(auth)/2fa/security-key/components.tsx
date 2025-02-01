@@ -18,12 +18,10 @@ export function Verify2FAWithSecurityKeyButton(props: { encodedCredentialIds: st
       publicKey: {
         challenge,
         userVerification: 'discouraged',
-        allowCredentials: props.encodedCredentialIds.map((encoded) => {
-          return {
-            id: decodeBase64(encoded),
-            type: 'public-key',
-          };
-        }),
+        allowCredentials: props.encodedCredentialIds.map((encoded) => ({
+          id: decodeBase64(encoded),
+          type: 'public-key',
+        })),
       },
     });
 
@@ -35,14 +33,14 @@ export function Verify2FAWithSecurityKeyButton(props: { encodedCredentialIds: st
     }
 
     const result = await verify2FAWithSecurityKeyAction({
-      credential_id: encodeBase64(new Uint8Array(credential.rawId)),
+      credentialId: encodeBase64(new Uint8Array(credential.rawId)),
       signature: encodeBase64(new Uint8Array(credential.response.signature)),
-      authenticator_data: encodeBase64(new Uint8Array(credential.response.authenticatorData)),
-      client_data_json: encodeBase64(new Uint8Array(credential.response.clientDataJSON)),
+      authenticatorData: encodeBase64(new Uint8Array(credential.response.authenticatorData)),
+      clientData: encodeBase64(new Uint8Array(credential.response.clientDataJSON)),
     });
 
-    if (result.error !== null) {
-      setMessage(result.error);
+    if ('message' in result) {
+      setMessage(result.message);
     } else {
       router.push('/');
     }
@@ -53,7 +51,7 @@ export function Verify2FAWithSecurityKeyButton(props: { encodedCredentialIds: st
       <Button className="w-full" onClick={() => void handleAuthentication()}>
         Authenticate
       </Button>
-      {message && <Alert>{message}</Alert>}
+      {message && <Alert variant="destructive">{message}</Alert>}
     </div>
   );
 }
