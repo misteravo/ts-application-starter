@@ -1,5 +1,3 @@
-import { setSessionAs2FAVerified } from '../../services/session';
-
 import { safeTrySync } from '@acme/utils';
 import {
   decodePKIXECDSASignature,
@@ -34,7 +32,7 @@ import {
   parseClientDataJSON,
 } from '@oslojs/webauthn';
 import { SqliteError } from 'better-sqlite3';
-import { getCurrentSession } from '../../services/session';
+import { getCurrentSession, setSessionAs2FAVerified } from '../../services/session';
 import type { WebAuthnUserCredential } from '../../services/webauthn';
 import {
   createPasskeyCredential,
