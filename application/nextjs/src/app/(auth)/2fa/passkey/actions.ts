@@ -1,12 +1,11 @@
 'use server';
 
-import { decodeBase64 } from '@oslojs/encoding';
-
+import { verify2FAWithPasskey } from '@acme/backend';
 import { safeTrySync } from '@acme/utils';
+import { decodeBase64 } from '@oslojs/encoding';
+import { redirect } from 'next/navigation';
 import { z } from 'zod';
 import { schemaAction } from '~/lib/safe-action';
-import { verify2FAWithPasskey } from '@acme/backend';
-import { redirect } from 'next/navigation';
 
 const schema = z.object({
   credentialId: z.string(),
