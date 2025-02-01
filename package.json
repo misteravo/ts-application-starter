@@ -1,6 +1,8 @@
 {
   "name": "application-starter",
   "private": true,
+  "license": "MIT",
+  "version": "0.0.1",
   "engines": {
     "node": ">=20.18.1",
     "pnpm": "^9.14.2"
