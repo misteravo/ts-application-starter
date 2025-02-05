@@ -2,14 +2,14 @@
 
 import { Alert, AlertDescription, Button, Input, Label } from '@acme/ui';
 import { useActionState } from 'react';
-import { setup2FAAction } from './actions';
+import { setupTotpCodeAction } from './actions';
 
 const initial2FASetUpState = {
   message: '',
 };
 
 export function TwoFactorSetUpForm(props: { encodedTOTPKey: string }) {
-  const [state, action] = useActionState(setup2FAAction, initial2FASetUpState);
+  const [state, action] = useActionState(setupTotpCodeAction, initial2FASetUpState);
 
   return (
     <form action={action} className="space-y-4">
