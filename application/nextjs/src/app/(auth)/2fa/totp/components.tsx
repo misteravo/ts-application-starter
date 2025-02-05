@@ -2,14 +2,14 @@
 
 import { Alert, Button, Input, Label } from '@acme/ui';
 import { useActionState } from 'react';
-import { verify2FAAction } from './actions';
+import { verifyTotpCodeAction } from './actions';
 
 const initial2FAVerificationState = {
   message: '',
 };
 
-export function TwoFactorVerificationForm() {
-  const [state, action] = useActionState(verify2FAAction, initial2FAVerificationState);
+export function TotpVerificationForm() {
+  const [state, action] = useActionState(verifyTotpCodeAction, initial2FAVerificationState);
 
   return (
     <form action={action} className="space-y-4">

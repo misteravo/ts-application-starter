@@ -3,7 +3,7 @@ import { Button, CardContent, CardDescription, CardHeader } from '@acme/ui';
 import { redirect } from 'next/navigation';
 import { Link } from '~/components/link';
 import { AuthLayout, AuthTitle } from '~/modules/auth/components/layout';
-import { TwoFactorVerificationForm } from './components';
+import { TotpVerificationForm } from './components';
 
 export default async function Page() {
   if (!(await globalGETRateLimit())) {
@@ -31,7 +31,7 @@ export default async function Page() {
         <CardDescription>Enter the code from your authenticator app to continue.</CardDescription>
       </CardHeader>
       <CardContent>
-        <TwoFactorVerificationForm />
+        <TotpVerificationForm />
 
         <Link href="/2fa/reset">
           <Button variant="outline" className="w-full">
