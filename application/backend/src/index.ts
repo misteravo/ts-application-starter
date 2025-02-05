@@ -18,3 +18,4 @@ export * from './auth/actions/verify-email';
 
 export * from './auth/actions/2fa/passkey';
 export * from './auth/actions/2fa/security-key';
+export * from './auth/actions/2fa/reset-code';

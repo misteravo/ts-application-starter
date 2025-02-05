@@ -1,55 +1,15 @@
 'use server';
 
-import {
-  getCurrentSession,
-  globalPOSTRateLimit,
-  recoveryCodeBucket,
-  resetUser2FAWithRecoveryCode,
-} from '@acme/backend';
+import { reset2FACode } from '@acme/backend';
 import { redirect } from 'next/navigation';
+import { zfd } from 'zod-form-data';
+import { formAction } from '~/lib/safe-action';
 
-export async function reset2FAAction(_prev: ActionResult, formData: FormData): Promise<ActionResult> {
-  if (!(await globalPOSTRateLimit())) return { message: 'Too many requests' };
-
-  const { session, user } = await getCurrentSession();
-  if (session === null) return { message: 'Not authenticated' };
-  if (!user.emailVerified || !user.registered2FA || session.twoFactorVerified) {
-    return {
-      message: 'Forbidden',
-    };
-  }
-  if (!recoveryCodeBucket.check(user.id, 1)) {
-    return {
-      message: 'Too many requests',
-    };
-  }
-
-  const code = formData.get('code');
-  if (typeof code !== 'string') {
-    return {
-      message: 'Invalid or missing fields',
-    };
-  }
-  if (code === '') {
-    return {
-      message: 'Please enter your code',
-    };
-  }
-  if (!recoveryCodeBucket.consume(user.id, 1)) {
-    return {
-      message: 'Too many requests',
-    };
-  }
-  const valid = await resetUser2FAWithRecoveryCode(user.id, code);
-  if (!valid) {
-    return {
-      message: 'Invalid recovery code',
-    };
-  }
-  recoveryCodeBucket.reset(user.id);
-  return redirect('/2fa/setup');
-}
-
-interface ActionResult {
-  message: string;
-}
+const schema = zfd.formData({
+  code: zfd.text(),
+});
+export const reset2FAAction = formAction(schema, async ({ code }) => {
+  const result = await reset2FACode({ code });
+  if ('redirect' in result) return redirect(result.redirect);
+  return result;
+});
