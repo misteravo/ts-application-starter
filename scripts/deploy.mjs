@@ -1,6 +1,8 @@
-#!/usr/bin/env -S zx --env=.env --verbose --shell=/bin/bash
+#!/usr/bin/env -S zx --env=.env
 
-$.quote = (str) => str; // disable quotes
+useBash();
+$.verbose = true;
+$.quote = (str) => str;
 
 console.log('Publishing application into production');
 
