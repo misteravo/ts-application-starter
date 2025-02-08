@@ -5,7 +5,7 @@ import { decodeBase64, encodeBase64 } from '@oslojs/encoding';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { createChallenge } from '~/lib/webauthn';
-import { verify2FAWithPasskeyAction } from './actions';
+import { verifyPasskeyAction } from './actions';
 
 export function Verify2FAWithPasskeyButton(props: { encodedCredentialIds: string[] }) {
   const router = useRouter();
@@ -32,7 +32,7 @@ export function Verify2FAWithPasskeyButton(props: { encodedCredentialIds: string
       throw new Error('Unexpected error');
     }
 
-    const result = await verify2FAWithPasskeyAction({
+    const result = await verifyPasskeyAction({
       credentialId: encodeBase64(new Uint8Array(credential.rawId)),
       signature: encodeBase64(new Uint8Array(credential.response.signature)),
       authenticatorData: encodeBase64(new Uint8Array(credential.response.authenticatorData)),

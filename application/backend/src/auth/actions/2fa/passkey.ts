@@ -43,7 +43,7 @@ import {
 
 type Result = { message: string } | { redirect: string };
 
-export async function verify2FAWithPasskey(props: {
+export async function verifyPasskey(props: {
   authenticatorData: Uint8Array;
   clientData: Uint8Array;
   credentialId: Uint8Array;
