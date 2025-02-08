@@ -12,12 +12,13 @@ const isReload = Boolean(argv.reload);
 if (isStart === isReload) throw new Error('Either --start or --reload must be provided');
 
 const destination = process.env.PRODUCTION_DESTINATION;
+const nextJsPath = 'application/nextjs';
 const applicationName = 'ts-application-starter';
 
 await $`pnpm build`;
-await $`rsync -av --exclude-from=".rsyncignore" --delete-after application/nextjs/public ${destination}/`;
-await $`rsync -av --exclude-from=".rsyncignore" --delete-after application/nextjs/.next/standalone/ ${destination}/`;
-await $`rsync -av --exclude-from=".rsyncignore" --delete-after application/nextjs/.next/static ${destination}/.next/`;
+await $`rsync -av --exclude-from=".rsyncignore" --delete-after ${nextJsPath}/public ${destination}/`;
+await $`rsync -av --exclude-from=".rsyncignore" --delete-after ${nextJsPath}/.next/standalone/ ${destination}/`;
+await $`rsync -av --exclude-from=".rsyncignore" --delete-after ${nextJsPath}/.next/static ${destination}/.next/`;
 
 if (isStart) {
   await $`rsync -av --delete-after .env ${destination}/`;
@@ -25,7 +26,7 @@ if (isStart) {
 }
 
 if (isStart) {
-  await $`cd ${destination} && pm2 start -i --time --name ${applicationName} node -- --env-file=.env application/nextjs/server.js`;
+  await $`cd ${destination} && pm2 start -i --time --name ${applicationName} node -- --env-file=.env ${nextJsPath}/server.js`;
 }
 
 if (isReload) {
