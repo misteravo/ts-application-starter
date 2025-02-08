@@ -4,7 +4,7 @@ import { encodeBase64 } from '@oslojs/encoding';
 import { redirect } from 'next/navigation';
 import { Link } from '~/components/link';
 import { AuthLayout, AuthTitle } from '~/modules/auth/components/layout';
-import { Verify2FAWithPasskeyButton } from './components';
+import { VerifyPasskeyButton } from './components';
 
 export default async function Page() {
   if (!(await globalGETRateLimit())) {
@@ -35,9 +35,7 @@ export default async function Page() {
         <AuthTitle>Authenticate with passkeys</AuthTitle>
       </CardHeader>
       <CardContent>
-        <Verify2FAWithPasskeyButton
-          encodedCredentialIds={credentials.map((credential) => encodeBase64(credential.id))}
-        />
+        <VerifyPasskeyButton encodedCredentialIds={credentials.map((credential) => encodeBase64(credential.id))} />
       </CardContent>
       <CardFooter className="flex flex-col gap-2">
         <Link href="/2fa/reset">

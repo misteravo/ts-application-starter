@@ -7,7 +7,7 @@ import { useState } from 'react';
 import { createChallenge } from '~/lib/webauthn';
 import { verifyPasskeyAction } from './actions';
 
-export function Verify2FAWithPasskeyButton(props: { encodedCredentialIds: string[] }) {
+export function VerifyPasskeyButton(props: { encodedCredentialIds: string[] }) {
   const router = useRouter();
   const [message, setMessage] = useState('');
 
