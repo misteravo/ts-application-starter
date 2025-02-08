@@ -9,7 +9,7 @@ import { encodeBase64 } from '@oslojs/encoding';
 import { redirect } from 'next/navigation';
 import { Link } from '~/components/link';
 import { AuthLayout, AuthTitle } from '~/modules/auth/components/layout';
-import { Verify2FAWithSecurityKeyButton } from './components';
+import { VerifySecurityKeyButton } from './components';
 
 export default async function Page() {
   if (!(await globalGETRateLimit())) {
@@ -41,9 +41,7 @@ export default async function Page() {
         <AuthTitle>Authenticate with security keys</AuthTitle>
       </CardHeader>
       <CardContent>
-        <Verify2FAWithSecurityKeyButton
-          encodedCredentialIds={credentials.map((credential) => encodeBase64(credential.id))}
-        />
+        <VerifySecurityKeyButton encodedCredentialIds={credentials.map((credential) => encodeBase64(credential.id))} />
       </CardContent>
       <CardFooter className="flex flex-col gap-2">
         <Link href="/reset-password/2fa/recovery-code" className="text-blue-500">

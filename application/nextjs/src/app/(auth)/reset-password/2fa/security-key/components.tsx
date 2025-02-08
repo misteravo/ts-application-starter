@@ -5,9 +5,9 @@ import { decodeBase64, encodeBase64 } from '@oslojs/encoding';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { createChallenge } from '~/lib/webauthn';
-import { verify2FAWithSecurityKeyAction } from './actions';
+import { verifySecurityKeyAction } from './actions';
 
-export function Verify2FAWithSecurityKeyButton({ encodedCredentialIds }: { encodedCredentialIds: string[] }) {
+export function VerifySecurityKeyButton({ encodedCredentialIds }: { encodedCredentialIds: string[] }) {
   const router = useRouter();
   const [message, setMessage] = useState('');
 
@@ -32,7 +32,7 @@ export function Verify2FAWithSecurityKeyButton({ encodedCredentialIds }: { encod
       throw new Error('Unexpected error');
     }
 
-    const result = await verify2FAWithSecurityKeyAction({
+    const result = await verifySecurityKeyAction({
       credential_id: encodeBase64(new Uint8Array(credential.rawId)),
       signature: encodeBase64(new Uint8Array(credential.response.signature)),
       authenticator_data: encodeBase64(new Uint8Array(credential.response.authenticatorData)),

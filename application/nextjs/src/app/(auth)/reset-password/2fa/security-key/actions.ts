@@ -23,7 +23,7 @@ import { ObjectParser } from '@pilcrowjs/object-parser';
 
 import type { AuthenticatorData, ClientData } from '@oslojs/webauthn';
 
-export async function verify2FAWithSecurityKeyAction(data: unknown): Promise<ActionResult> {
+export async function verifySecurityKeyAction(data: unknown): Promise<ActionResult> {
   if (!(await globalPOSTRateLimit())) {
     return {
       error: 'Too many requests',
