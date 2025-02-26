@@ -1,45 +1,49 @@
-#!/usr/bin/env -S zx --env=.env
+#!/usr/bin/env -S zx --env=.env --verbose
 
-useBash();
-$.verbose = true;
 $.quote = (str) => str;
 
-console.log('Publishing application into production');
+await main();
 
-const isStart = Boolean(argv.start);
-const isReload = Boolean(argv.reload);
+async function main() {
+  try {
+    if (argv.build === undefined) throw new Error('One of --build or --no-build is required');
+    if (argv.start === undefined && argv.reload === undefined)
+      throw new Error('One of --start, --reload, --no-start or --no-reload is required');
 
-if (isStart === isReload) throw new Error('Either --start or --reload must be provided');
+    if (!process.env.APPLICATION_NAME) throw new Error('APPLICATION_NAME is not set');
+    if (!process.env.APPLICATION_PATH) throw new Error('APPLICATION_PATH is not set');
+    if (!process.env.PRODUCTION_DESTINATION) throw new Error('PRODUCTION_DESTINATION is not set');
 
-if (!process.env.PRODUCTION_DESTINATION) throw new Error('PRODUCTION_DESTINATION is not set');
+    const applicationName = process.env.APPLICATION_NAME;
+    const applicationPath = process.env.APPLICATION_PATH;
+    const [server, destinationPath] = process.env.PRODUCTION_DESTINATION.split(':');
 
-const destinationTab = process.env.PRODUCTION_DESTINATION.split(':');
-const fullDestinationPath = process.env.PRODUCTION_DESTINATION;
+    if (Boolean(argv.build)) await build();
 
-const server = destinationTab.length == 2 ? destinationTab[0] : null;
-const destinationPath = destinationTab.length == 2 ? destinationTab[1] : fullDestinationPath;
+    await deployFiles({ server, destinationPath, applicationPath });
 
-const nextJsPath = 'application/nextjs';
-const applicationName = 'ts-application-starter';
-
-await $`pnpm build`;
-await $`rsync -av --exclude-from=".rsyncignore" --delete-after ${nextJsPath}/public ${fullDestinationPath}/`;
-await $`rsync -av --exclude-from=".rsyncignore" --delete-after ${nextJsPath}/.next/standalone/ ${fullDestinationPath}/`;
-await $`rsync -av --exclude-from=".rsyncignore" --delete-after ${nextJsPath}/.next/static ${fullDestinationPath}/.next/`;
-
-if (isStart) {
-  await $`rsync -av --delete-after .env ${fullDestinationPath}/`;
-  await $`rsync -av --delete-after sqlite.db ${fullDestinationPath}/`;
+    if (Boolean(argv.start)) await startServer({ server, destinationPath, applicationName, applicationPath });
+    else if (Boolean(argv.reload)) await reloadServer({ server, applicationName });
+  } catch (error) {
+    console.error(error instanceof Error ? error.message : error);
+  }
 }
 
-if (isStart) {
-  const command = `cd ${destinationPath} && pm2 start -i --time --name ${applicationName} node -- --env-file=.env ${nextJsPath}/server.js`;
-  if (server) await $`ssh ${server} "${command}"`;
-  else await $`${command}`;
+async function build() {
+  await $`pnpm build`;
 }
 
-if (isReload) {
-  const command = `cd ${destinationPath} && pm2 reload --time ${applicationName}`;
-  if (server) await $`ssh ${server} "${command}"`;
-  else await $`${command}`;
+async function deployFiles({ server, destinationPath, applicationPath }) {
+  await $`rsync -av --exclude-from=".rsyncignore" --delete-after ${applicationPath}/.next/standalone/ ${server}:${destinationPath}/`;
+  await $`rsync -av --exclude-from=".rsyncignore" --delete-after ${applicationPath}/public ${server}:${destinationPath}/`;
+  await $`rsync -av --exclude-from=".rsyncignore" --delete-after ${applicationPath}/.next/static ${server}:${destinationPath}/${applicationPath}/.next/`;
+}
+
+async function startServer({ server, destinationPath, applicationName, applicationPath }) {
+  const command = `pm2 start --time --name ${applicationName} ${applicationPath}/server.js`;
+  await $`ssh ${server} "cd ${destinationPath} && ${command}"`;
+}
+
+async function reloadServer({ server, applicationName }) {
+  await $`ssh ${server} "pm2 reload --time ${applicationName}"`;
 }
