@@ -28,9 +28,8 @@ function createTransporter() {
 export type MailOptions = Pick<Mail.Options, 'to' | 'cc' | 'bcc' | 'subject' | 'html' | 'text' | 'attachments'>;
 
 export async function sendEmail(mailOptions: MailOptions) {
-  if (!mailOptions.to) {
-    throw new Error('Missing email recipient : ' + mailOptions.subject);
-  }
+  if (!mailOptions.to) throw new Error('Missing email recipient : ' + mailOptions.subject);
+
   return new Promise<boolean>((resolve) => {
     createTransporter().sendMail(
       {

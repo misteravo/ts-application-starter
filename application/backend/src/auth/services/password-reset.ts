@@ -9,6 +9,7 @@ import { db, s } from '../../db';
 import { sqlNotNull } from '../../db/utils';
 import type { User } from './user';
 import { env } from '../../env';
+import { sendEmail } from './email';
 
 export async function createPasswordResetSession(token: string, userId: number, email: string) {
   const sessionId = encodeHexLowerCase(sha256(new TextEncoder().encode(token)));
@@ -124,8 +125,12 @@ export async function deletePasswordResetSessionTokenCookie() {
   });
 }
 
-export function sendPasswordResetEmail(email: string, code: string) {
-  console.log(`To ${email}: Your reset code is ${code}`);
+export async function sendPasswordResetEmail(email: string, code: string) {
+  await sendEmail({
+    to: email,
+    subject: 'Password Reset Code',
+    html: `<p>Your reset code is ${code}</p>`,
+  });
 }
 
 export interface PasswordResetSession {

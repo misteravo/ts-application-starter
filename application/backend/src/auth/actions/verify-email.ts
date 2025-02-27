@@ -32,7 +32,7 @@ export async function verifyEmail({ code }: { code: string }): Promise<Result> {
 
   if (Date.now() >= verificationRequest.expiresAt.getTime()) {
     verificationRequest = await createEmailVerificationRequest(verificationRequest.userId, verificationRequest.email);
-    sendVerificationEmail(verificationRequest.email, verificationRequest.code);
+    await sendVerificationEmail(verificationRequest.email, verificationRequest.code);
     return {
       message: 'The verification code was expired. We sent another code to your inbox.',
     };
@@ -64,7 +64,7 @@ export async function resendEmailVerificationCode(): Promise<Result> {
     verificationRequest = await createEmailVerificationRequest(user.id, verificationRequest.email);
   }
 
-  sendVerificationEmail(verificationRequest.email, verificationRequest.code);
+  await sendVerificationEmail(verificationRequest.email, verificationRequest.code);
   await setEmailVerificationRequestCookie(verificationRequest);
   return { message: 'A new code was sent to your inbox.' };
 }

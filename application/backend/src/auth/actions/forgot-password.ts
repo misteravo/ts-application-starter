@@ -48,7 +48,7 @@ export async function forgotPassword({ email }: { email: string }): Promise<Resu
   const sessionToken = generateSessionToken();
   const session = await createPasswordResetSession(sessionToken, user.id, user.email);
 
-  sendPasswordResetEmail(session.email, session.code);
+  await sendPasswordResetEmail(session.email, session.code);
   await setPasswordResetSessionTokenCookie(sessionToken, session.expiresAt);
   return { redirect: '/reset-password/verify-email' };
 }

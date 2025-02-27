@@ -41,7 +41,7 @@ export async function signUp({
 
   const user = await createUser(email, username, password);
   const emailVerificationRequest = await createEmailVerificationRequest(user.id, user.email);
-  sendVerificationEmail(emailVerificationRequest.email, emailVerificationRequest.code);
+  await sendVerificationEmail(emailVerificationRequest.email, emailVerificationRequest.code);
   await setEmailVerificationRequestCookie(emailVerificationRequest);
 
   const sessionToken = generateSessionToken();

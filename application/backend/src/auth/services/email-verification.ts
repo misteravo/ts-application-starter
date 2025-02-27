@@ -7,6 +7,7 @@ import { ExpiringTokenBucket } from './rate-limit';
 import { getCurrentSession } from './session';
 import { generateRandomOTP } from './utils';
 import { env } from '../../env';
+import { sendEmail } from './email';
 
 export async function getUserEmailVerificationRequest(userId: number, id: string) {
   const [result] = await db
@@ -47,8 +48,12 @@ export async function deleteUserEmailVerificationRequest(userId: number) {
   await db.delete(s.emailVerificationRequest).where(eq(s.emailVerificationRequest.userId, userId));
 }
 
-export function sendVerificationEmail(email: string, code: string) {
-  console.log(`To ${email}: Your verification code is ${code}`);
+export async function sendVerificationEmail(email: string, code: string) {
+  await sendEmail({
+    to: email,
+    subject: 'Verification Code',
+    html: `<p>Your verification code is ${code}</p>`,
+  });
 }
 
 export async function setEmailVerificationRequestCookie(request: EmailVerificationRequest): Promise<void> {

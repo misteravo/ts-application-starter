@@ -121,7 +121,7 @@ export async function updateEmailAction(_prev: ActionResult, formData: FormData)
     };
   }
   const verificationRequest = await createEmailVerificationRequest(user.id, email);
-  sendVerificationEmail(verificationRequest.email, verificationRequest.code);
+  await sendVerificationEmail(verificationRequest.email, verificationRequest.code);
   await setEmailVerificationRequestCookie(verificationRequest);
   return redirect('/verify-email');
 }
