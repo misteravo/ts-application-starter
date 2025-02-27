@@ -22,6 +22,7 @@ import {
 import { ObjectParser } from '@pilcrowjs/object-parser';
 
 import type { AuthenticatorData, ClientData } from '@oslojs/webauthn';
+import { env } from '~/env';
 
 export async function verifySecurityKeyAction(data: unknown): Promise<ActionResult> {
   if (!(await globalPOSTRateLimit())) {
@@ -81,7 +82,7 @@ export async function verifySecurityKeyAction(data: unknown): Promise<ActionResu
     };
   }
   // TODO: Update host
-  if (!authenticatorData.verifyRelyingPartyIdHash('localhost')) {
+  if (!authenticatorData.verifyRelyingPartyIdHash(env.SERVER_HOST)) {
     return {
       error: 'Invalid data',
     };
@@ -111,8 +112,7 @@ export async function verifySecurityKeyAction(data: unknown): Promise<ActionResu
       error: 'Invalid data',
     };
   }
-  // TODO: Update origin
-  if (clientData.origin !== 'http://localhost:3000') {
+  if (clientData.origin !== env.SERVER_URL) {
     return {
       error: 'Invalid data',
     };

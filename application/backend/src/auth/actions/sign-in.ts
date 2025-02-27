@@ -10,6 +10,7 @@ import {
   parseAuthenticatorData,
   parseClientDataJSON,
 } from '@oslojs/webauthn';
+import { env } from '../../env';
 import { getClientIP } from '../../lib/headers';
 import { get2FARedirect } from '../services/2fa';
 import { verifyEmailInput } from '../services/email';
@@ -63,7 +64,7 @@ export async function signInWithPasskey(props: {
   if (!authenticatorData) return { message: 'Invalid data' };
 
   // TODO: Update host
-  if (!authenticatorData.verifyRelyingPartyIdHash('localhost')) return { message: 'Invalid data' };
+  if (!authenticatorData.verifyRelyingPartyIdHash(env.SERVER_HOST)) return { message: 'Invalid data' };
   if (!authenticatorData.userPresent || !authenticatorData.userVerified) return { message: 'Invalid data' };
 
   const [clientData] = safeTrySync(() => parseClientDataJSON(props.clientData));
@@ -72,8 +73,7 @@ export async function signInWithPasskey(props: {
   if (clientData.type !== ClientDataType.Get) return { message: 'Invalid data' };
 
   if (!verifyWebAuthnChallenge(clientData.challenge)) return { message: 'Invalid data' };
-  // TODO: Update origin
-  if (clientData.origin !== 'http://localhost:3000') return { message: 'Invalid data' };
+  if (clientData.origin !== env.SERVER_URL) return { message: 'Invalid data' };
   if (clientData.crossOrigin !== null && clientData.crossOrigin) return { message: 'Invalid data' };
 
   const credential = await getPasskeyCredential(props.credentialId);

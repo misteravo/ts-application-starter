@@ -40,6 +40,7 @@ import {
   getUserSecurityKeyCredentials,
   verifyWebAuthnChallenge,
 } from '../../services/webauthn';
+import { env } from '../../../env';
 
 type Result = { message: string } | { redirect: string };
 
@@ -59,8 +60,7 @@ export async function verifySecurityKey(props: {
   const [authenticatorData] = safeTrySync(() => parseAuthenticatorData(props.authenticatorData));
   if (!authenticatorData) return { message: 'Invalid data' };
 
-  // TODO: Update host
-  if (!authenticatorData.verifyRelyingPartyIdHash('localhost')) return { message: 'Invalid data' };
+  if (!authenticatorData.verifyRelyingPartyIdHash(env.SERVER_HOST)) return { message: 'Invalid data' };
   if (!authenticatorData.userPresent) return { message: 'Invalid data' };
 
   const [clientData] = safeTrySync(() => parseClientDataJSON(props.clientData));
@@ -71,7 +71,7 @@ export async function verifySecurityKey(props: {
   if (!verifyWebAuthnChallenge(clientData.challenge)) return { message: 'Invalid data' };
 
   // TODO: Update origin
-  if (clientData.origin !== 'http://localhost:3000') return { message: 'Invalid data' };
+  if (clientData.origin !== env.SERVER_URL) return { message: 'Invalid data' };
   if (clientData.crossOrigin !== null && clientData.crossOrigin) return { message: 'Invalid data' };
 
   const credential = await getUserSecurityKeyCredential(user.id, props.credentialId);
@@ -117,8 +117,7 @@ export async function registerSecurityKey(props: {
     return { message: 'Invalid data' };
   }
   if (attestationStatement.format !== AttestationStatementFormat.None) return { message: 'Invalid data' };
-  // TODO: Update host
-  if (!authenticatorData.verifyRelyingPartyIdHash('localhost')) return { message: 'Invalid data' };
+  if (!authenticatorData.verifyRelyingPartyIdHash(env.SERVER_HOST)) return { message: 'Invalid data' };
   if (!authenticatorData.userPresent) return { message: 'Invalid data' };
   if (authenticatorData.credential === null) return { message: 'Invalid data' };
 
@@ -131,8 +130,7 @@ export async function registerSecurityKey(props: {
   if (clientData.type !== ClientDataType.Create) return { message: 'Invalid data' };
 
   if (!verifyWebAuthnChallenge(clientData.challenge)) return { message: 'Invalid data' };
-  // TODO: Update origin
-  if (clientData.origin !== 'http://localhost:3000') return { message: 'Invalid data' };
+  if (clientData.origin !== env.SERVER_URL) return { message: 'Invalid data' };
   if (clientData.crossOrigin !== null && clientData.crossOrigin) return { message: 'Invalid data' };
 
   let credential: WebAuthnUserCredential;

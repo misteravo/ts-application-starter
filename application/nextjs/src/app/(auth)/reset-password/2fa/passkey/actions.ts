@@ -11,6 +11,7 @@ import { decodePKIXECDSASignature, decodeSEC1PublicKey, p256, verifyECDSASignatu
 import { decodePKCS1RSAPublicKey, sha256ObjectIdentifier, verifyRSASSAPKCS1v15Signature } from '@oslojs/crypto/rsa';
 import { sha256 } from '@oslojs/crypto/sha2';
 import { decodeBase64 } from '@oslojs/encoding';
+import type { AuthenticatorData, ClientData } from '@oslojs/webauthn';
 import {
   ClientDataType,
   coseAlgorithmES256,
@@ -20,8 +21,7 @@ import {
   parseClientDataJSON,
 } from '@oslojs/webauthn';
 import { ObjectParser } from '@pilcrowjs/object-parser';
-
-import type { AuthenticatorData, ClientData } from '@oslojs/webauthn';
+import { env } from '~/env';
 
 export async function verifyPasskeyAction(data: unknown): Promise<ActionResult> {
   if (!(await globalPOSTRateLimit())) {
@@ -80,8 +80,7 @@ export async function verifyPasskeyAction(data: unknown): Promise<ActionResult> 
       error: 'Invalid data',
     };
   }
-  // TODO: Update host
-  if (!authenticatorData.verifyRelyingPartyIdHash('localhost')) {
+  if (!authenticatorData.verifyRelyingPartyIdHash(env.SERVER_HOST)) {
     return {
       error: 'Invalid data',
     };
@@ -111,8 +110,7 @@ export async function verifyPasskeyAction(data: unknown): Promise<ActionResult> 
       error: 'Invalid data',
     };
   }
-  // TODO: Update origin
-  if (clientData.origin !== 'http://localhost:3000') {
+  if (clientData.origin !== env.SERVER_URL) {
     return {
       error: 'Invalid data',
     };
