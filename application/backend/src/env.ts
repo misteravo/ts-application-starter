@@ -8,10 +8,10 @@ export const env = createEnv({
   server: {
     ENCRYPTION_KEY: z.string(),
     COOKIE_SECURE: z.boolean(),
-    SMTP_HOST: z.string(),
+    SMTP_HOST: z.string().default('localhost'),
     SMTP_PORT: z.string().default('25').transform(Number),
     MAIL_FROM: z.string(),
-    REPLY_TO: z.string(),
+    REPLY_TO: z.string().optional(),
     DEV_EMAIL: z.string().optional(),
   },
   runtimeEnv: {

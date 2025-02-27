@@ -35,7 +35,7 @@ export async function sendEmail(mailOptions: MailOptions) {
       {
         ...mailOptions,
         from: env.MAIL_FROM,
-        replyTo: env.REPLY_TO,
+        replyTo: env.REPLY_TO ?? env.MAIL_FROM,
         to: env.DEV_EMAIL ?? mailOptions.to,
         cc: env.DEV_EMAIL ? undefined : mailOptions.cc,
         bcc: env.DEV_EMAIL ? undefined : mailOptions.bcc,
