@@ -9,7 +9,7 @@ export const env = createEnv({
     ENCRYPTION_KEY: z.string(),
     COOKIE_SECURE: z.boolean(),
     SMTP_HOST: z.string(),
-    SMTP_PORT: z.number().default(25),
+    SMTP_PORT: z.string().default('25').transform(Number),
     MAIL_FROM: z.string(),
     REPLY_TO: z.string(),
     DEV_EMAIL: z.string().optional(),
