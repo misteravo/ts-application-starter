@@ -6,6 +6,8 @@ The purpose is to be able to quickly start a new project with a modern tech stac
 Currently, the application is set up for Next.js. 
 Future enhancements may include support for various popular TypeScript frameworks, such as Expo, Tanstack Start, and Angular.
 
+**Demo:** https://app-starter.org/.
+
 ## Features
 
 - **Authentication**: Secure sign-in functionalities with 2FA and passwordless.
