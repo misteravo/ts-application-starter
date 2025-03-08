@@ -126,6 +126,9 @@ export async function deletePasswordResetSessionTokenCookie() {
 }
 
 export async function sendPasswordResetEmail(email: string, code: string) {
+  if (env.NODE_ENV === 'development') {
+    console.log('Your reset code is', code);
+  }
   await sendEmail({
     to: email,
     subject: 'Password Reset Code',

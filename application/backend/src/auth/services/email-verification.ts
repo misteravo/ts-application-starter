@@ -49,6 +49,9 @@ export async function deleteUserEmailVerificationRequest(userId: number) {
 }
 
 export async function sendVerificationEmail(email: string, code: string) {
+  if (env.NODE_ENV === 'development') {
+    console.log('Your verification code is', code);
+  }
   await sendEmail({
     to: email,
     subject: 'Verification Code',
