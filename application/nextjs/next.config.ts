@@ -11,6 +11,18 @@ const config: NextConfig = {
   /** We already do linting and typechecking as separate tasks in CI */
   eslint: { ignoreDuringBuilds: true },
   typescript: { ignoreBuildErrors: true },
+
+  /** Handle native modules */
+  webpack: (config, { isServer }) => {
+    if (!isServer) {
+      config.resolve.fallback = {
+        ...config.resolve.fallback,
+        'better-sqlite3': false,
+      };
+    }
+    config.externals = [...(config.externals || []), 'better-sqlite3'];
+    return config;
+  },
 };
 
 export default config;
