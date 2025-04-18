@@ -4,7 +4,7 @@ This application starter has been built with the intention of being used as a st
 The purpose is to be able to quickly start a new project with a modern tech stack based on TypeScript.
 
 Currently, the application is set up for Next.js. 
-Future enhancements may include support for various popular TypeScript frameworks, such as Expo, Tanstack Start, and Angular.
+Future enhancements may include support for various popular TypeScript frameworks, such as Expo, Tanstack Start, and Analog (Angular).
 
 **Demo:** https://app-starter.org/.
 
