@@ -9,20 +9,12 @@ import { renderSVG } from 'uqr';
 import { AuthLayout, AuthTitle } from '~/modules/auth/components/layout';
 
 export default async function Page() {
-  if (!(await globalGETRateLimit())) {
-    return 'Too many requests';
-  }
+  if (!(await globalGETRateLimit())) return 'Too many requests';
 
   const { session, user } = await getCurrentSession();
-  if (session === null) {
-    return redirect('/sign-in');
-  }
-  if (!user.emailVerified) {
-    return redirect('/verify-email');
-  }
-  if (user.registered2FA && !session.twoFactorVerified) {
-    return redirect(get2FARedirect(user));
-  }
+  if (session === null) return redirect('/sign-in');
+  if (!user.emailVerified) return redirect('/verify-email');
+  if (user.registered2FA && !session.twoFactorVerified) return redirect(get2FARedirect(user));
 
   const totpKey = new Uint8Array(20);
   crypto.getRandomValues(totpKey);

@@ -21,22 +21,14 @@ import { encodeBase64 } from '@oslojs/encoding';
 import { redirect } from 'next/navigation';
 
 export default async function Page() {
-  if (!(await globalGETRateLimit())) {
-    return 'Too many requests';
-  }
+  if (!(await globalGETRateLimit())) return 'Too many requests';
 
   const { session, user } = await getCurrentSession();
-  if (session === null) {
-    return redirect('/sign-in');
-  }
-  if (user.registered2FA && !session.twoFactorVerified) {
-    return redirect(get2FARedirect(user));
-  }
+  if (session === null) return redirect('/sign-in');
+  if (user.registered2FA && !session.twoFactorVerified) return redirect(get2FARedirect(user));
 
   let recoveryCode: string | null = null;
-  if (user.registered2FA) {
-    recoveryCode = await getUserRecoverCode(user.id);
-  }
+  if (user.registered2FA) recoveryCode = await getUserRecoverCode(user.id);
 
   const passkeyCredentials = await getUserPasskeyCredentials(user.id);
   const securityKeyCredentials = await getUserSecurityKeyCredentials(user.id);

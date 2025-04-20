@@ -6,23 +6,13 @@ import { AuthLayout, AuthTitle } from '~/modules/auth/components/layout';
 import { TotpVerificationForm } from './components';
 
 export default async function Page() {
-  if (!(await globalGETRateLimit())) {
-    return 'Too many requests';
-  }
+  if (!(await globalGETRateLimit())) return 'Too many requests';
 
   const { session, user } = await getCurrentSession();
-  if (session === null) {
-    return redirect('/sign-in');
-  }
-  if (!user.emailVerified) {
-    return redirect('/verify-email');
-  }
-  if (!user.registered2FA) {
-    return redirect('/2fa/setup');
-  }
-  if (session.twoFactorVerified) {
-    return redirect('/');
-  }
+  if (session === null) return redirect('/sign-in');
+  if (!user.emailVerified) return redirect('/verify-email');
+  if (!user.registered2FA) return redirect('/2fa/setup');
+  if (session.twoFactorVerified) return redirect('/');
 
   return (
     <AuthLayout>

@@ -5,9 +5,7 @@ import { AuthLayout, AuthTitle } from '~/modules/auth/components/layout';
 import { ForgotPasswordForm } from './components';
 
 export default async function Page() {
-  if (!(await globalGETRateLimit())) {
-    return 'Too many requests';
-  }
+  if (!(await globalGETRateLimit())) return 'Too many requests';
 
   return (
     <AuthLayout>

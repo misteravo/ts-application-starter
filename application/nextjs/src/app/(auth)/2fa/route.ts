@@ -1,11 +1,8 @@
 import { get2FARedirect, getCurrentSession, globalGETRateLimit } from '@acme/backend';
 
 export async function GET() {
-  if (!(await globalGETRateLimit())) {
-    return new Response('Too many requests', {
-      status: 429,
-    });
-  }
+  if (!(await globalGETRateLimit())) return new Response('Too many requests', { status: 429 });
+
   const { session, user } = await getCurrentSession();
   if (session === null) {
     return new Response(null, {
