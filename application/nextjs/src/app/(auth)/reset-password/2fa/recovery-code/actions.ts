@@ -16,39 +16,18 @@ export async function verifyPasswordReset2FAWithRecoveryCodeAction(
 
   const { session, user } = await getCurrentPasswordResetSession();
   if (session === null) return { message: 'Not authenticated' };
-  if (!session.emailVerified || !user.registered2FA || session.twoFactorVerified) {
-    return {
-      message: 'Forbidden',
-    };
-  }
+  if (!session.emailVerified || !user.registered2FA || session.twoFactorVerified) return { message: 'Forbidden' };
 
-  if (!recoveryCodeBucket.check(session.userId, 1)) {
-    return {
-      message: 'Too many requests',
-    };
-  }
+  if (!recoveryCodeBucket.check(session.userId, 1)) return { message: 'Too many requests' };
+
   const code = formData.get('code');
-  if (typeof code !== 'string') {
-    return {
-      message: 'Invalid or missing fields',
-    };
-  }
-  if (code === '') {
-    return {
-      message: 'Please enter your code',
-    };
-  }
-  if (!recoveryCodeBucket.consume(session.userId, 1)) {
-    return {
-      message: 'Too many requests',
-    };
-  }
+  if (typeof code !== 'string') return { message: 'Invalid or missing fields' };
+  if (code === '') return { message: 'Please enter your code' };
+  if (!recoveryCodeBucket.consume(session.userId, 1)) return { message: 'Too many requests' };
+
   const valid = await resetUser2FAWithRecoveryCode(session.userId, code);
-  if (!valid) {
-    return {
-      message: 'Invalid code',
-    };
-  }
+  if (!valid) return { message: 'Invalid code' };
+
   recoveryCodeBucket.reset(session.userId);
   return redirect('/reset-password');
 }

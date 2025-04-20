@@ -12,27 +12,18 @@ import { AuthLayout, AuthTitle } from '~/modules/auth/components/layout';
 import { VerifyPasskeyButton } from './components';
 
 export default async function Page() {
-  if (!(await globalGETRateLimit())) {
-    return 'Too many requests';
-  }
+  if (!(await globalGETRateLimit())) return 'Too many requests';
 
   const { session, user } = await getCurrentPasswordResetSession();
 
   if (session === null) {
     return redirect('/forgot-password');
   }
-  if (!session.emailVerified) {
-    return redirect('/reset-password/verify-email');
-  }
-  if (!user.registered2FA) {
-    return redirect('/reset-password');
-  }
-  if (session.twoFactorVerified) {
-    return redirect('/reset-password');
-  }
-  if (!user.registeredPasskey) {
-    return redirect(getPasswordReset2FARedirect(user));
-  }
+  if (!session.emailVerified) return redirect('/reset-password/verify-email');
+  if (!user.registered2FA) return redirect('/reset-password');
+  if (session.twoFactorVerified) return redirect('/reset-password');
+  if (!user.registeredPasskey) return redirect(getPasswordReset2FARedirect(user));
+
   const credentials = await getUserPasskeyCredentials(user.id);
 
   return (

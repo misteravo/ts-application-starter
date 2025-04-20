@@ -25,23 +25,11 @@ import type { AuthenticatorData, ClientData } from '@oslojs/webauthn';
 import { env } from '~/env';
 
 export async function verifySecurityKeyAction(data: unknown): Promise<ActionResult> {
-  if (!(await globalPOSTRateLimit())) {
-    return {
-      error: 'Too many requests',
-    };
-  }
+  if (!(await globalPOSTRateLimit())) return { error: 'Too many requests' };
 
   const { session, user } = await getCurrentPasswordResetSession();
-  if (session === null) {
-    return {
-      error: 'Not authenticated',
-    };
-  }
-  if (!session.emailVerified || !user.registeredSecurityKey || session.twoFactorVerified) {
-    return {
-      error: 'Forbidden',
-    };
-  }
+  if (session === null) return { error: 'Not authenticated' };
+  if (!session.emailVerified || !user.registeredSecurityKey || session.twoFactorVerified) return { error: 'Forbidden' };
 
   const parser = new ObjectParser(data);
   let encodedAuthenticatorData: string;
@@ -54,9 +42,7 @@ export async function verifySecurityKeyAction(data: unknown): Promise<ActionResu
     encodedCredentialId = parser.getString('credential_id');
     encodedSignature = parser.getString('signature');
   } catch {
-    return {
-      error: 'Invalid or missing fields',
-    };
+    return { error: 'Invalid or missing fields' };
   }
   let authenticatorDataBytes: Uint8Array;
   let clientDataJSON: Uint8Array;
@@ -68,67 +54,33 @@ export async function verifySecurityKeyAction(data: unknown): Promise<ActionResu
     credentialId = decodeBase64(encodedCredentialId);
     signatureBytes = decodeBase64(encodedSignature);
   } catch {
-    return {
-      error: 'Invalid or missing fields',
-    };
+    return { error: 'Invalid or missing fields' };
   }
 
   let authenticatorData: AuthenticatorData;
   try {
     authenticatorData = parseAuthenticatorData(authenticatorDataBytes);
   } catch {
-    return {
-      error: 'Invalid data',
-    };
+    return { error: 'Invalid data' };
   }
   // TODO: Update host
-  if (!authenticatorData.verifyRelyingPartyIdHash(env.SERVER_HOST)) {
-    return {
-      error: 'Invalid data',
-    };
-  }
-  if (!authenticatorData.userPresent) {
-    return {
-      error: 'Invalid data',
-    };
-  }
+  if (!authenticatorData.verifyRelyingPartyIdHash(env.SERVER_HOST)) return { error: 'Invalid data' };
+  if (!authenticatorData.userPresent) return { error: 'Invalid data' };
 
   let clientData: ClientData;
   try {
     clientData = parseClientDataJSON(clientDataJSON);
   } catch {
-    return {
-      error: 'Invalid data',
-    };
+    return { error: 'Invalid data' };
   }
-  if (clientData.type !== ClientDataType.Get) {
-    return {
-      error: 'Invalid data',
-    };
-  }
+  if (clientData.type !== ClientDataType.Get) return { error: 'Invalid data' };
 
-  if (!verifyWebAuthnChallenge(clientData.challenge)) {
-    return {
-      error: 'Invalid data',
-    };
-  }
-  if (clientData.origin !== env.SERVER_URL) {
-    return {
-      error: 'Invalid data',
-    };
-  }
-  if (clientData.crossOrigin !== null && clientData.crossOrigin) {
-    return {
-      error: 'Invalid data',
-    };
-  }
+  if (!verifyWebAuthnChallenge(clientData.challenge)) return { error: 'Invalid data' };
+  if (clientData.origin !== env.SERVER_URL) return { error: 'Invalid data' };
+  if (clientData.crossOrigin !== null && clientData.crossOrigin) return { error: 'Invalid data' };
 
   const credential = await getUserSecurityKeyCredential(user.id, credentialId);
-  if (credential === null) {
-    return {
-      error: 'Invalid credential',
-    };
-  }
+  if (credential === null) return { error: 'Invalid credential' };
 
   let validSignature: boolean;
   if (credential.algorithmId === coseAlgorithmES256) {
@@ -141,21 +93,13 @@ export async function verifySecurityKeyAction(data: unknown): Promise<ActionResu
     const hash = sha256(createAssertionSignatureMessage(authenticatorDataBytes, clientDataJSON));
     validSignature = verifyRSASSAPKCS1v15Signature(rsaPublicKey, sha256ObjectIdentifier, hash, signatureBytes);
   } else {
-    return {
-      error: 'Internal error',
-    };
+    return { error: 'Internal error' };
   }
 
-  if (!validSignature) {
-    return {
-      error: 'Invalid data',
-    };
-  }
+  if (!validSignature) return { error: 'Invalid data' };
 
   await setPasswordResetSessionAs2FAVerified(session.id);
-  return {
-    error: null,
-  };
+  return { error: null };
 }
 
 interface ActionResult {
