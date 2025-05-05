@@ -53,3 +53,5 @@ dist/
 
 # sqlite
 sqlite.db
+
+.nx
