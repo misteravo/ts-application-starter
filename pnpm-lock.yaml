@@ -96,6 +96,9 @@ importers:
       front-matter:
         specifier: ^4.0.2
         version: 4.0.2
+      h3:
+        specifier: ^1.15.3
+        version: 1.15.3
       marked:
         specifier: ^15.0.7
         version: 15.0.11
@@ -17163,7 +17166,7 @@ snapshots:
 
   dotenv-expand@11.0.7:
     dependencies:
-      dotenv: 16.4.7
+      dotenv: 16.5.0
 
   dotenv@16.0.3: {}
 

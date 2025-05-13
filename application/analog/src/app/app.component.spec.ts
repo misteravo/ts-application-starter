@@ -1,7 +1,8 @@
+import { provideLocationMocks } from '@angular/common/testing';
 import { TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
-import { provideLocationMocks } from '@angular/common/testing';
 
+import { beforeEach, describe, expect, it } from 'vitest';
 import { AppComponent } from './app.component';
 
 describe('AppComponent', () => {
