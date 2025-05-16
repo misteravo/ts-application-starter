@@ -42,7 +42,7 @@
     "@acme/tailwind-config": "workspace:*",
     "@acme/tsconfig": "workspace:*",
     "@types/better-sqlite3": "^7.6.13",
-    "@types/node": "^22.15.17",
+    "@types/node": "^22.15.18",
     "@types/react": "catalog:react19",
     "@types/react-dom": "catalog:react19",
     "add": "^2.0.6",
