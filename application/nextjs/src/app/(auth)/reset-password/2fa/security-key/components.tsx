@@ -33,14 +33,14 @@ export function VerifySecurityKeyButton({ encodedCredentialIds }: { encodedCrede
     }
 
     const result = await verifySecurityKeyAction({
-      credential_id: encodeBase64(new Uint8Array(credential.rawId)),
+      credentialId: encodeBase64(new Uint8Array(credential.rawId)),
       signature: encodeBase64(new Uint8Array(credential.response.signature)),
-      authenticator_data: encodeBase64(new Uint8Array(credential.response.authenticatorData)),
-      client_data_json: encodeBase64(new Uint8Array(credential.response.clientDataJSON)),
+      authenticatorData: encodeBase64(new Uint8Array(credential.response.authenticatorData)),
+      clientData: encodeBase64(new Uint8Array(credential.response.clientDataJSON)),
     });
 
-    if (result.error !== null) {
-      setMessage(result.error);
+    if ('message' in result) {
+      setMessage(result.message);
     } else {
       router.push('/reset-password');
     }
