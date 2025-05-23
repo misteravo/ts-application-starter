@@ -206,22 +206,16 @@ export async function verifyResetSecurityKey(props: {
   if (!session.emailVerified || !user.registeredSecurityKey || session.twoFactorVerified)
     return { message: 'Forbidden' };
 
-  let authenticatorData: AuthenticatorData;
-  try {
-    authenticatorData = parseAuthenticatorData(props.authenticatorData);
-  } catch {
-    return { message: 'Invalid data' };
-  }
+  const [authenticatorData] = safeTrySync(() => parseAuthenticatorData(props.authenticatorData));
+  if (!authenticatorData) return { message: 'Invalid data' };
+
   // TODO: Update host
   if (!authenticatorData.verifyRelyingPartyIdHash(env.SERVER_HOST)) return { message: 'Invalid data' };
   if (!authenticatorData.userPresent) return { message: 'Invalid data' };
 
-  let clientData: ClientData;
-  try {
-    clientData = parseClientDataJSON(props.clientData);
-  } catch {
-    return { message: 'Invalid data' };
-  }
+  const [clientData] = safeTrySync(() => parseClientDataJSON(props.clientData));
+  if (!clientData) return { message: 'Invalid data' };
+
   if (clientData.type !== ClientDataType.Get) return { message: 'Invalid data' };
 
   if (!verifyWebAuthnChallenge(clientData.challenge)) return { message: 'Invalid data' };
