@@ -41,6 +41,7 @@ import {
   getUserPasskeyCredentials,
   verifyWebAuthnChallenge,
 } from '../../services/webauthn';
+import { getCurrentPasswordResetSession, setPasswordResetSessionAs2FAVerified } from '../../services/password-reset';
 
 type Result = { message: string } | { redirect: string };
 
@@ -191,4 +192,54 @@ export async function registerPasskey(props: {
 
   if (!user.registered2FA) return { redirect: '/recovery-code' };
   return { redirect: '/' };
+}
+
+export async function verifyResetPasskey(props: {
+  authenticatorData: Uint8Array;
+  clientData: Uint8Array;
+  credentialId: Uint8Array;
+  signature: Uint8Array;
+}): Promise<Result> {
+  const { session, user } = await getCurrentPasswordResetSession();
+  if (session === null) return { message: 'Not authenticated' };
+  if (!session.emailVerified || !user.registeredPasskey || session.twoFactorVerified) return { message: 'Forbidden' };
+
+  const [authenticatorData] = safeTrySync(() => parseAuthenticatorData(props.authenticatorData));
+  if (!authenticatorData) return { message: 'Invalid data' };
+
+  if (!authenticatorData.verifyRelyingPartyIdHash(env.SERVER_HOST)) {
+    return { message: 'Invalid data' };
+  }
+  if (!authenticatorData.userPresent) return { message: 'Invalid data' };
+
+  const [clientData] = safeTrySync(() => parseClientDataJSON(props.clientData));
+  if (!clientData) return { message: 'Invalid data' };
+
+  if (clientData.type !== ClientDataType.Get) return { message: 'Invalid data' };
+
+  if (!verifyWebAuthnChallenge(clientData.challenge)) return { message: 'Invalid data' };
+  if (clientData.origin !== env.SERVER_URL) return { message: 'Invalid data' };
+  if (clientData.crossOrigin !== null && clientData.crossOrigin) return { message: 'Invalid data' };
+
+  const credential = await getUserPasskeyCredential(user.id, props.credentialId);
+  if (credential === null) return { message: 'Invalid credential' };
+
+  let validSignature: boolean;
+  if (credential.algorithmId === coseAlgorithmES256) {
+    const ecdsaSignature = decodePKIXECDSASignature(props.signature);
+    const ecdsaPublicKey = decodeSEC1PublicKey(p256, credential.publicKey);
+    const hash = sha256(createAssertionSignatureMessage(props.authenticatorData, props.clientData));
+    validSignature = verifyECDSASignature(ecdsaPublicKey, hash, ecdsaSignature);
+  } else if (credential.algorithmId === coseAlgorithmRS256) {
+    const rsaPublicKey = decodePKCS1RSAPublicKey(credential.publicKey);
+    const hash = sha256(createAssertionSignatureMessage(props.authenticatorData, props.clientData));
+    validSignature = verifyRSASSAPKCS1v15Signature(rsaPublicKey, sha256ObjectIdentifier, hash, props.signature);
+  } else {
+    return { message: 'Internal error' };
+  }
+
+  if (!validSignature) return { message: 'Invalid data' };
+
+  await setPasswordResetSessionAs2FAVerified(session.id);
+  return { redirect: '/reset-password' };
 }

@@ -39,8 +39,8 @@ export function VerifyPasskeyButton({ encodedCredentialIds }: { encodedCredentia
       clientData: encodeBase64(new Uint8Array(credential.response.clientDataJSON)),
     });
 
-    if ('error' in result && result.error !== null) {
-      setMessage(result.error);
+    if ('message' in result) {
+      setMessage(result.message);
     } else {
       router.push('/reset-password');
     }
