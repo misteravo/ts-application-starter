@@ -33,13 +33,13 @@ export function VerifyPasskeyButton({ encodedCredentialIds }: { encodedCredentia
     }
 
     const result = await verifyPasskeyAction({
-      credential_id: encodeBase64(new Uint8Array(credential.rawId)),
+      credentialId: encodeBase64(new Uint8Array(credential.rawId)),
       signature: encodeBase64(new Uint8Array(credential.response.signature)),
-      authenticator_data: encodeBase64(new Uint8Array(credential.response.authenticatorData)),
-      client_data_json: encodeBase64(new Uint8Array(credential.response.clientDataJSON)),
+      authenticatorData: encodeBase64(new Uint8Array(credential.response.authenticatorData)),
+      clientData: encodeBase64(new Uint8Array(credential.response.clientDataJSON)),
     });
 
-    if (result.error !== null) {
+    if ('error' in result && result.error !== null) {
       setMessage(result.error);
     } else {
       router.push('/reset-password');
