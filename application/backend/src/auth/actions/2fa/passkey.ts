@@ -61,7 +61,6 @@ export async function verifyPasskey(props: {
   const [authenticatorData] = safeTrySync(() => parseAuthenticatorData(props.authenticatorData));
   if (!authenticatorData) return { message: 'Invalid data' };
 
-  // TODO: Update host
   if (!authenticatorData.verifyRelyingPartyIdHash(env.SERVER_HOST)) return { message: 'Invalid data' };
   if (!authenticatorData.userPresent) return { message: 'Invalid data' };
 
@@ -72,7 +71,6 @@ export async function verifyPasskey(props: {
 
   if (!verifyWebAuthnChallenge(clientData.challenge)) return { message: 'Invalid data' };
 
-  // TODO: Update origin
   if (clientData.origin !== env.SERVER_URL) return { message: 'Invalid data' };
   if (clientData.crossOrigin !== null && clientData.crossOrigin) return { message: 'Invalid data' };
 
@@ -120,7 +118,6 @@ export async function registerPasskey(props: {
   }
   if (attestationStatement.format !== AttestationStatementFormat.None) return { message: 'Invalid data' };
 
-  // TODO: Update host
   if (!authenticatorData.verifyRelyingPartyIdHash(env.SERVER_HOST)) return { message: 'Invalid data' };
   if (!authenticatorData.userPresent || !authenticatorData.userVerified) return { message: 'Invalid data' };
   if (authenticatorData.credential === null) return { message: 'Invalid data' };
@@ -134,7 +131,6 @@ export async function registerPasskey(props: {
   if (clientData.type !== ClientDataType.Create) return { message: 'Invalid data' };
   if (!verifyWebAuthnChallenge(clientData.challenge)) return { message: 'Invalid data' };
 
-  // TODO: Update origin
   if (clientData.origin !== env.SERVER_URL) return { message: 'Invalid data' };
   if (clientData.crossOrigin !== null && clientData.crossOrigin) return { message: 'Invalid data' };
 
