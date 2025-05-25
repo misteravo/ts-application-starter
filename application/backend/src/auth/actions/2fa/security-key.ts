@@ -1,4 +1,4 @@
-import { safeTrySync } from '@acme/utils';
+import { safeTry, safeTrySync } from '@acme/utils';
 import {
   decodePKIXECDSASignature,
   decodeSEC1PublicKey,
@@ -154,10 +154,10 @@ export async function registerSecurityKey(props: {
   const credentials = await getUserSecurityKeyCredentials(user.id);
   if (credentials.length >= 5) return { message: 'Too many credentials' };
 
-  try {
-    await createSecurityKeyCredential(credential);
-  } catch (e) {
-    if (e instanceof SqliteError && e.code === 'SQLITE_CONSTRAINT_PRIMARYKEY') return { message: 'Invalid data' };
+  const [, error] = await safeTry(createSecurityKeyCredential(credential));
+  if (error) {
+    if (error instanceof SqliteError && error.code === 'SQLITE_CONSTRAINT_PRIMARYKEY')
+      return { message: 'Invalid data' };
     return { message: 'Internal error' };
   }
 
