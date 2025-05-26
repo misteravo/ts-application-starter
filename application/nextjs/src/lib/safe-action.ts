@@ -2,10 +2,7 @@ import { safeTry } from '@acme/utils';
 import { globalPOSTRateLimit } from '@acme/backend';
 import type { Schema, z } from 'zod';
 
-type ErrorMessage = {
-  message: string;
-};
-
+type ErrorMessage = { message: string };
 type ActionFunction<S extends Schema, R> = (props: z.infer<S>) => Promise<R>;
 
 export function schemaAction<S extends Schema, R>(schema: S, actionFn: ActionFunction<S, R>) {
