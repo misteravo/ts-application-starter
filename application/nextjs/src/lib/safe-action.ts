@@ -17,7 +17,7 @@ export function formAction<S extends Schema, R>(schema: S, actionFn: ActionFunct
   };
 }
 
-async function runAction<S extends Schema, R>(schema: S, props: unknown, actionFn: ActionFunction<S, R>) {
+async function runAction<S extends Schema, P, R>(schema: S, props: P, actionFn: ActionFunction<S, R>) {
   try {
     if (!(await globalPOSTRateLimit())) return { message: 'Too many requests' };
     const [data] = await safeTry(schema.parseAsync(props));
