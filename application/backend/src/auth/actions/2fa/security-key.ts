@@ -35,6 +35,7 @@ import {
   getUserSecurityKeyCredentials,
   verifyWebAuthnChallenge,
 } from '../../services/webauthn';
+import type { User } from '../../services/user';
 
 type Result = { message: string } | { redirect: string };
 
@@ -51,40 +52,8 @@ export async function verifySecurityKey(props: {
     return { message: 'Forbidden' };
   }
 
-  const [authenticatorData] = safeTrySync(() => parseAuthenticatorData(props.authenticatorData));
-  if (!authenticatorData) return { message: 'Invalid data' };
-
-  if (!authenticatorData.verifyRelyingPartyIdHash(env.SERVER_HOST)) return { message: 'Invalid data' };
-  if (!authenticatorData.userPresent) return { message: 'Invalid data' };
-
-  const [clientData] = safeTrySync(() => parseClientDataJSON(props.clientData));
-  if (!clientData) return { message: 'Invalid data' };
-
-  if (clientData.type !== ClientDataType.Get) return { message: 'Invalid data' };
-
-  if (!verifyWebAuthnChallenge(clientData.challenge)) return { message: 'Invalid data' };
-
-  if (clientData.origin !== env.SERVER_URL) return { message: 'Invalid data' };
-  if (clientData.crossOrigin !== null && clientData.crossOrigin) return { message: 'Invalid data' };
-
-  const credential = await getUserSecurityKeyCredential(user.id, props.credentialId);
-  if (credential === null) return { message: 'Invalid credential' };
-
-  let validSignature: boolean;
-  if (credential.algorithmId === coseAlgorithmES256) {
-    const ecdsaSignature = decodePKIXECDSASignature(props.signature);
-    const ecdsaPublicKey = decodeSEC1PublicKey(p256, credential.publicKey);
-    const hash = sha256(createAssertionSignatureMessage(props.authenticatorData, props.clientData));
-    validSignature = verifyECDSASignature(ecdsaPublicKey, hash, ecdsaSignature);
-  } else if (credential.algorithmId === coseAlgorithmRS256) {
-    const rsaPublicKey = decodePKCS1RSAPublicKey(credential.publicKey);
-    const hash = sha256(createAssertionSignatureMessage(props.authenticatorData, props.clientData));
-    validSignature = verifyRSASSAPKCS1v15Signature(rsaPublicKey, sha256ObjectIdentifier, hash, props.signature);
-  } else {
-    return { message: 'Internal error' };
-  }
-
-  if (!validSignature) return { message: 'Invalid data' };
+  const result = await verifySecurityKeyHelper({ user, ...props });
+  if (result.message !== null) return { message: result.message };
 
   await setSessionAs2FAVerified(session.id);
   return { redirect: '/2fa/security-key' };
@@ -178,6 +147,20 @@ export async function verifyResetSecurityKey(props: {
   if (!session.emailVerified || !user.registeredSecurityKey || session.twoFactorVerified)
     return { message: 'Forbidden' };
 
+  const result = await verifySecurityKeyHelper({ user, ...props });
+  if (result.message !== null) return { message: result.message };
+
+  await setPasswordResetSessionAs2FAVerified(session.id);
+  return { redirect: '/reset-password' };
+}
+
+async function verifySecurityKeyHelper(props: {
+  user: User;
+  authenticatorData: Uint8Array;
+  clientData: Uint8Array;
+  credentialId: Uint8Array;
+  signature: Uint8Array;
+}) {
   const [authenticatorData] = safeTrySync(() => parseAuthenticatorData(props.authenticatorData));
   if (!authenticatorData) return { message: 'Invalid data' };
 
@@ -190,10 +173,11 @@ export async function verifyResetSecurityKey(props: {
   if (clientData.type !== ClientDataType.Get) return { message: 'Invalid data' };
 
   if (!verifyWebAuthnChallenge(clientData.challenge)) return { message: 'Invalid data' };
+
   if (clientData.origin !== env.SERVER_URL) return { message: 'Invalid data' };
   if (clientData.crossOrigin !== null && clientData.crossOrigin) return { message: 'Invalid data' };
 
-  const credential = await getUserSecurityKeyCredential(user.id, props.credentialId);
+  const credential = await getUserSecurityKeyCredential(props.user.id, props.credentialId);
   if (credential === null) return { message: 'Invalid credential' };
 
   let validSignature: boolean;
@@ -212,6 +196,5 @@ export async function verifyResetSecurityKey(props: {
 
   if (!validSignature) return { message: 'Invalid data' };
 
-  await setPasswordResetSessionAs2FAVerified(session.id);
-  return { redirect: '/reset-password' };
+  return { message: null };
 }
