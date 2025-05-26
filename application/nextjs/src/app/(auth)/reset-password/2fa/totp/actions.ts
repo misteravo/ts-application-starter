@@ -17,8 +17,11 @@ export async function verifyPasswordReset2FAWithTOTPAction(
   if (!(await globalPOSTRateLimit())) return { message: 'Too many requests' };
 
   const { session, user } = await getCurrentPasswordResetSession();
-  if (session === null) return { message: 'Not authenticated' };
-  if (!session.emailVerified || !user.registeredTOTP || session.twoFactorVerified) return { message: 'Forbidden' };
+  if (!session) return { message: 'Not authenticated' };
+  if (!session.emailVerified) return { message: 'Forbidden' };
+  if (!user.registeredTOTP) return { message: 'Forbidden' };
+  if (session.twoFactorVerified) return { message: 'Forbidden' };
+
   if (!totpBucket.check(session.userId, 1)) return { message: 'Too many requests' };
 
   const code = formData.get('code');

@@ -93,13 +93,11 @@ export async function invalidateUserPasswordResetSessions(userId: number) {
 export const getCurrentPasswordResetSession = cache(async () => {
   const cookiesList = await cookies();
   const token = cookiesList.get('password_reset_session')?.value ?? null;
-  if (token === null) {
-    return { session: null, user: null };
-  }
+  if (token === null) return { session: null, user: null };
+
   const result = await validatePasswordResetSessionToken(token);
-  if (result.session === null) {
-    await deletePasswordResetSessionTokenCookie();
-  }
+  if (!result.session) await deletePasswordResetSessionTokenCookie();
+
   return result;
 });
 

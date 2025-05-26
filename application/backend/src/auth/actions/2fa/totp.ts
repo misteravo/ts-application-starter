@@ -8,10 +8,11 @@ type Result = { message: string } | { redirect: string };
 
 export async function verifyTotpCode(props: { code: string }): Promise<Result> {
   const { session, user } = await getCurrentSession();
-  if (session === null) return { message: 'Not authenticated' };
-  if (!user.emailVerified || !user.registeredTOTP || session.twoFactorVerified) {
-    return { message: 'Forbidden' };
-  }
+  if (!session) return { message: 'Not authenticated' };
+  if (!user.emailVerified) return { message: 'Forbidden' };
+  if (!user.registeredTOTP) return { message: 'Forbidden' };
+  if (session.twoFactorVerified) return { message: 'Forbidden' };
+
   if (!totpBucket.check(user.id, 1)) return { message: 'Too many requests' };
 
   if (props.code === '') return { message: 'Enter your code' };

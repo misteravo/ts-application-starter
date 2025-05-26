@@ -4,7 +4,7 @@ export async function GET() {
   if (!(await globalGETRateLimit())) return new Response('Too many requests', { status: 429 });
 
   const { session, user } = await getCurrentPasswordResetSession();
-  if (session === null) {
+  if (!session) {
     return new Response(null, {
       status: 302,
       headers: {

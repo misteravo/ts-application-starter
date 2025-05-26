@@ -8,7 +8,7 @@ export default async function Page() {
   if (!(await globalGETRateLimit())) return 'Too many requests';
 
   const { session } = await getCurrentPasswordResetSession();
-  if (session === null) return redirect('/forgot-password');
+  if (!session) return redirect('/forgot-password');
   if (session.emailVerified) {
     if (!session.twoFactorVerified) return redirect('/reset-password/2fa');
     return redirect('/reset-password');

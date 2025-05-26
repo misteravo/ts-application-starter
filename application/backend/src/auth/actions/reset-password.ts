@@ -20,9 +20,8 @@ type Result = { message: string } | { redirect: string };
 
 export async function resetPassword({ password }: { password: string }): Promise<Result> {
   const { session: passwordResetSession, user } = await getCurrentPasswordResetSession();
-  if (passwordResetSession === null) return { message: 'Not authenticated' };
+  if (!passwordResetSession) return { message: 'Not authenticated' };
   if (!passwordResetSession.emailVerified) return { message: 'Forbidden' };
-
   if (user.registered2FA && !passwordResetSession.twoFactorVerified) return { message: 'Forbidden' };
 
   const strongPassword = await verifyPasswordStrength(password);
@@ -45,7 +44,7 @@ const emailVerificationBucket = new ExpiringTokenBucket<number>(5, 60 * 30);
 
 export async function verifyPasswordResetEmail({ code }: { code: string }): Promise<Result> {
   const { session } = await getCurrentPasswordResetSession();
-  if (session === null) return { message: 'Not authenticated' };
+  if (!session) return { message: 'Not authenticated' };
   if (session.emailVerified) return { message: 'Forbidden' };
 
   if (!emailVerificationBucket.check(session.userId, 1)) return { message: 'Too many requests' };

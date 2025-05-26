@@ -69,7 +69,7 @@ export async function updateEmailAction(_prev: ActionResult, formData: FormData)
   if (!(await globalPOSTRateLimit())) return { message: 'Too many requests' };
 
   const { session, user } = await getCurrentSession();
-  if (session === null) return { message: 'Not authenticated' };
+  if (!session) return { message: 'Not authenticated' };
   if (user.registered2FA && !session.twoFactorVerified) return { message: 'Forbidden' };
   if (!sendVerificationEmailBucket.check(user.id, 1)) return { message: 'Too many requests' };
 
@@ -95,7 +95,7 @@ export async function disconnectTOTPAction(): Promise<ActionResult> {
   if (!(await globalPOSTRateLimit())) return { message: 'Too many requests' };
 
   const { session, user } = await getCurrentSession();
-  if (session === null) return { message: 'Not authenticated' };
+  if (!session) return { message: 'Not authenticated' };
   if (!user.emailVerified) return { message: 'Forbidden' };
   if (user.registered2FA && !session.twoFactorVerified) return { message: 'Forbidden' };
   if (!totpUpdateBucket.consume(user.id, 1)) return { message: '' };
@@ -108,7 +108,7 @@ export async function deletePasskeyAction(_prev: ActionResult, formData: FormDat
   if (!(await globalPOSTRateLimit())) return { message: 'Too many requests' };
 
   const { session, user } = await getCurrentSession();
-  if (session === null) return { message: 'Not authenticated' };
+  if (!session) return { message: 'Not authenticated' };
   if (!user.emailVerified) return { message: 'Forbidden' };
   if (user.registered2FA && !session.twoFactorVerified) return { message: 'Forbidden' };
 
@@ -132,7 +132,7 @@ export async function deleteSecurityKeyAction(_prev: ActionResult, formData: For
   if (!(await globalPOSTRateLimit())) return { message: 'Too many requests' };
 
   const { session, user } = await getCurrentSession();
-  if (session === null) return { message: 'Not authenticated' };
+  if (!session) return { message: 'Not authenticated' };
   if (!user.emailVerified) return { message: 'Forbidden' };
   if (user.registered2FA && !session.twoFactorVerified) return { message: 'Forbidden' };
 
@@ -155,7 +155,7 @@ export async function regenerateRecoveryCodeAction(): Promise<RegenerateRecovery
   if (!(await globalPOSTRateLimit())) return { error: 'Too many requests', recoveryCode: null };
 
   const { session, user } = await getCurrentSession();
-  if (session === null) return { error: 'Not authenticated', recoveryCode: null };
+  if (!session) return { error: 'Not authenticated', recoveryCode: null };
   if (!user.emailVerified) return { error: 'Forbidden', recoveryCode: null };
   if (!session.twoFactorVerified) return { error: 'Forbidden', recoveryCode: null };
 

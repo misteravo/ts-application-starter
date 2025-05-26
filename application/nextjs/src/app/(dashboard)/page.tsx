@@ -5,9 +5,7 @@ import { redirect } from 'next/navigation';
 
 export default async function DashboardPage() {
   const { session, user } = await getCurrentSession();
-  if (session === null) {
-    return redirect('/sign-in');
-  }
+  if (!session) return redirect('/sign-in');
   if (user.registered2FA && !session.twoFactorVerified) {
     return redirect(get2FARedirect(user));
   }

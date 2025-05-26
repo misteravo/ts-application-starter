@@ -142,9 +142,10 @@ export async function verifyResetSecurityKey(props: {
   signature: Uint8Array;
 }): Promise<Result> {
   const { session, user } = await getCurrentPasswordResetSession();
-  if (session === null) return { message: 'Not authenticated' };
-  if (!session.emailVerified || !user.registeredSecurityKey || session.twoFactorVerified)
-    return { message: 'Forbidden' };
+  if (!session) return { message: 'Not authenticated' };
+  if (!session.emailVerified) return { message: 'Forbidden' };
+  if (!user.registeredSecurityKey) return { message: 'Forbidden' };
+  if (session.twoFactorVerified) return { message: 'Forbidden' };
 
   const result = await verifySecurityKeyHelper({ user, ...props });
   if (result.message !== null) return { message: result.message };
