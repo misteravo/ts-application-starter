@@ -13,13 +13,6 @@ import {
   verifyRSASSAPKCS1v15Signature,
 } from '@oslojs/crypto/rsa';
 import { sha256 } from '@oslojs/crypto/sha2';
-import type {
-  AttestationStatement,
-  AuthenticatorData,
-  ClientData,
-  COSEEC2PublicKey,
-  COSERSAPublicKey,
-} from '@oslojs/webauthn';
 import {
   AttestationStatementFormat,
   ClientDataType,
@@ -33,7 +26,9 @@ import {
 } from '@oslojs/webauthn';
 import { SqliteError } from 'better-sqlite3';
 import { env } from '../../../env';
+import { getCurrentPasswordResetSession, setPasswordResetSessionAs2FAVerified } from '../../services/password-reset';
 import { getCurrentSession, setSessionAs2FAVerified } from '../../services/session';
+import type { User } from '../../services/user';
 import type { WebAuthnUserCredential } from '../../services/webauthn';
 import {
   createPasskeyCredential,
@@ -41,8 +36,6 @@ import {
   getUserPasskeyCredentials,
   verifyWebAuthnChallenge,
 } from '../../services/webauthn';
-import { getCurrentPasswordResetSession, setPasswordResetSessionAs2FAVerified } from '../../services/password-reset';
-import type { User } from '../../services/user';
 
 type Result = { message: string } | { redirect: string };
 
@@ -75,27 +68,18 @@ export async function registerPasskey(props: {
   if (!user.emailVerified) return { message: 'Forbidden' };
   if (user.registered2FA && !session.twoFactorVerified) return { message: 'Forbidden' };
 
-  let attestationStatement: AttestationStatement;
-  let authenticatorData: AuthenticatorData;
-  try {
-    const attestationObject = parseAttestationObject(props.attestationObject);
-    attestationStatement = attestationObject.attestationStatement;
-    authenticatorData = attestationObject.authenticatorData;
-  } catch {
-    return { message: 'Invalid data' };
-  }
+  const [attestationObject] = safeTrySync(() => parseAttestationObject(props.attestationObject));
+  if (!attestationObject) return { message: 'Invalid data' };
+  const attestationStatement = attestationObject.attestationStatement;
+  const authenticatorData = attestationObject.authenticatorData;
   if (attestationStatement.format !== AttestationStatementFormat.None) return { message: 'Invalid data' };
 
   if (!authenticatorData.verifyRelyingPartyIdHash(env.SERVER_HOST)) return { message: 'Invalid data' };
   if (!authenticatorData.userPresent || !authenticatorData.userVerified) return { message: 'Invalid data' };
   if (authenticatorData.credential === null) return { message: 'Invalid data' };
 
-  let clientData: ClientData;
-  try {
-    clientData = parseClientDataJSON(props.clientData);
-  } catch {
-    return { message: 'Invalid data' };
-  }
+  const [clientData] = safeTrySync(() => parseClientDataJSON(props.clientData));
+  if (!clientData) return { message: 'Invalid data' };
   if (clientData.type !== ClientDataType.Create) return { message: 'Invalid data' };
   if (!verifyWebAuthnChallenge(clientData.challenge)) return { message: 'Invalid data' };
 
@@ -104,12 +88,8 @@ export async function registerPasskey(props: {
 
   let credential: WebAuthnUserCredential;
   if (authenticatorData.credential.publicKey.algorithm() === coseAlgorithmES256) {
-    let cosePublicKey: COSEEC2PublicKey;
-    try {
-      cosePublicKey = authenticatorData.credential.publicKey.ec2();
-    } catch {
-      return { message: 'Invalid data' };
-    }
+    const [cosePublicKey] = safeTrySync(() => authenticatorData.credential?.publicKey.ec2());
+    if (!cosePublicKey) return { message: 'Invalid data' };
     if (cosePublicKey.curve !== coseEllipticCurveP256) return { message: 'Unsupported algorithm' };
 
     const encodedPublicKey = new ECDSAPublicKey(p256, cosePublicKey.x, cosePublicKey.y).encodeSEC1Uncompressed();
@@ -121,12 +101,8 @@ export async function registerPasskey(props: {
       publicKey: encodedPublicKey,
     };
   } else if (authenticatorData.credential.publicKey.algorithm() === coseAlgorithmRS256) {
-    let cosePublicKey: COSERSAPublicKey;
-    try {
-      cosePublicKey = authenticatorData.credential.publicKey.rsa();
-    } catch {
-      return { message: 'Invalid data' };
-    }
+    const [cosePublicKey] = safeTrySync(() => authenticatorData.credential?.publicKey.rsa());
+    if (!cosePublicKey) return { message: 'Invalid data' };
 
     const encodedPublicKey = new RSAPublicKey(cosePublicKey.n, cosePublicKey.e).encodePKCS1();
     credential = {
@@ -144,9 +120,8 @@ export async function registerPasskey(props: {
   const credentials = await getUserPasskeyCredentials(user.id);
   if (credentials.length >= 5) return { message: 'Too many credentials' };
 
-  try {
-    await createPasskeyCredential(credential);
-  } catch (error) {
+  const [, error] = safeTrySync(async () => await createPasskeyCredential(credential));
+  if (error) {
     if (error instanceof SqliteError && error.code === 'SQLITE_CONSTRAINT_PRIMARYKEY')
       return { message: 'Invalid data' };
     return { message: 'Internal error' };
