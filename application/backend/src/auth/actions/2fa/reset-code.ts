@@ -7,10 +7,10 @@ type Result = { message: string } | { redirect: string };
 
 export async function reset2FACode(props: { code: string }): Promise<Result> {
   const { session, user } = await getCurrentSession();
-  if (session === null) return { message: 'Not authenticated' };
-  if (!user.emailVerified || !user.registered2FA || session.twoFactorVerified) {
-    return { message: 'Forbidden' };
-  }
+  if (!session) return { message: 'Not authenticated' };
+  if (!user.emailVerified) return { message: 'Forbidden' };
+  if (!user.registered2FA) return { message: 'Forbidden' };
+  if (session.twoFactorVerified) return { message: 'Forbidden' };
 
   if (!recoveryCodeBucket.check(user.id, 1)) return { message: 'Too many requests' };
 

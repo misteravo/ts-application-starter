@@ -35,39 +35,23 @@ export async function updatePasswordAction(_prev: ActionResult, formData: FormDa
   if (!(await globalPOSTRateLimit())) return { message: 'Too many requests' };
 
   const { session, user } = await getCurrentSession();
-  if (session === null) return { message: 'Not authenticated' };
+  if (!session) return { message: 'Not authenticated' };
   if (user.registered2FA && !session.twoFactorVerified) return { message: 'Forbidden' };
-  if (!passwordUpdateBucket.check(session.id, 1)) {
-    return {
-      message: 'Too many requests',
-    };
-  }
+  if (!passwordUpdateBucket.check(session.id, 1)) return { message: 'Too many requests' };
 
   const password = formData.get('password');
   const newPassword = formData.get('new_password');
-  if (typeof password !== 'string' || typeof newPassword !== 'string') {
-    return {
-      message: 'Invalid or missing fields',
-    };
-  }
+  if (typeof password !== 'string' || typeof newPassword !== 'string') return { message: 'Invalid or missing fields' };
+
   const strongPassword = await verifyPasswordStrength(newPassword);
-  if (!strongPassword) {
-    return {
-      message: 'Weak password',
-    };
-  }
-  if (!passwordUpdateBucket.consume(session.id, 1)) {
-    return {
-      message: 'Too many requests',
-    };
-  }
+  if (!strongPassword) return { message: 'Weak password' };
+
+  if (!passwordUpdateBucket.consume(session.id, 1)) return { message: 'Too many requests' };
+
   const passwordHash = await getUserPasswordHash(user.id);
   const validPassword = await verifyPasswordHash(passwordHash, password);
-  if (!validPassword) {
-    return {
-      message: 'Incorrect password',
-    };
-  }
+  if (!validPassword) return { message: 'Incorrect password' };
+
   passwordUpdateBucket.reset(session.id);
   await invalidateUserSessions(user.id);
   await updateUserPassword(user.id, newPassword);
@@ -78,9 +62,7 @@ export async function updatePasswordAction(_prev: ActionResult, formData: FormDa
   };
   const newSession = await createSession(sessionToken, user.id, sessionFlags);
   await setSessionTokenCookie(sessionToken, newSession.expiresAt);
-  return {
-    message: 'Updated password',
-  };
+  return { message: 'Updated password' };
 }
 
 export async function updateEmailAction(_prev: ActionResult, formData: FormData): Promise<ActionResult> {
@@ -89,37 +71,20 @@ export async function updateEmailAction(_prev: ActionResult, formData: FormData)
   const { session, user } = await getCurrentSession();
   if (session === null) return { message: 'Not authenticated' };
   if (user.registered2FA && !session.twoFactorVerified) return { message: 'Forbidden' };
-  if (!sendVerificationEmailBucket.check(user.id, 1)) {
-    return {
-      message: 'Too many requests',
-    };
-  }
+  if (!sendVerificationEmailBucket.check(user.id, 1)) return { message: 'Too many requests' };
 
   const email = formData.get('email');
-  if (typeof email !== 'string') {
-    return { message: 'Invalid or missing fields' };
-  }
-  if (email === '') {
-    return {
-      message: 'Please enter your email',
-    };
-  }
-  if (!verifyEmailInput(email)) {
-    return {
-      message: 'Please enter a valid email',
-    };
-  }
+  if (typeof email !== 'string') return { message: 'Invalid or missing fields' };
+
+  if (email === '') return { message: 'Please enter your email' };
+
+  if (!verifyEmailInput(email)) return { message: 'Please enter a valid email' };
+
   const emailAvailable = await checkEmailAvailability(email);
-  if (!emailAvailable) {
-    return {
-      message: 'This email is already used',
-    };
-  }
-  if (!sendVerificationEmailBucket.consume(user.id, 1)) {
-    return {
-      message: 'Too many requests',
-    };
-  }
+  if (!emailAvailable) return { message: 'This email is already used' };
+
+  if (!sendVerificationEmailBucket.consume(user.id, 1)) return { message: 'Too many requests' };
+
   const verificationRequest = await createEmailVerificationRequest(user.id, email);
   await sendVerificationEmail(verificationRequest.email, verificationRequest.code);
   await setEmailVerificationRequestCookie(verificationRequest);
@@ -136,9 +101,7 @@ export async function disconnectTOTPAction(): Promise<ActionResult> {
   if (!totpUpdateBucket.consume(user.id, 1)) return { message: '' };
 
   await deleteUserTOTPKey(user.id);
-  return {
-    message: 'Disconnected authenticator app',
-  };
+  return { message: 'Disconnected authenticator app' };
 }
 
 export async function deletePasskeyAction(_prev: ActionResult, formData: FormData): Promise<ActionResult> {

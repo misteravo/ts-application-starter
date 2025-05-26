@@ -47,10 +47,9 @@ export async function verifySecurityKey(props: {
 }): Promise<Result> {
   const { session, user } = await getCurrentSession();
   if (!session) return { message: 'Not authenticated' };
-
-  if (!user.emailVerified || !user.registeredPasskey || session.twoFactorVerified) {
-    return { message: 'Forbidden' };
-  }
+  if (!user.emailVerified) return { message: 'Forbidden' };
+  if (!user.registeredPasskey) return { message: 'Forbidden' };
+  if (session.twoFactorVerified) return { message: 'Forbidden' };
 
   const result = await verifySecurityKeyHelper({ user, ...props });
   if (result.message !== null) return { message: result.message };
@@ -65,7 +64,7 @@ export async function registerSecurityKey(props: {
   clientData: Uint8Array;
 }): Promise<Result> {
   const { session, user } = await getCurrentSession();
-  if (session === null) return { message: 'Not authenticated' };
+  if (!session) return { message: 'Not authenticated' };
   if (!user.emailVerified) return { message: 'Forbidden' };
   if (user.registered2FA && !session.twoFactorVerified) return { message: 'Forbidden' };
 

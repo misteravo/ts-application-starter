@@ -54,10 +54,9 @@ export async function verifyPasskey(props: {
 }): Promise<Result> {
   const { session, user } = await getCurrentSession();
   if (!session) return { message: 'Not authenticated' };
-
-  if (!user.emailVerified || !user.registeredPasskey || session.twoFactorVerified) {
-    return { message: 'Forbidden' };
-  }
+  if (!user.emailVerified) return { message: 'Forbidden' };
+  if (!user.registeredPasskey) return { message: 'Forbidden' };
+  if (session.twoFactorVerified) return { message: 'Forbidden' };
 
   const result = await verifyPasskeyHelper({ user, ...props });
   if (result.message !== null) return { message: result.message };
@@ -72,7 +71,7 @@ export async function registerPasskey(props: {
   clientData: Uint8Array;
 }): Promise<Result> {
   const { session, user } = await getCurrentSession();
-  if (session === null) return { message: 'Not authenticated' };
+  if (!session) return { message: 'Not authenticated' };
   if (!user.emailVerified) return { message: 'Forbidden' };
   if (user.registered2FA && !session.twoFactorVerified) return { message: 'Forbidden' };
 
@@ -166,8 +165,10 @@ export async function verifyResetPasskey(props: {
   signature: Uint8Array;
 }): Promise<Result> {
   const { session, user } = await getCurrentPasswordResetSession();
-  if (session === null) return { message: 'Not authenticated' };
-  if (!session.emailVerified || !user.registeredPasskey || session.twoFactorVerified) return { message: 'Forbidden' };
+  if (!session) return { message: 'Not authenticated' };
+  if (!user.emailVerified) return { message: 'Forbidden' };
+  if (!user.registeredPasskey) return { message: 'Forbidden' };
+  if (session.twoFactorVerified) return { message: 'Forbidden' };
 
   const result = await verifyPasskeyHelper({ user, ...props });
   if (result.message !== null) return { message: result.message };

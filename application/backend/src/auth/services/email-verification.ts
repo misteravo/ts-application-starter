@@ -83,14 +83,12 @@ export async function deleteEmailVerificationRequestCookie(): Promise<void> {
 
 export const getCurrentUserEmailVerificationRequest = cache(async () => {
   const { user } = await getCurrentSession();
-  if (user === null) {
-    return null;
-  }
+  if (user === null) return null;
+
   const cookiesList = await cookies();
   const id = cookiesList.get('email_verification')?.value ?? null;
-  if (id === null) {
-    return null;
-  }
+  if (id === null) return null;
+
   const request = await getUserEmailVerificationRequest(user.id, id);
   if (request === null) {
     await deleteEmailVerificationRequestCookie();

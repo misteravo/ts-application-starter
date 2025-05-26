@@ -27,7 +27,7 @@ export async function verifyTotpCode(props: { code: string }): Promise<Result> {
 
 export async function setupTotpCode(props: { encodedKey: string; code: string }): Promise<Result> {
   const { session, user } = await getCurrentSession();
-  if (session === null) return { message: 'Not authenticated' };
+  if (!session) return { message: 'Not authenticated' };
   if (!user.emailVerified) return { message: 'Forbidden' };
   if (user.registered2FA && !session.twoFactorVerified) return { message: 'Forbidden' };
 
