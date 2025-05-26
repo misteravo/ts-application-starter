@@ -19,31 +19,16 @@ type Result = { message: string } | { redirect: string };
 
 export async function forgotPassword({ email }: { email: string }): Promise<Result> {
   const clientIP = await getClientIP();
-  if (clientIP && !passwordResetEmailIPBucket.check(clientIP, 1)) {
-    return { message: 'Too many requests' };
-  }
+  if (clientIP && !passwordResetEmailIPBucket.check(clientIP, 1)) return { message: 'Too many requests' };
 
-  if (!verifyEmailInput(email)) {
-    return {
-      message: 'Invalid email',
-    };
-  }
+  if (!verifyEmailInput(email)) return { message: 'Invalid email' };
+
   const user = await getUserFromEmail(email);
-  if (user === null) {
-    return {
-      message: 'Account does not exist',
-    };
-  }
-  if (clientIP !== null && !passwordResetEmailIPBucket.consume(clientIP, 1)) {
-    return {
-      message: 'Too many requests',
-    };
-  }
-  if (!passwordResetEmailUserBucket.consume(user.id, 1)) {
-    return {
-      message: 'Too many requests',
-    };
-  }
+  if (!user) return { message: 'Account does not exist' };
+
+  if (clientIP !== null && !passwordResetEmailIPBucket.consume(clientIP, 1)) return { message: 'Too many requests' };
+  if (!passwordResetEmailUserBucket.consume(user.id, 1)) return { message: 'Too many requests' };
+
   await invalidateUserPasswordResetSessions(user.id);
   const sessionToken = generateSessionToken();
   const session = await createPasswordResetSession(sessionToken, user.id, user.email);

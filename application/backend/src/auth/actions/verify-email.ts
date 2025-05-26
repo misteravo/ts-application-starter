@@ -33,9 +33,7 @@ export async function verifyEmail({ code }: { code: string }): Promise<Result> {
   if (Date.now() >= verificationRequest.expiresAt.getTime()) {
     verificationRequest = await createEmailVerificationRequest(verificationRequest.userId, verificationRequest.email);
     await sendVerificationEmail(verificationRequest.email, verificationRequest.code);
-    return {
-      message: 'The verification code was expired. We sent another code to your inbox.',
-    };
+    return { message: 'The verification code was expired. We sent another code to your inbox.' };
   }
   if (verificationRequest.code !== code) return { message: 'Incorrect code.' };
 
