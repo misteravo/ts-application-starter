@@ -16,7 +16,7 @@ export async function getUserEmailVerificationRequest(userId: number, id: string
       userId: s.emailVerificationRequest.userId,
       code: s.emailVerificationRequest.code,
       email: s.emailVerificationRequest.email,
-      expiresAt: s.emailVerificationRequest.expiresAt.getSQL().mapWith((value: number) => new Date(value * 1000)),
+      expiresAt: s.emailVerificationRequest.expiresAt,
     })
     .from(s.emailVerificationRequest)
     .where(and(eq(s.emailVerificationRequest.id, id), eq(s.emailVerificationRequest.userId, userId)));
@@ -37,7 +37,7 @@ export async function createEmailVerificationRequest(userId: number, email: stri
     userId,
     code,
     email,
-    expiresAt: Math.floor(expiresAt.getTime() / 1000),
+    expiresAt,
   });
 
   const request: EmailVerificationRequest = { id, userId, code, email, expiresAt };

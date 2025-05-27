@@ -27,7 +27,7 @@ export async function createPasswordResetSession(token: string, userId: number, 
     userId: session.userId,
     email: session.email,
     code: session.code,
-    expiresAt: Math.floor(session.expiresAt.getTime() / 1000),
+    expiresAt: session.expiresAt,
   });
   return session;
 }
@@ -41,7 +41,7 @@ export async function validatePasswordResetSessionToken(token: string) {
         userId: s.passwordResetSession.userId,
         email: s.passwordResetSession.email,
         code: s.passwordResetSession.code,
-        expiresAt: s.passwordResetSession.expiresAt.getSQL().mapWith((value) => new Date(value * 1000)),
+        expiresAt: s.passwordResetSession.expiresAt,
         emailVerified: s.passwordResetSession.emailVerified.getSQL().mapWith(Boolean),
         twoFactorVerified: s.passwordResetSession.twoFactorVerified.getSQL().mapWith(Boolean),
       },
@@ -79,11 +79,14 @@ export async function validatePasswordResetSessionToken(token: string) {
 }
 
 export async function setPasswordResetSessionAsEmailVerified(sessionId: string) {
-  await db.update(s.passwordResetSession).set({ emailVerified: 1 }).where(eq(s.passwordResetSession.id, sessionId));
+  await db.update(s.passwordResetSession).set({ emailVerified: true }).where(eq(s.passwordResetSession.id, sessionId));
 }
 
 export async function setPasswordResetSessionAs2FAVerified(sessionId: string) {
-  await db.update(s.passwordResetSession).set({ twoFactorVerified: 1 }).where(eq(s.passwordResetSession.id, sessionId));
+  await db
+    .update(s.passwordResetSession)
+    .set({ twoFactorVerified: true })
+    .where(eq(s.passwordResetSession.id, sessionId));
 }
 
 export async function invalidateUserPasswordResetSessions(userId: number) {

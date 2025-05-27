@@ -81,7 +81,7 @@ export async function deleteUserPasskeyCredential(userId: number, credentialId: 
   const result = await db
     .delete(s.passkeyCredential)
     .where(and(eq(s.passkeyCredential.id, credentialId), eq(s.passkeyCredential.userId, userId)));
-  return result.changes > 0;
+  return result.rowCount && result.rowCount > 0;
 }
 
 export async function getUserSecurityKeyCredentials(userId: number) {
@@ -131,7 +131,7 @@ export async function deleteUserSecurityKeyCredential(userId: number, credential
   const result = await db
     .delete(s.securityKeyCredential)
     .where(and(eq(s.securityKeyCredential.id, credentialId), eq(s.securityKeyCredential.userId, userId)));
-  return result.changes > 0;
+  return result.rowCount && result.rowCount > 0;
 }
 
 export interface WebAuthnUserCredential {

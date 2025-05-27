@@ -14,13 +14,7 @@ const config: NextConfig = {
 
   /** Handle native modules */
   webpack: (config, { isServer }) => {
-    if (!isServer) {
-      config.resolve.fallback = {
-        ...config.resolve.fallback,
-        'better-sqlite3': false,
-      };
-    }
-    config.externals = [...(config.externals || []), 'better-sqlite3'];
+    // PostgreSQL doesn't need special webpack configuration like SQLite did
     return config;
   },
 };

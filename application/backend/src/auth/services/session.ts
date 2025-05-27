@@ -16,7 +16,7 @@ export async function validateSessionToken(token: string): Promise<SessionValida
       session: {
         id: s.session.id,
         userId: s.session.userId,
-        expiresAt: s.session.expiresAt.getSQL().mapWith((value) => new Date(value * 1000)),
+        expiresAt: s.session.expiresAt,
         twoFactorVerified: s.session.twoFactorVerified.getSQL().mapWith(Boolean),
       },
       user: {
@@ -51,10 +51,7 @@ export async function validateSessionToken(token: string): Promise<SessionValida
   }
   if (Date.now() >= session.expiresAt.getTime() - 1000 * 60 * 60 * 24 * 15) {
     session.expiresAt = new Date(Date.now() + 1000 * 60 * 60 * 24 * 30);
-    await db
-      .update(s.session)
-      .set({ expiresAt: Math.floor(session.expiresAt.getTime() / 1000) })
-      .where(eq(s.session.id, sessionId));
+    await db.update(s.session).set({ expiresAt: session.expiresAt }).where(eq(s.session.id, sessionId));
   }
   return { session, user };
 }
@@ -117,14 +114,14 @@ export async function createSession(token: string, userId: number, flags: Sessio
   await db.insert(s.session).values({
     id: session.id,
     userId: session.userId,
-    expiresAt: Math.floor(session.expiresAt.getTime() / 1000),
-    twoFactorVerified: Number(session.twoFactorVerified),
+    expiresAt: session.expiresAt,
+    twoFactorVerified: session.twoFactorVerified,
   });
   return session;
 }
 
 export async function setSessionAs2FAVerified(sessionId: string) {
-  await db.update(s.session).set({ twoFactorVerified: 1 }).where(eq(s.session.id, sessionId));
+  await db.update(s.session).set({ twoFactorVerified: true }).where(eq(s.session.id, sessionId));
 }
 
 export interface SessionFlags {

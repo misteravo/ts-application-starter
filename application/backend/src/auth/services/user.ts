@@ -38,15 +38,15 @@ export async function updateUserPassword(userId: number, password: string) {
 }
 
 export async function updateUserEmailAndSetEmailAsVerified(userId: number, email: string) {
-  await db.update(s.user).set({ email, emailVerified: 1 }).where(eq(s.user.id, userId));
+  await db.update(s.user).set({ email, emailVerified: true }).where(eq(s.user.id, userId));
 }
 
 export async function setUserAsEmailVerifiedIfEmailMatches(userId: number, email: string) {
   const result = await db
     .update(s.user)
-    .set({ emailVerified: 1 })
+    .set({ emailVerified: true })
     .where(and(eq(s.user.id, userId), eq(s.user.email, email)));
-  return result.changes > 0;
+  return result.rowCount && result.rowCount > 0;
 }
 
 export async function getUserPasswordHash(userId: number) {

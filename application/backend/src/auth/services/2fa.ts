@@ -28,13 +28,13 @@ export async function resetUser2FAWithRecoveryCode(userId: number, recoveryCode:
       .set({ recoveryCode: encryptedNewRecoveryCode })
       .where(and(eq(s.user.id, userId), eq(s.user.recoveryCode, user.recoveryCode)));
 
-    if (result.changes < 1) {
+    if (!result.rowCount) {
       tx.rollback();
       return false;
     }
 
     // Reset 2FA verification in sessions
-    await tx.update(s.session).set({ twoFactorVerified: 0 }).where(eq(s.session.userId, userId));
+    await tx.update(s.session).set({ twoFactorVerified: false }).where(eq(s.session.userId, userId));
 
     // Delete all 2FA credentials
     await tx.delete(s.totpCredential).where(eq(s.totpCredential.userId, userId));
@@ -57,4 +57,22 @@ export function getPasswordReset2FARedirect(user: User): string {
   if (user.registeredTOTP) return '/reset-password/2fa/totp';
   if (user.registeredPasskey) return '/reset-password/2fa/passkey';
   return '/2fa/setup';
+}
+
+export async function resetUser2FA(userId: number): Promise<boolean> {
+  const result = await db.transaction(async (tx) => {
+    await tx.delete(s.totpCredential).where(eq(s.totpCredential.userId, userId));
+    await tx.delete(s.passkeyCredential).where(eq(s.passkeyCredential.userId, userId));
+    await tx.delete(s.securityKeyCredential).where(eq(s.securityKeyCredential.userId, userId));
+    const newRecoveryCode = generateRandomRecoveryCode();
+    const encryptedNewRecoveryCode = encryptString(newRecoveryCode);
+    const result = await tx.update(s.user).set({ recoveryCode: encryptedNewRecoveryCode }).where(eq(s.user.id, userId));
+    if (result.rowCount && result.rowCount < 1) {
+      tx.rollback();
+      return false;
+    }
+    await tx.update(s.session).set({ twoFactorVerified: false }).where(eq(s.session.userId, userId));
+    return true;
+  });
+  return result;
 }

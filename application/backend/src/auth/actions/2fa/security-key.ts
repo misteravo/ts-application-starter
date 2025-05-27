@@ -24,7 +24,6 @@ import {
   parseAuthenticatorData,
   parseClientDataJSON,
 } from '@oslojs/webauthn';
-import { SqliteError } from 'better-sqlite3';
 import { env } from '../../../env';
 import { getCurrentPasswordResetSession, setPasswordResetSessionAs2FAVerified } from '../../services/password-reset';
 import { getCurrentSession, setSessionAs2FAVerified } from '../../services/session';
@@ -124,8 +123,8 @@ export async function registerSecurityKey(props: {
 
   const [, error] = await safeTry(createSecurityKeyCredential(credential));
   if (error) {
-    if (error instanceof SqliteError && error.code === 'SQLITE_CONSTRAINT_PRIMARYKEY')
-      return { message: 'Invalid data' };
+    // PostgreSQL unique constraint violation error code is '23505'
+    if (error instanceof Error && 'code' in error && error.code === '23505') return { message: 'Invalid data' };
     return { message: 'Internal error' };
   }
 
