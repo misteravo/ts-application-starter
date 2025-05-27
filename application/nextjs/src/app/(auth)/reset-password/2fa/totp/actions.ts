@@ -1,43 +1,15 @@
 'use server';
 
-import {
-  getCurrentPasswordResetSession,
-  getUserTOTPKey,
-  globalPOSTRateLimit,
-  setPasswordResetSessionAs2FAVerified,
-  totpBucket,
-} from '@acme/backend';
-import { verifyTOTP } from '@oslojs/otp';
+import { verifyPasswordResetWithTotp } from '@acme/backend';
 import { redirect } from 'next/navigation';
+import { zfd } from 'zod-form-data';
+import { formAction } from '~/lib/safe-action';
 
-export async function verifyPasswordReset2FAWithTOTPAction(
-  _prev: ActionResult,
-  formData: FormData,
-): Promise<ActionResult> {
-  if (!(await globalPOSTRateLimit())) return { message: 'Too many requests' };
-
-  const { session, user } = await getCurrentPasswordResetSession();
-  if (!session) return { message: 'Not authenticated' };
-  if (!session.emailVerified) return { message: 'Forbidden' };
-  if (!user.registeredTOTP) return { message: 'Forbidden' };
-  if (session.twoFactorVerified) return { message: 'Forbidden' };
-
-  if (!totpBucket.check(session.userId, 1)) return { message: 'Too many requests' };
-
-  const code = formData.get('code');
-  if (typeof code !== 'string') return { message: 'Invalid or missing fields' };
-  if (code === '') return { message: 'Please enter your code' };
-
-  const totpKey = await getUserTOTPKey(session.userId);
-  if (totpKey === null) return { message: 'Forbidden' };
-  if (!totpBucket.consume(session.userId, 1)) return { message: 'Too many requests' };
-  if (!verifyTOTP(totpKey, 30, 6, code)) return { message: 'Invalid code' };
-
-  totpBucket.reset(session.userId);
-  await setPasswordResetSessionAs2FAVerified(session.id);
-  return redirect('/reset-password');
-}
-
-interface ActionResult {
-  message: string;
-}
+const schema = zfd.formData({
+  code: zfd.text(),
+});
+export const verifyPasswordReset2FAWithTOTPAction = formAction(schema, async ({ code }) => {
+  const result = await verifyPasswordResetWithTotp({ code });
+  if ('redirect' in result) return redirect(result.redirect);
+  return result;
+});

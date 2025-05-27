@@ -3,6 +3,8 @@ import { getCurrentSession, setSessionAs2FAVerified } from '../../services/sessi
 import { getUserTOTPKey, totpBucket, totpUpdateBucket, updateUserTOTPKey } from '../../services/totp';
 import { decodeBase64 } from '@oslojs/encoding';
 import { safeTrySync } from '@acme/utils';
+import { setPasswordResetSessionAs2FAVerified } from '../../services/password-reset';
+import { getCurrentPasswordResetSession } from '../../services/password-reset';
 
 type Result = { message: string } | { redirect: string };
 
@@ -49,4 +51,25 @@ export async function setupTotpCode(props: { encodedKey: string; code: string })
 
   if (!user.registered2FA) return { redirect: '/recovery-code' };
   return { redirect: '/' };
+}
+
+export async function verifyPasswordResetWithTotp(props: { code: string }): Promise<Result> {
+  const { session, user } = await getCurrentPasswordResetSession();
+  if (!session) return { message: 'Not authenticated' };
+  if (!session.emailVerified) return { message: 'Forbidden' };
+  if (!user.registeredTOTP) return { message: 'Forbidden' };
+  if (session.twoFactorVerified) return { message: 'Forbidden' };
+
+  if (!totpBucket.check(session.userId, 1)) return { message: 'Too many requests' };
+
+  if (props.code === '') return { message: 'Please enter your code' };
+
+  const totpKey = await getUserTOTPKey(session.userId);
+  if (totpKey === null) return { message: 'Forbidden' };
+  if (!totpBucket.consume(session.userId, 1)) return { message: 'Too many requests' };
+  if (!verifyTOTP(totpKey, 30, 6, props.code)) return { message: 'Invalid code' };
+
+  totpBucket.reset(session.userId);
+  await setPasswordResetSessionAs2FAVerified(session.id);
+  return { redirect: '/reset-password' };
 }
