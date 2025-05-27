@@ -4,9 +4,7 @@ import {
   deletePasskey,
   deleteSecurityKey,
   disconnectTOTP,
-  getCurrentSession,
   regenerateRecoveryCode,
-  resetUserRecoveryCode,
   updateEmail,
   updatePassword,
 } from '@acme/backend';
