@@ -5,6 +5,7 @@ import {
   deleteSecurityKey,
   disconnectTOTP,
   getCurrentSession,
+  regenerateRecoveryCode,
   resetUserRecoveryCode,
   updateEmail,
   updatePassword,
@@ -50,11 +51,5 @@ export const deleteSecurityKeyAction = formAction(deleteSecurityKeySchema, async
 });
 
 export const regenerateRecoveryCodeAction = simpleAction(async () => {
-  const { session, user } = await getCurrentSession();
-  if (!session) return { message: 'Not authenticated', recoveryCode: null };
-  if (!user.emailVerified) return { message: 'Forbidden', recoveryCode: null };
-  if (!session.twoFactorVerified) return { message: 'Forbidden', recoveryCode: null };
-
-  const recoveryCode = await resetUserRecoveryCode(session.userId);
-  return { recoveryCode };
+  return await regenerateRecoveryCode();
 });
