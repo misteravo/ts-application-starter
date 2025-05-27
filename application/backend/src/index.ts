@@ -12,6 +12,7 @@ export * from './auth/services/webauthn';
 
 export * from './auth/actions/forgot-password';
 export * from './auth/actions/reset-password';
+export * from './auth/actions/settings';
 export * from './auth/actions/sign-in';
 export * from './auth/actions/sign-up';
 export * from './auth/actions/verify-email';
