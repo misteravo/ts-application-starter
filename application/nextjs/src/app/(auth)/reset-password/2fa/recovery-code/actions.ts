@@ -7,11 +7,13 @@ import {
   resetUser2FAWithRecoveryCode,
 } from '@acme/backend';
 import { redirect } from 'next/navigation';
+import { z } from 'zod';
+import { formAction } from '~/lib/safe-action';
 
-export async function verifyPasswordReset2FAWithRecoveryCodeAction(
-  _prev: ActionResult,
-  formData: FormData,
-): Promise<ActionResult> {
+const schema = z.object({
+  code: z.string(),
+});
+export const verifyPasswordReset2FAWithRecoveryCodeAction = formAction(schema, async ({ code }) => {
   if (!(await globalPOSTRateLimit())) return { message: 'Too many requests' };
 
   const { session, user } = await getCurrentPasswordResetSession();
@@ -22,8 +24,6 @@ export async function verifyPasswordReset2FAWithRecoveryCodeAction(
 
   if (!recoveryCodeBucket.check(session.userId, 1)) return { message: 'Too many requests' };
 
-  const code = formData.get('code');
-  if (typeof code !== 'string') return { message: 'Invalid or missing fields' };
   if (code === '') return { message: 'Please enter your code' };
   if (!recoveryCodeBucket.consume(session.userId, 1)) return { message: 'Too many requests' };
 
@@ -32,8 +32,4 @@ export async function verifyPasswordReset2FAWithRecoveryCodeAction(
 
   recoveryCodeBucket.reset(session.userId);
   return redirect('/reset-password');
-}
-
-interface ActionResult {
-  message: string;
-}
+});
