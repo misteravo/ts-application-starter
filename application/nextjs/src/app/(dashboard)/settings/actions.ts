@@ -11,7 +11,6 @@ import {
   generateSessionToken,
   getCurrentSession,
   getUserPasswordHash,
-  globalPOSTRateLimit,
   invalidateUserSessions,
   resetUserRecoveryCode,
   sendVerificationEmail,
@@ -28,9 +27,9 @@ import { decodeBase64 } from '@oslojs/encoding';
 import { redirect } from 'next/navigation';
 
 import type { SessionFlags } from '@acme/backend';
-import { zfd } from 'zod-form-data';
-import { formAction } from '~/lib/safe-action';
 import { safeTrySync } from '@acme/utils';
+import { zfd } from 'zod-form-data';
+import { formAction, simpleAction } from '~/lib/safe-action';
 
 const passwordUpdateBucket = new ExpiringTokenBucket<string>(5, 60 * 30);
 
@@ -90,9 +89,7 @@ export const updateEmailAction = formAction(updateEmailSchema, async ({ email })
   return redirect('/verify-email');
 });
 
-export async function disconnectTOTPAction(): Promise<ActionResult> {
-  if (!(await globalPOSTRateLimit())) return { message: 'Too many requests' };
-
+export const disconnectTOTPAction = simpleAction(async () => {
   const { session, user } = await getCurrentSession();
   if (!session) return { message: 'Not authenticated' };
   if (!user.emailVerified) return { message: 'Forbidden' };
@@ -101,7 +98,7 @@ export async function disconnectTOTPAction(): Promise<ActionResult> {
 
   await deleteUserTOTPKey(user.id);
   return { message: 'Disconnected authenticator app' };
-}
+});
 
 const deletePasskeySchema = zfd.formData({
   encodedCredentialId: zfd.text(),
@@ -139,20 +136,12 @@ export const deleteSecurityKeyAction = formAction(deleteSecurityKeySchema, async
   return { message: 'Removed credential' };
 });
 
-export async function regenerateRecoveryCodeAction(): Promise<RegenerateRecoveryCodeActionResult> {
-  if (!(await globalPOSTRateLimit())) return { error: 'Too many requests', recoveryCode: null };
-
+export const regenerateRecoveryCodeAction = simpleAction(async () => {
   const { session, user } = await getCurrentSession();
-  if (!session) return { error: 'Not authenticated', recoveryCode: null };
-  if (!user.emailVerified) return { error: 'Forbidden', recoveryCode: null };
-  if (!session.twoFactorVerified) return { error: 'Forbidden', recoveryCode: null };
+  if (!session) return { message: 'Not authenticated', recoveryCode: null };
+  if (!user.emailVerified) return { message: 'Forbidden', recoveryCode: null };
+  if (!session.twoFactorVerified) return { message: 'Forbidden', recoveryCode: null };
 
   const recoveryCode = await resetUserRecoveryCode(session.userId);
   return { error: null, recoveryCode };
-}
-
-interface ActionResult {
-  message: string;
-}
-
-type RegenerateRecoveryCodeActionResult = { error: string; recoveryCode: null } | { error: null; recoveryCode: string };
+});

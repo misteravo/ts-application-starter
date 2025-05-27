@@ -114,7 +114,7 @@ export function RecoveryCodeSection(props: { recoveryCode: string }) {
 
   async function handleGenerateNewCode() {
     const result = await regenerateRecoveryCodeAction();
-    if (result.recoveryCode !== null) {
+    if ('recoveryCode' in result && result.recoveryCode !== null) {
       setRecoveryCode(result.recoveryCode);
     }
   }
