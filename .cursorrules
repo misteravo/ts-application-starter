@@ -1,0 +1,216 @@
+# TypeScript Monorepo Cursor Rules
+
+## Project Overview
+This is a TypeScript monorepo using Turborepo with:
+- Next.js 15 frontend (`application/nextjs`)
+- Backend with Drizzle ORM (`application/backend`) 
+- Shared UI components (`packages/ui`)
+- Shared utilities (`packages/utils`)
+- Tooling configurations (`tooling/`)
+
+## Code Style & Standards
+
+### General Guidelines
+- Use TypeScript for all code
+- Use ESM imports/exports
+- Prefer functional components and hooks
+- Use strict TypeScript configuration
+- Follow the existing monorepo structure
+
+### File Naming
+- Use kebab-case for files and directories
+- Use PascalCase for React components
+- Use camelCase for functions and variables
+- Use SCREAMING_SNAKE_CASE for constants
+
+### Import Organization
+```typescript
+// 1. Node modules
+import React from "react"
+import { NextRequest } from "next/server"
+
+// 2. Internal packages (workspace:*)
+import { Button } from "@acme/ui"
+import { cn } from "@acme/utils"
+
+// 3. Relative imports
+import { UserCard } from "./user-card"
+import type { User } from "../types"
+```
+
+## Architecture Patterns
+
+### Monorepo Structure
+- Keep shared logic in `packages/`
+- Application-specific code in `application/`
+- Tooling configs in `tooling/`
+- Use workspace references for internal dependencies
+
+### Frontend (Next.js)
+- Use App Router (app directory)
+- Server Components by default, Client Components when needed
+- Use React 19 features (use, useActionState, etc.)
+- Implement proper error boundaries
+- Use Tanstack Query for data fetching
+- Follow Next.js 15 best practices
+
+### Backend
+- Use Drizzle ORM for database operations
+- Implement proper error handling with typed errors
+- Use Zod for validation
+- Follow RESTful API conventions
+- Implement proper authentication/authorization
+
+### Database
+- Use Drizzle schema definitions
+- Implement proper migrations
+- Use prepared statements for performance
+- Handle database errors gracefully
+
+## Technology-Specific Rules
+
+### React/Next.js
+- Use Server Components for data fetching when possible
+- Use "use client" directive only when necessary
+- Implement proper loading and error states
+- Use Next.js Image component for images
+- Implement proper SEO with metadata API
+
+### TypeScript
+- Use strict mode
+- Define proper types for all props and functions
+- Use branded types for IDs and sensitive data
+- Implement proper error types
+- Use const assertions where appropriate
+
+### Styling
+- Use Tailwind CSS for styling
+- Follow the design system in `packages/ui`
+- Use CSS variables for theming
+- Implement responsive design patterns
+
+### Authentication
+- Use the existing WebAuthn implementation
+- Implement proper session management
+- Handle authentication errors gracefully
+- Use proper CSRF protection
+
+## Development Workflow
+
+### Package Management
+- Use pnpm for package management
+- Use workspace protocol for internal dependencies
+- Keep dependencies up to date
+- Use catalog for shared dependency versions
+
+### Build & Development
+- Use Turborepo for build orchestration
+- Run `pnpm dev` for development
+- Use `pnpm build` for production builds
+- Implement proper caching strategies
+
+### Code Quality
+- Run ESLint and fix issues: `pnpm lint:fix`
+- Format code with Prettier: `pnpm format:fix`
+- Run type checking: `pnpm typecheck`
+- Use the existing configurations in `tooling/`
+
+## Security Best Practices
+- Validate all inputs with Zod
+- Use proper CSRF protection
+- Implement rate limiting
+- Use secure headers
+- Handle sensitive data properly
+- Use environment variables for secrets
+
+## Performance Guidelines
+- Implement proper caching strategies
+- Use React.memo for expensive components
+- Implement proper code splitting
+- Optimize database queries
+- Use proper image optimization
+- Implement proper error boundaries
+
+## Testing Guidelines
+- Write unit tests for utilities
+- Write integration tests for API routes
+- Test React components with proper mocking
+- Use proper test data factories
+- Implement proper test cleanup
+
+## Error Handling
+- Use typed error classes
+- Implement proper error boundaries
+- Log errors appropriately
+- Provide user-friendly error messages
+- Handle async errors properly
+
+## Documentation
+- Document complex business logic
+- Use JSDoc for public APIs
+- Keep README files updated
+- Document environment variables
+- Document database schema changes
+
+## Common Patterns
+
+### API Routes
+```typescript
+import { NextRequest } from "next/server"
+import { z } from "zod"
+
+const schema = z.object({
+  // Define schema
+})
+
+export async function POST(request: NextRequest) {
+  try {
+    const body = await request.json()
+    const data = schema.parse(body)
+    // Handle request
+  } catch (error) {
+    // Handle error
+  }
+}
+```
+
+### Database Operations
+```typescript
+import { db } from "@acme/backend"
+import { users } from "@acme/backend/schema"
+
+export async function getUser(id: string) {
+  return await db.select().from(users).where(eq(users.id, id))
+}
+```
+
+### Component Structure
+```typescript
+import type { ComponentProps } from "react"
+import { cn } from "@acme/utils"
+
+interface Props extends ComponentProps<"div"> {
+  // Define props
+}
+
+export function Component({ className, ...props }: Props) {
+  return (
+    <div className={cn("base-styles", className)} {...props}>
+      {/* Component content */}
+    </div>
+  )
+}
+```
+
+## Environment Setup
+- Use Node.js >= 20.18.1
+- Use pnpm >= 9.14.2
+- Configure proper environment variables
+- Use the existing tooling configurations
+
+When making changes:
+1. Follow the existing patterns and conventions
+2. Update relevant documentation
+3. Run linting and type checking
+4. Test changes thoroughly
+5. Consider impact on other packages in the monorepo 
