@@ -28,20 +28,21 @@ import { decodeBase64 } from '@oslojs/encoding';
 import { redirect } from 'next/navigation';
 
 import type { SessionFlags } from '@acme/backend';
+import { zfd } from 'zod-form-data';
+import { formAction } from '~/lib/safe-action';
+import { safeTrySync } from '@acme/utils';
 
 const passwordUpdateBucket = new ExpiringTokenBucket<string>(5, 60 * 30);
 
-export async function updatePasswordAction(_prev: ActionResult, formData: FormData): Promise<ActionResult> {
-  if (!(await globalPOSTRateLimit())) return { message: 'Too many requests' };
-
+const updatePasswordSchema = zfd.formData({
+  password: zfd.text(),
+  newPassword: zfd.text(),
+});
+export const updatePasswordAction = formAction(updatePasswordSchema, async ({ password, newPassword }) => {
   const { session, user } = await getCurrentSession();
   if (!session) return { message: 'Not authenticated' };
   if (user.registered2FA && !session.twoFactorVerified) return { message: 'Forbidden' };
   if (!passwordUpdateBucket.check(session.id, 1)) return { message: 'Too many requests' };
-
-  const password = formData.get('password');
-  const newPassword = formData.get('new_password');
-  if (typeof password !== 'string' || typeof newPassword !== 'string') return { message: 'Invalid or missing fields' };
 
   const strongPassword = await verifyPasswordStrength(newPassword);
   if (!strongPassword) return { message: 'Weak password' };
@@ -63,18 +64,16 @@ export async function updatePasswordAction(_prev: ActionResult, formData: FormDa
   const newSession = await createSession(sessionToken, user.id, sessionFlags);
   await setSessionTokenCookie(sessionToken, newSession.expiresAt);
   return { message: 'Updated password' };
-}
+});
 
-export async function updateEmailAction(_prev: ActionResult, formData: FormData): Promise<ActionResult> {
-  if (!(await globalPOSTRateLimit())) return { message: 'Too many requests' };
-
+const updateEmailSchema = zfd.formData({
+  email: zfd.text(),
+});
+export const updateEmailAction = formAction(updateEmailSchema, async ({ email }) => {
   const { session, user } = await getCurrentSession();
   if (!session) return { message: 'Not authenticated' };
   if (user.registered2FA && !session.twoFactorVerified) return { message: 'Forbidden' };
   if (!sendVerificationEmailBucket.check(user.id, 1)) return { message: 'Too many requests' };
-
-  const email = formData.get('email');
-  if (typeof email !== 'string') return { message: 'Invalid or missing fields' };
 
   if (email === '') return { message: 'Please enter your email' };
 
@@ -89,7 +88,7 @@ export async function updateEmailAction(_prev: ActionResult, formData: FormData)
   await sendVerificationEmail(verificationRequest.email, verificationRequest.code);
   await setEmailVerificationRequestCookie(verificationRequest);
   return redirect('/verify-email');
-}
+});
 
 export async function disconnectTOTPAction(): Promise<ActionResult> {
   if (!(await globalPOSTRateLimit())) return { message: 'Too many requests' };
@@ -104,52 +103,41 @@ export async function disconnectTOTPAction(): Promise<ActionResult> {
   return { message: 'Disconnected authenticator app' };
 }
 
-export async function deletePasskeyAction(_prev: ActionResult, formData: FormData): Promise<ActionResult> {
-  if (!(await globalPOSTRateLimit())) return { message: 'Too many requests' };
-
+const deletePasskeySchema = zfd.formData({
+  encodedCredentialId: zfd.text(),
+});
+export const deletePasskeyAction = formAction(deletePasskeySchema, async ({ encodedCredentialId }) => {
   const { session, user } = await getCurrentSession();
   if (!session) return { message: 'Not authenticated' };
   if (!user.emailVerified) return { message: 'Forbidden' };
   if (user.registered2FA && !session.twoFactorVerified) return { message: 'Forbidden' };
 
-  const encodedCredentialId = formData.get('credential_id');
-  if (typeof encodedCredentialId !== 'string') return { message: 'Invalid or missing fields' };
-
-  let credentialId: Uint8Array;
-  try {
-    credentialId = decodeBase64(encodedCredentialId);
-  } catch {
-    return { message: 'Invalid or missing fields' };
-  }
+  const [credentialId] = safeTrySync(() => decodeBase64(encodedCredentialId));
+  if (!credentialId) return { message: 'Invalid or missing fields' };
 
   const deleted = await deleteUserPasskeyCredential(user.id, credentialId);
   if (!deleted) return { message: 'Invalid credential ID' };
 
   return { message: 'Removed credential' };
-}
+});
 
-export async function deleteSecurityKeyAction(_prev: ActionResult, formData: FormData): Promise<ActionResult> {
-  if (!(await globalPOSTRateLimit())) return { message: 'Too many requests' };
-
+const deleteSecurityKeySchema = zfd.formData({
+  encodedCredentialId: zfd.text(),
+});
+export const deleteSecurityKeyAction = formAction(deleteSecurityKeySchema, async ({ encodedCredentialId }) => {
   const { session, user } = await getCurrentSession();
   if (!session) return { message: 'Not authenticated' };
   if (!user.emailVerified) return { message: 'Forbidden' };
   if (user.registered2FA && !session.twoFactorVerified) return { message: 'Forbidden' };
 
-  const encodedCredentialId = formData.get('credential_id');
-  if (typeof encodedCredentialId !== 'string') return { message: 'Invalid or missing fields' };
+  const [credentialId] = safeTrySync(() => decodeBase64(encodedCredentialId));
+  if (!credentialId) return { message: 'Invalid or missing fields' };
 
-  let credentialId: Uint8Array;
-  try {
-    credentialId = decodeBase64(encodedCredentialId);
-  } catch {
-    return { message: 'Invalid or missing fields' };
-  }
   const deleted = await deleteUserSecurityKeyCredential(user.id, credentialId);
   if (!deleted) return { message: 'Invalid credential ID' };
 
   return { message: 'Removed credential' };
-}
+});
 
 export async function regenerateRecoveryCodeAction(): Promise<RegenerateRecoveryCodeActionResult> {
   if (!(await globalPOSTRateLimit())) return { error: 'Too many requests', recoveryCode: null };

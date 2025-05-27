@@ -29,7 +29,7 @@ export function UpdatePasswordForm() {
         <Input
           type="password"
           id="form-password.new-password"
-          name="new_password"
+          name="newPassword"
           autoComplete="new-password"
           required
         />
@@ -83,7 +83,7 @@ export function PasskeyCredentialListItem(props: { encodedId: string; name: stri
     <div className="flex items-center justify-between">
       <p>{props.name}</p>
       <form action={formAction}>
-        <input type="hidden" name="credential_id" value={props.encodedId} />
+        <input type="hidden" name="encodedCredentialId" value={props.encodedId} />
         <Button type="submit">Delete</Button>
         {state.message && <Alert>{state.message}</Alert>}
       </form>
@@ -101,7 +101,7 @@ export function SecurityKeyCredentialListItem(props: { encodedId: string; name: 
     <div className="flex items-center justify-between">
       <p>{props.name}</p>
       <form action={formAction}>
-        <input type="hidden" name="credential_id" value={props.encodedId} />
+        <input type="hidden" name="encodedCredentialId" value={props.encodedId} />
         <Button type="submit">Delete</Button>
         {state.message && <Alert>{state.message}</Alert>}
       </form>
