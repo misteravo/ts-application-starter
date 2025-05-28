@@ -11,5 +11,4 @@ const pool = new Pool({
 export const db = drizzle({
   client: pool,
   schema,
-  casing: 'snake_case',
 });
