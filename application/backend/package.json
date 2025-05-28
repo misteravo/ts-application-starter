@@ -27,7 +27,6 @@
     "@oslojs/otp": "^1.1.0",
     "@oslojs/webauthn": "^1.0.0",
     "@t3-oss/env-core": "^0.13.4",
-    "@vercel/postgres": "^0.10.0",
     "bcryptjs": "^3.0.2",
     "drizzle-orm": "^0.43.1",
     "drizzle-zod": "^0.8.2",

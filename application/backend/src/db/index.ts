@@ -1,10 +1,17 @@
-import { drizzle } from 'drizzle-orm/vercel-postgres';
-import { sql } from '@vercel/postgres';
+import { drizzle } from 'drizzle-orm/node-postgres';
+import { Pool } from 'pg';
 import * as schema from './schema';
+import { env } from '../env';
 
 export { schema as s };
 
-export const db = drizzle(sql, {
+const pool = new Pool({
+  connectionString: env.POSTGRES_URL,
+});
+const db = drizzle({
+  client: pool,
   schema,
   casing: 'snake_case',
 });
+
+export default db;
