@@ -12,6 +12,8 @@ export const env = createEnv({
     SERVER_HOST: z.string().default('localhost'),
     SERVER_URL: z.string().default('http://localhost:3000'),
 
+    POSTGRES_URL: z.string(),
+
     SMTP_HOST: z.string().default('localhost'),
     SMTP_PORT: z.string().default('25').transform(Number),
     MAIL_FROM: z.string(),
