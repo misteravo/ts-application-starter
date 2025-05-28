@@ -11,12 +11,6 @@ const config: NextConfig = {
   /** We already do linting and typechecking as separate tasks in CI */
   eslint: { ignoreDuringBuilds: true },
   typescript: { ignoreBuildErrors: true },
-
-  /** Handle native modules */
-  webpack: (config, { isServer }) => {
-    // PostgreSQL doesn't need special webpack configuration like SQLite did
-    return config;
-  },
 };
 
 export default config;
