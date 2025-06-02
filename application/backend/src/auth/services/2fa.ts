@@ -1,10 +1,9 @@
 import { and, eq } from 'drizzle-orm';
 import { db, s } from '../../db';
-import { generateRandomRecoveryCode } from './utils';
 import { ExpiringTokenBucket } from './rate-limit';
+import { generateRandomRecoveryCode } from './utils';
 
 import type { User } from './user';
-import { decryptToString, encryptString } from './encryption';
 
 export const recoveryCodeBucket = new ExpiringTokenBucket<number>(3, 60 * 60);
 
@@ -15,17 +14,16 @@ export async function resetUser2FAWithRecoveryCode(userId: number, recoveryCode:
   });
   if (!user) return false;
 
-  const userRecoveryCode = decryptToString(user.recoveryCode);
+  const userRecoveryCode = user.recoveryCode;
   if (recoveryCode !== userRecoveryCode) return false;
 
   const newRecoveryCode = generateRandomRecoveryCode();
-  const encryptedNewRecoveryCode = encryptString(newRecoveryCode);
 
   await db.transaction(async (tx) => {
     // Update user recovery code
     const result = await tx
       .update(s.user)
-      .set({ recoveryCode: encryptedNewRecoveryCode })
+      .set({ recoveryCode: newRecoveryCode })
       .where(and(eq(s.user.id, userId), eq(s.user.recoveryCode, user.recoveryCode)));
 
     if (!result.rowCount) {
@@ -64,9 +62,8 @@ export async function resetUser2FA(userId: number): Promise<boolean> {
     await tx.delete(s.totpCredential).where(eq(s.totpCredential.userId, userId));
     await tx.delete(s.passkeyCredential).where(eq(s.passkeyCredential.userId, userId));
     await tx.delete(s.securityKeyCredential).where(eq(s.securityKeyCredential.userId, userId));
-    const newRecoveryCode = generateRandomRecoveryCode();
-    const encryptedNewRecoveryCode = encryptString(newRecoveryCode);
-    const result = await tx.update(s.user).set({ recoveryCode: encryptedNewRecoveryCode }).where(eq(s.user.id, userId));
+    const recoveryCode = generateRandomRecoveryCode();
+    const result = await tx.update(s.user).set({ recoveryCode }).where(eq(s.user.id, userId));
     if (result.rowCount && result.rowCount < 1) {
       tx.rollback();
       return false;

@@ -1,6 +1,5 @@
 import { and, eq, sql } from 'drizzle-orm';
 import { db, s } from '../../db';
-import { decryptToString, encryptString } from './encryption';
 import { hashPassword } from './password';
 import { generateRandomRecoveryCode } from './utils';
 
@@ -11,11 +10,11 @@ export function verifyUsernameInput(username: string) {
 export async function createUser(email: string, username: string, password: string) {
   const passwordHash = await hashPassword(password);
   const recoveryCode = generateRandomRecoveryCode();
-  const encryptedRecoveryCode = encryptString(recoveryCode);
+  // const encryptedRecoveryCode = encryptString(recoveryCode);
 
   const [row] = await db
     .insert(s.user)
-    .values({ email, username, passwordHash, recoveryCode: encryptedRecoveryCode })
+    .values({ email, username, passwordHash, recoveryCode })
     .returning({ id: s.user.id });
   if (!row) throw new Error('Unexpected error');
 
@@ -58,13 +57,12 @@ export async function getUserPasswordHash(userId: number) {
 export async function getUserRecoverCode(userId: number) {
   const user = await db.query.user.findFirst({ where: eq(s.user.id, userId), columns: { recoveryCode: true } });
   if (!user) throw new Error('Invalid user ID');
-  return decryptToString(user.recoveryCode);
+  return user.recoveryCode;
 }
 
 export async function resetUserRecoveryCode(userId: number) {
   const recoveryCode = generateRandomRecoveryCode();
-  const encrypted = encryptString(recoveryCode);
-  await db.update(s.user).set({ recoveryCode: encrypted }).where(eq(s.user.id, userId));
+  await db.update(s.user).set({ recoveryCode }).where(eq(s.user.id, userId));
   return recoveryCode;
 }
 

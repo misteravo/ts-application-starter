@@ -6,7 +6,7 @@ export const user = pgTable('user', {
   username: text('username').notNull(),
   passwordHash: text('password_hash').notNull(),
   emailVerified: boolean('email_verified').notNull().default(false),
-  recoveryCode: text('recovery_code').$type<Uint8Array>().notNull(),
+  recoveryCode: text('recovery_code').notNull(),
 });
 
 export const session = pgTable('session', {
