@@ -2,7 +2,7 @@
 
 import { Alert, AlertDescription, Button, Input, Label } from '@acme/ui';
 import { encodeBase64 } from '@oslojs/encoding';
-import { KeyRound } from 'lucide-react';
+import { Loader2, Eye, EyeOff, Mail, Lock, Fingerprint } from 'lucide-react';
 import { Link } from '~/components/link';
 import { useActionState, useState } from 'react';
 import { createChallenge } from '~/lib/webauthn';
@@ -13,28 +13,85 @@ const initialState = {
 };
 
 export function LoginForm() {
-  const [state, action] = useActionState(signInAction, initialState);
+  const [state, action, pending] = useActionState(signInAction, initialState);
+  const [showPassword, setShowPassword] = useState(false);
 
   return (
-    <form action={action}>
-      <div className="flex flex-col gap-6">
-        <div className="grid gap-2">
-          <Label htmlFor="email">Email</Label>
-          <Input id="form-login.email" name="email" type="email" autoComplete="username" required />
+    <form action={action} className="space-y-6">
+      <div className="space-y-4">
+        <div className="space-y-2">
+          <Label htmlFor="email" className="flex items-center text-sm font-medium">
+            <Mail className="mr-2 h-4 w-4" />
+            Email
+          </Label>
+          <Input
+            id="form-login.email"
+            name="email"
+            type="email"
+            autoComplete="username"
+            placeholder="Enter your email address"
+            className="h-11"
+            required
+          />
         </div>
-        <div className="grid gap-2">
-          <div className="flex items-center">
-            <Label htmlFor="password">Password</Label>
-            <Link href="forgot-password" className="ml-auto inline-block text-sm underline-offset-4 hover:underline">
-              Forgot your password?
+
+        <div className="space-y-2">
+          <div className="flex items-center justify-between">
+            <Label htmlFor="password" className="flex items-center text-sm font-medium">
+              <Lock className="mr-2 h-4 w-4" />
+              Password
+            </Label>
+            <Link
+              href="forgot-password"
+              className="hover:text-primary/80 text-sm text-primary underline-offset-4 hover:underline"
+            >
+              Forgot password?
             </Link>
           </div>
-          <Input id="form-login.password" name="password" type="password" autoComplete="current-password" required />
+          <div className="relative">
+            <Input
+              id="form-login.password"
+              name="password"
+              type={showPassword ? 'text' : 'password'}
+              autoComplete="current-password"
+              placeholder="Enter your password"
+              className="h-11 pr-10"
+              required
+            />
+            <button
+              type="button"
+              className="absolute inset-y-0 right-0 flex items-center pr-3 text-muted-foreground hover:text-foreground"
+              onClick={() => setShowPassword(!showPassword)}
+            >
+              {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+            </button>
+          </div>
         </div>
-        <Button type="submit" className="w-full">
-          Sign in
+      </div>
+
+      <div className="space-y-4">
+        <Button type="submit" disabled={pending} className="h-11 w-full">
+          {pending ? (
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              Signing in...
+            </>
+          ) : (
+            'Sign in'
+          )}
         </Button>
+
+        <div className="relative">
+          <div className="absolute inset-0 flex items-center">
+            <span className="w-full border-t" />
+          </div>
+          <div className="relative flex justify-center text-xs uppercase">
+            <span className="bg-background px-2 text-muted-foreground">Or continue with</span>
+          </div>
+        </div>
+
         <PasskeyLoginButton />
+
         {state.message && (
           <Alert variant="destructive">
             <AlertDescription>{state.message}</AlertDescription>
@@ -47,38 +104,64 @@ export function LoginForm() {
 
 export function PasskeyLoginButton() {
   const [message, setMessage] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
   async function handleLogin() {
-    const challenge = await createChallenge();
+    setIsLoading(true);
+    setMessage('');
 
-    const credential = await navigator.credentials.get({
-      publicKey: {
-        challenge,
-        userVerification: 'required',
-      },
-    });
+    try {
+      const challenge = await createChallenge();
 
-    if (!(credential instanceof PublicKeyCredential)) {
-      throw new Error('Failed to create public key');
+      const credential = await navigator.credentials.get({
+        publicKey: {
+          challenge,
+          userVerification: 'required',
+        },
+      });
+
+      if (!(credential instanceof PublicKeyCredential)) {
+        throw new Error('Failed to create public key');
+      }
+      if (!(credential.response instanceof AuthenticatorAssertionResponse)) {
+        throw new Error('Unexpected error');
+      }
+
+      const result = await signInWithPasskeyAction({
+        credentialId: encodeBase64(new Uint8Array(credential.rawId)),
+        signature: encodeBase64(new Uint8Array(credential.response.signature)),
+        authenticatorData: encodeBase64(new Uint8Array(credential.response.authenticatorData)),
+        clientData: encodeBase64(new Uint8Array(credential.response.clientDataJSON)),
+      });
+      setMessage(result.message);
+    } catch {
+      setMessage('Failed to sign in with passkey. Please try again.');
+    } finally {
+      setIsLoading(false);
     }
-    if (!(credential.response instanceof AuthenticatorAssertionResponse)) {
-      throw new Error('Unexpected error');
-    }
-
-    const result = await signInWithPasskeyAction({
-      credentialId: encodeBase64(new Uint8Array(credential.rawId)),
-      signature: encodeBase64(new Uint8Array(credential.response.signature)),
-      authenticatorData: encodeBase64(new Uint8Array(credential.response.authenticatorData)),
-      clientData: encodeBase64(new Uint8Array(credential.response.clientDataJSON)),
-    });
-    setMessage(result.message);
   }
 
   return (
-    <div className="space-y-4">
-      <Button variant="outline" onClick={() => void handleLogin()} className="w-full">
-        <KeyRound /> Sign in with passkey
+    <div className="space-y-3">
+      <Button
+        variant="outline"
+        onClick={() => void handleLogin()}
+        disabled={isLoading}
+        className="hover:bg-muted/50 h-11 w-full border-2"
+      >
+        {isLoading ? (
+          <>
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            Authenticating...
+          </>
+        ) : (
+          <>
+            <Fingerprint className="mr-2 h-4 w-4" />
+            Sign in with passkey
+          </>
+        )}
       </Button>
+
       {message && (
         <Alert variant="destructive">
           <AlertDescription>{message}</AlertDescription>
