@@ -10,7 +10,6 @@ export function verifyUsernameInput(username: string) {
 export async function createUser(email: string, username: string, password: string) {
   const passwordHash = await hashPassword(password);
   const recoveryCode = generateRandomRecoveryCode();
-  // const encryptedRecoveryCode = encryptString(recoveryCode);
 
   const [row] = await db
     .insert(s.user)

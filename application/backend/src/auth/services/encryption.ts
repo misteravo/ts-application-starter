@@ -17,10 +17,6 @@ export function encrypt(data: Uint8Array) {
   return encrypted.bytes();
 }
 
-export function encryptString(data: string) {
-  return encrypt(new TextEncoder().encode(data));
-}
-
 export function decrypt(encrypted: Uint8Array) {
   if (encrypted.byteLength < 33) {
     throw new Error('Invalid data');
@@ -31,8 +27,4 @@ export function decrypt(encrypted: Uint8Array) {
   decrypted.write(decipher.update(encrypted.slice(16, encrypted.byteLength - 16)));
   decrypted.write(decipher.final());
   return decrypted.bytes();
-}
-
-export function decryptToString(data: Uint8Array) {
-  return new TextDecoder().decode(decrypt(data));
 }
