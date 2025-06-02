@@ -1,39 +1,20 @@
 'use client';
 
-import * as React from 'react';
 import {
   Breadcrumb,
   BreadcrumbItem,
   BreadcrumbLink,
   BreadcrumbList,
-  BreadcrumbPage,
   BreadcrumbSeparator,
   Separator,
   SidebarInset,
   SidebarProvider,
   SidebarTrigger,
 } from '@acme/ui';
+import * as React from 'react';
 import { AppSidebar } from './_components/app-sidebar';
-import { usePathname } from 'next/navigation';
-import { Home, Settings } from 'lucide-react';
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
-  const pathname = usePathname();
-
-  // Generate breadcrumb items based on current path
-  const getBreadcrumbs = () => {
-    const pathSegments = pathname.split('/').filter(Boolean);
-    const breadcrumbs = [{ title: 'Dashboard', href: '/', icon: Home }];
-
-    if (pathSegments.includes('settings')) {
-      breadcrumbs.push({ title: 'Settings', href: '/settings', icon: Settings });
-    }
-
-    return breadcrumbs;
-  };
-
-  const breadcrumbs = getBreadcrumbs();
-
   return (
     <SidebarProvider>
       <AppSidebar />
@@ -44,24 +25,13 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             <Separator orientation="vertical" className="mr-2 h-4" />
             <Breadcrumb>
               <BreadcrumbList>
-                {breadcrumbs.map((breadcrumb, index) => (
-                  <React.Fragment key={breadcrumb.href}>
-                    <BreadcrumbItem>
-                      {index === breadcrumbs.length - 1 ? (
-                        <BreadcrumbPage className="flex items-center">
-                          <breadcrumb.icon className="mr-1 h-4 w-4" />
-                          {breadcrumb.title}
-                        </BreadcrumbPage>
-                      ) : (
-                        <BreadcrumbLink href={breadcrumb.href} className="flex items-center">
-                          <breadcrumb.icon className="mr-1 h-4 w-4" />
-                          {breadcrumb.title}
-                        </BreadcrumbLink>
-                      )}
-                    </BreadcrumbItem>
-                    {index < breadcrumbs.length - 1 && <BreadcrumbSeparator />}
-                  </React.Fragment>
-                ))}
+                <BreadcrumbItem>
+                  <BreadcrumbLink href="/">Dashboard</BreadcrumbLink>
+                </BreadcrumbItem>
+                <BreadcrumbSeparator />
+                <BreadcrumbItem>
+                  <BreadcrumbLink href="/settings">Settings</BreadcrumbLink>
+                </BreadcrumbItem>
               </BreadcrumbList>
             </Breadcrumb>
           </div>
