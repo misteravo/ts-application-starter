@@ -1,7 +1,8 @@
 'use client';
 
-import { Alert, Button, Input, Label } from '@acme/ui'; // Assuming these components are available from Shadcn
+import { Alert, AlertDescription, Button, Input, Label } from '@acme/ui';
 import { useActionState, useState } from 'react';
+import { Loader2, Trash2, Key, Shield, RefreshCw, Copy, Check, Eye, EyeOff } from 'lucide-react';
 import {
   deletePasskeyAction,
   deleteSecurityKeyAction,
@@ -16,26 +17,79 @@ const initialUpdatePasswordState = {
 };
 
 export function UpdatePasswordForm() {
-  const [state, action] = useActionState(updatePasswordAction, initialUpdatePasswordState);
+  const [state, action, pending] = useActionState(updatePasswordAction, initialUpdatePasswordState);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
 
   return (
     <form action={action} className="space-y-4">
-      <div>
-        <Label htmlFor="form-password.password">Current password</Label>
-        <Input type="password" id="form-password.password" name="password" autoComplete="current-password" required />
+      <div className="space-y-2">
+        <Label htmlFor="form-password.password" className="text-sm font-medium">
+          Current password
+        </Label>
+        <div className="relative">
+          <Input
+            type={showPassword ? 'text' : 'password'}
+            id="form-password.password"
+            name="password"
+            autoComplete="current-password"
+            className="pr-10"
+            required
+          />
+          <button
+            type="button"
+            className="absolute inset-y-0 right-0 flex items-center pr-3"
+            onClick={() => setShowPassword(!showPassword)}
+          >
+            {showPassword ? (
+              <EyeOff className="h-4 w-4 text-muted-foreground" />
+            ) : (
+              <Eye className="h-4 w-4 text-muted-foreground" />
+            )}
+          </button>
+        </div>
       </div>
-      <div>
-        <Label htmlFor="form-password.new-password">New password</Label>
-        <Input
-          type="password"
-          id="form-password.new-password"
-          name="newPassword"
-          autoComplete="new-password"
-          required
-        />
+      <div className="space-y-2">
+        <Label htmlFor="form-password.new-password" className="text-sm font-medium">
+          New password
+        </Label>
+        <div className="relative">
+          <Input
+            type={showNewPassword ? 'text' : 'password'}
+            id="form-password.new-password"
+            name="newPassword"
+            autoComplete="new-password"
+            className="pr-10"
+            required
+          />
+          <button
+            type="button"
+            className="absolute inset-y-0 right-0 flex items-center pr-3"
+            onClick={() => setShowNewPassword(!showNewPassword)}
+          >
+            {showNewPassword ? (
+              <EyeOff className="h-4 w-4 text-muted-foreground" />
+            ) : (
+              <Eye className="h-4 w-4 text-muted-foreground" />
+            )}
+          </button>
+        </div>
       </div>
-      <Button type="submit">Update</Button>
-      {state.message && <Alert>{state.message}</Alert>}
+      <Button type="submit" disabled={pending} className="w-full">
+        {pending ? (
+          <>
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            Updating...
+          </>
+        ) : (
+          'Update Password'
+        )}
+      </Button>
+      {state.message && (
+        <Alert variant={state.message.includes('success') ? 'default' : 'destructive'}>
+          <AlertDescription>{state.message}</AlertDescription>
+        </Alert>
+      )}
     </form>
   );
 }
@@ -45,16 +99,31 @@ const initialUpdateFormState = {
 };
 
 export function UpdateEmailForm() {
-  const [state, action] = useActionState(updateEmailAction, initialUpdateFormState);
+  const [state, action, pending] = useActionState(updateEmailAction, initialUpdateFormState);
 
   return (
     <form action={action} className="space-y-4">
-      <div>
-        <Label htmlFor="form-email.email">New email</Label>
-        <Input type="email" id="form-email.email" name="email" required />
+      <div className="space-y-2">
+        <Label htmlFor="form-email.email" className="text-sm font-medium">
+          New email address
+        </Label>
+        <Input type="email" id="form-email.email" name="email" placeholder="Enter new email address" required />
       </div>
-      <Button type="submit">Update</Button>
-      {state.message && <Alert>{state.message}</Alert>}
+      <Button type="submit" disabled={pending} className="w-full">
+        {pending ? (
+          <>
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            Updating...
+          </>
+        ) : (
+          'Update Email'
+        )}
+      </Button>
+      {state.message && (
+        <Alert variant={state.message.includes('success') ? 'default' : 'destructive'}>
+          <AlertDescription>{state.message}</AlertDescription>
+        </Alert>
+      )}
     </form>
   );
 }
@@ -64,11 +133,28 @@ const initialDisconnectTOTPState = {
 };
 
 export function DisconnectTOTPButton() {
-  const [state, formAction] = useActionState(disconnectTOTPAction, initialDisconnectTOTPState);
+  const [state, formAction, pending] = useActionState(disconnectTOTPAction, initialDisconnectTOTPState);
+
   return (
     <form action={formAction}>
-      <Button type="submit">Disconnect</Button>
-      {state.message && <Alert>{state.message}</Alert>}
+      <Button type="submit" variant="destructive" size="sm" disabled={pending} className="text-xs">
+        {pending ? (
+          <>
+            <Loader2 className="mr-1 h-3 w-3 animate-spin" />
+            Disconnecting...
+          </>
+        ) : (
+          <>
+            <Trash2 className="mr-1 h-3 w-3" />
+            Disconnect
+          </>
+        )}
+      </Button>
+      {state.message && (
+        <Alert variant="destructive" className="mt-2">
+          <AlertDescription>{state.message}</AlertDescription>
+        </Alert>
+      )}
     </form>
   );
 }
@@ -78,15 +164,36 @@ const initialPasskeyState = {
 };
 
 export function PasskeyCredentialListItem(props: { encodedId: string; name: string }) {
-  const [state, formAction] = useActionState(deletePasskeyAction, initialPasskeyState);
+  const [state, formAction, pending] = useActionState(deletePasskeyAction, initialPasskeyState);
+
   return (
-    <div className="flex items-center justify-between">
-      <p>{props.name}</p>
+    <div className="bg-muted/30 flex items-center justify-between rounded-lg border p-3">
+      <div className="flex items-center space-x-3">
+        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-100">
+          <Key className="h-4 w-4 text-blue-600" />
+        </div>
+        <div>
+          <p className="text-sm font-medium">{props.name}</p>
+          <p className="text-xs text-muted-foreground">Passkey credential</p>
+        </div>
+      </div>
       <form action={formAction}>
         <input type="hidden" name="encodedCredentialId" value={props.encodedId} />
-        <Button type="submit">Delete</Button>
-        {state.message && <Alert>{state.message}</Alert>}
+        <Button
+          type="submit"
+          variant="outline"
+          size="sm"
+          disabled={pending}
+          className="hover:bg-destructive/10 text-destructive hover:text-destructive"
+        >
+          {pending ? <Loader2 className="h-3 w-3 animate-spin" /> : <Trash2 className="h-3 w-3" />}
+        </Button>
       </form>
+      {state.message && (
+        <Alert variant="destructive" className="mt-2">
+          <AlertDescription>{state.message}</AlertDescription>
+        </Alert>
+      )}
     </div>
   );
 }
@@ -96,36 +203,121 @@ const initialSecurityKeyState = {
 };
 
 export function SecurityKeyCredentialListItem(props: { encodedId: string; name: string }) {
-  const [state, formAction] = useActionState(deleteSecurityKeyAction, initialSecurityKeyState);
+  const [state, formAction, pending] = useActionState(deleteSecurityKeyAction, initialSecurityKeyState);
+
   return (
-    <div className="flex items-center justify-between">
-      <p>{props.name}</p>
+    <div className="bg-muted/30 flex items-center justify-between rounded-lg border p-3">
+      <div className="flex items-center space-x-3">
+        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-purple-100">
+          <Shield className="h-4 w-4 text-purple-600" />
+        </div>
+        <div>
+          <p className="text-sm font-medium">{props.name}</p>
+          <p className="text-xs text-muted-foreground">Security key credential</p>
+        </div>
+      </div>
       <form action={formAction}>
         <input type="hidden" name="encodedCredentialId" value={props.encodedId} />
-        <Button type="submit">Delete</Button>
-        {state.message && <Alert>{state.message}</Alert>}
+        <Button
+          type="submit"
+          variant="outline"
+          size="sm"
+          disabled={pending}
+          className="hover:bg-destructive/10 text-destructive hover:text-destructive"
+        >
+          {pending ? <Loader2 className="h-3 w-3 animate-spin" /> : <Trash2 className="h-3 w-3" />}
+        </Button>
       </form>
+      {state.message && (
+        <Alert variant="destructive" className="mt-2">
+          <AlertDescription>{state.message}</AlertDescription>
+        </Alert>
+      )}
     </div>
   );
 }
 
 export function RecoveryCodeSection(props: { recoveryCode: string }) {
   const [recoveryCode, setRecoveryCode] = useState(props.recoveryCode);
+  const [copied, setCopied] = useState(false);
+  const [isGenerating, setIsGenerating] = useState(false);
 
   async function handleGenerateNewCode() {
-    const result = await regenerateRecoveryCodeAction();
-    if ('recoveryCode' in result && result.recoveryCode) {
-      setRecoveryCode(result.recoveryCode);
+    setIsGenerating(true);
+    try {
+      const result = await regenerateRecoveryCodeAction();
+      if ('recoveryCode' in result && result.recoveryCode) {
+        setRecoveryCode(result.recoveryCode);
+      }
+    } finally {
+      setIsGenerating(false);
+    }
+  }
+
+  async function copyToClipboard() {
+    try {
+      await navigator.clipboard.writeText(recoveryCode);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch (err) {
+      console.error('Failed to copy: ', err);
     }
   }
 
   return (
-    <div className="space-y-4">
-      <h1>Recovery code</h1>
-      <p>
-        Your recovery code is: <strong>{recoveryCode}</strong>
-      </p>
-      <Button onClick={() => void handleGenerateNewCode()}>Generate new code</Button>
+    <div className="space-y-4 p-6">
+      <div className="flex items-center space-x-2">
+        <Shield className="h-5 w-5 text-orange-600" />
+        <h3 className="text-lg font-semibold">Recovery Code</h3>
+      </div>
+
+      <Alert className="border-orange-200 bg-orange-50">
+        <AlertDescription>
+          <strong>Important:</strong> Store this recovery code in a safe place. You can use it to access your account if
+          you lose access to your other authentication methods.
+        </AlertDescription>
+      </Alert>
+
+      <div className="space-y-3">
+        <Label className="text-sm font-medium">Your recovery code:</Label>
+        <div className="flex items-center space-x-2">
+          <div className="flex-1 rounded-lg border bg-background p-3">
+            <code className="break-all font-mono text-sm">{recoveryCode}</code>
+          </div>
+          <Button type="button" variant="outline" size="sm" onClick={() => void copyToClipboard()} disabled={copied}>
+            {copied ? (
+              <>
+                <Check className="mr-1 h-3 w-3" />
+                Copied
+              </>
+            ) : (
+              <>
+                <Copy className="mr-1 h-3 w-3" />
+                Copy
+              </>
+            )}
+          </Button>
+        </div>
+
+        <Button
+          onClick={() => void handleGenerateNewCode()}
+          variant="secondary"
+          disabled={isGenerating}
+          className="w-full"
+        >
+          {isGenerating ? (
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              Generating...
+            </>
+          ) : (
+            <>
+              <RefreshCw className="mr-2 h-4 w-4" />
+              Generate New Recovery Code
+            </>
+          )}
+        </Button>
+      </div>
     </div>
   );
 }
