@@ -46,25 +46,25 @@ export const totpCredential = pgTable('totp_credential', {
     .notNull()
     .unique()
     .references(() => user.id),
-  key: text('key').$type<Uint8Array>().notNull(),
+  key: text('key').notNull(),
 });
 
 export const passkeyCredential = pgTable('passkey_credential', {
-  id: text('id').$type<Uint8Array>().primaryKey(),
+  id: text('id').primaryKey(),
   userId: integer('user_id')
     .notNull()
     .references(() => user.id),
   name: text('name').notNull(),
   algorithm: integer('algorithm').notNull(),
-  publicKey: text('public_key').$type<Uint8Array>().notNull(),
+  publicKey: text('public_key').notNull(),
 });
 
 export const securityKeyCredential = pgTable('security_key_credential', {
-  id: text('id').$type<Uint8Array>().primaryKey(),
+  id: text('id').primaryKey(),
   userId: integer('user_id')
     .notNull()
     .references(() => user.id),
   name: text('name').notNull(),
   algorithm: integer('algorithm').notNull(),
-  publicKey: text('public_key').$type<Uint8Array>().notNull(),
+  publicKey: text('public_key').notNull(),
 });

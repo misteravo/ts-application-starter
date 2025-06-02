@@ -1,4 +1,4 @@
-import { encodeHexLowerCase } from '@oslojs/encoding';
+import { decodeBase64, encodeBase64, encodeHexLowerCase } from '@oslojs/encoding';
 import { and, eq } from 'drizzle-orm';
 import { db, s } from '../../db';
 
@@ -24,11 +24,11 @@ export async function getUserPasskeyCredentials(userId: number) {
   const credentials: WebAuthnUserCredential[] = [];
   for (const passkeyCredential of passkeyCredentials) {
     const credential: WebAuthnUserCredential = {
-      id: passkeyCredential.id,
+      id: decodeBase64(passkeyCredential.id),
       userId: passkeyCredential.userId,
       name: passkeyCredential.name,
       algorithmId: passkeyCredential.algorithm,
-      publicKey: passkeyCredential.publicKey,
+      publicKey: decodeBase64(passkeyCredential.publicKey),
     };
     credentials.push(credential);
   }
@@ -37,50 +37,50 @@ export async function getUserPasskeyCredentials(userId: number) {
 
 export async function getPasskeyCredential(credentialId: Uint8Array) {
   const passkeyCredential = await db.query.passkeyCredential.findFirst({
-    where: eq(s.passkeyCredential.id, credentialId),
+    where: eq(s.passkeyCredential.id, encodeBase64(credentialId)),
   });
   if (passkeyCredential === undefined) return null;
 
   const credential: WebAuthnUserCredential = {
-    id: passkeyCredential.id,
+    id: decodeBase64(passkeyCredential.id),
     userId: passkeyCredential.userId,
     name: passkeyCredential.name,
     algorithmId: passkeyCredential.algorithm,
-    publicKey: passkeyCredential.publicKey,
+    publicKey: decodeBase64(passkeyCredential.publicKey),
   };
   return credential;
 }
 
 export async function getUserPasskeyCredential(userId: number, credentialId: Uint8Array) {
   const passkeyCredential = await db.query.passkeyCredential.findFirst({
-    where: and(eq(s.passkeyCredential.id, credentialId), eq(s.passkeyCredential.userId, userId)),
+    where: and(eq(s.passkeyCredential.id, encodeBase64(credentialId)), eq(s.passkeyCredential.userId, userId)),
   });
   if (passkeyCredential === undefined) return null;
 
   const credential: WebAuthnUserCredential = {
-    id: passkeyCredential.id,
+    id: decodeBase64(passkeyCredential.id),
     userId: passkeyCredential.userId,
     name: passkeyCredential.name,
     algorithmId: passkeyCredential.algorithm,
-    publicKey: passkeyCredential.publicKey,
+    publicKey: decodeBase64(passkeyCredential.publicKey),
   };
   return credential;
 }
 
 export async function createPasskeyCredential(credential: WebAuthnUserCredential) {
   await db.insert(s.passkeyCredential).values({
-    id: credential.id,
+    id: encodeBase64(credential.id),
     userId: credential.userId,
     name: credential.name,
     algorithm: credential.algorithmId,
-    publicKey: credential.publicKey,
+    publicKey: encodeBase64(credential.publicKey),
   });
 }
 
 export async function deleteUserPasskeyCredential(userId: number, credentialId: Uint8Array) {
   const result = await db
     .delete(s.passkeyCredential)
-    .where(and(eq(s.passkeyCredential.id, credentialId), eq(s.passkeyCredential.userId, userId)));
+    .where(and(eq(s.passkeyCredential.id, encodeBase64(credentialId)), eq(s.passkeyCredential.userId, userId)));
   return result.rowCount && result.rowCount > 0;
 }
 
@@ -91,11 +91,11 @@ export async function getUserSecurityKeyCredentials(userId: number) {
   const credentials: WebAuthnUserCredential[] = [];
   for (const securityKeyCredential of securityKeyCredentials) {
     const credential: WebAuthnUserCredential = {
-      id: securityKeyCredential.id,
+      id: decodeBase64(securityKeyCredential.id),
       userId: securityKeyCredential.userId,
       name: securityKeyCredential.name,
       algorithmId: securityKeyCredential.algorithm,
-      publicKey: securityKeyCredential.publicKey,
+      publicKey: decodeBase64(securityKeyCredential.publicKey),
     };
     credentials.push(credential);
   }
@@ -104,33 +104,33 @@ export async function getUserSecurityKeyCredentials(userId: number) {
 
 export async function getUserSecurityKeyCredential(userId: number, credentialId: Uint8Array) {
   const securityKeyCredential = await db.query.securityKeyCredential.findFirst({
-    where: and(eq(s.securityKeyCredential.id, credentialId), eq(s.securityKeyCredential.userId, userId)),
+    where: and(eq(s.securityKeyCredential.id, encodeBase64(credentialId)), eq(s.securityKeyCredential.userId, userId)),
   });
   if (securityKeyCredential === undefined) return null;
   const credential: WebAuthnUserCredential = {
-    id: securityKeyCredential.id,
+    id: decodeBase64(securityKeyCredential.id),
     userId: securityKeyCredential.userId,
     name: securityKeyCredential.name,
     algorithmId: securityKeyCredential.algorithm,
-    publicKey: securityKeyCredential.publicKey,
+    publicKey: decodeBase64(securityKeyCredential.publicKey),
   };
   return credential;
 }
 
 export async function createSecurityKeyCredential(credential: WebAuthnUserCredential) {
   await db.insert(s.securityKeyCredential).values({
-    id: credential.id,
+    id: encodeBase64(credential.id),
     userId: credential.userId,
     name: credential.name,
     algorithm: credential.algorithmId,
-    publicKey: credential.publicKey,
+    publicKey: encodeBase64(credential.publicKey),
   });
 }
 
 export async function deleteUserSecurityKeyCredential(userId: number, credentialId: Uint8Array) {
   const result = await db
     .delete(s.securityKeyCredential)
-    .where(and(eq(s.securityKeyCredential.id, credentialId), eq(s.securityKeyCredential.userId, userId)));
+    .where(and(eq(s.securityKeyCredential.id, encodeBase64(credentialId)), eq(s.securityKeyCredential.userId, userId)));
   return result.rowCount && result.rowCount > 0;
 }
 
