@@ -63,7 +63,6 @@ export async function signInWithPasskey(props: {
   const [authenticatorData] = safeTrySync(() => parseAuthenticatorData(props.authenticatorData));
   if (!authenticatorData) return { message: 'Invalid data' };
 
-  // TODO: Update host
   if (!authenticatorData.verifyRelyingPartyIdHash(env.SERVER_HOST)) return { message: 'Invalid data' };
   if (!authenticatorData.userPresent || !authenticatorData.userVerified) return { message: 'Invalid data' };
 
