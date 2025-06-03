@@ -3,8 +3,8 @@ import { Button, CardContent, CardFooter, CardHeader } from '@acme/ui';
 import { encodeBase64 } from '@oslojs/encoding';
 import { redirect } from 'next/navigation';
 import { Link } from '~/components/link';
-import { AuthLayout, AuthTitle } from '~/modules/auth/components/layout';
 import { VerifyPasskeyButton } from './components';
+import { AuthTitle } from '~/components/auth-title';
 
 export default async function Page() {
   if (!(await globalGETRateLimit())) return 'Too many requests';
@@ -19,7 +19,7 @@ export default async function Page() {
   const credentials = await getUserPasskeyCredentials(user.id);
 
   return (
-    <AuthLayout>
+    <>
       <CardHeader>
         <AuthTitle>Authenticate with passkeys</AuthTitle>
       </CardHeader>
@@ -41,6 +41,6 @@ export default async function Page() {
           </Link>
         )}
       </CardFooter>
-    </AuthLayout>
+    </>
   );
 }

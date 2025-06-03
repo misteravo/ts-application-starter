@@ -2,7 +2,7 @@ import { CardContent, CardHeader } from '@acme/ui';
 import { Link } from '~/components/link';
 import { get2FARedirect, getCurrentSession, getUserRecoverCode, globalGETRateLimit } from '@acme/backend';
 import { redirect } from 'next/navigation';
-import { AuthLayout, AuthTitle } from '~/modules/auth/components/layout';
+import { AuthTitle } from '~/components/auth-title';
 
 export default async function Page() {
   if (!(await globalGETRateLimit())) return 'Too many requests';
@@ -16,7 +16,7 @@ export default async function Page() {
   const recoveryCode = getUserRecoverCode(user.id);
 
   return (
-    <AuthLayout>
+    <>
       <CardHeader>
         <AuthTitle>Recovery Code</AuthTitle>
       </CardHeader>
@@ -31,6 +31,6 @@ export default async function Page() {
           </Link>
         </div>
       </CardContent>
-    </AuthLayout>
+    </>
   );
 }

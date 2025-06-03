@@ -6,7 +6,7 @@ import { encodeBase64 } from '@oslojs/encoding';
 import { createTOTPKeyURI } from '@oslojs/otp';
 import { redirect } from 'next/navigation';
 import { renderSVG } from 'uqr';
-import { AuthLayout, AuthTitle } from '~/modules/auth/components/layout';
+import { AuthTitle } from '~/components/auth-title';
 
 export default async function Page() {
   if (!(await globalGETRateLimit())) return 'Too many requests';
@@ -23,7 +23,7 @@ export default async function Page() {
   const qrcode = renderSVG(keyURI);
 
   return (
-    <AuthLayout>
+    <>
       <CardHeader>
         <AuthTitle className="text-left">Set up authenticator app</AuthTitle>
         <CardDescription>Scan the QR code below with your authenticator app to get started</CardDescription>
@@ -39,6 +39,6 @@ export default async function Page() {
         </div>
         <TwoFactorSetUpForm encodedTOTPKey={encodedTOTPKey} />
       </CardContent>
-    </AuthLayout>
+    </>
   );
 }

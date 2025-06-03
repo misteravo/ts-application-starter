@@ -3,7 +3,7 @@ import { CardContent, CardHeader } from '@acme/ui';
 import { bigEndian } from '@oslojs/binary';
 import { encodeBase64 } from '@oslojs/encoding';
 import { redirect } from 'next/navigation';
-import { AuthLayout, AuthTitle } from '~/modules/auth/components/layout';
+import { AuthTitle } from '~/components/auth-title';
 import { RegisterSecurityKey } from './components';
 
 export default async function Page() {
@@ -19,7 +19,7 @@ export default async function Page() {
   bigEndian.putUint64(credentialUserId, BigInt(user.id), 0);
 
   return (
-    <AuthLayout>
+    <>
       <CardHeader>
         <AuthTitle>Register Security Key</AuthTitle>
       </CardHeader>
@@ -30,6 +30,6 @@ export default async function Page() {
           encodedCredentialUserId={encodeBase64(credentialUserId)}
         />
       </CardContent>
-    </AuthLayout>
+    </>
   );
 }

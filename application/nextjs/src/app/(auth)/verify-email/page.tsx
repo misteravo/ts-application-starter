@@ -1,7 +1,7 @@
 import { getCurrentSession, getCurrentUserEmailVerificationRequest, globalGETRateLimit } from '@acme/backend';
 import { CardContent, CardDescription, CardHeader } from '@acme/ui';
 import { redirect } from 'next/navigation';
-import { AuthLayout, AuthTitle } from '~/modules/auth/components/layout';
+import { AuthTitle } from '~/components/auth-title';
 import { EmailVerificationForm, ResendEmailVerificationCodeForm } from './components';
 
 export default async function Page() {
@@ -16,7 +16,7 @@ export default async function Page() {
   if (!verificationRequest && user.emailVerified) return redirect('/');
 
   return (
-    <AuthLayout>
+    <>
       <CardHeader>
         <AuthTitle className="text-left">Verify your email address</AuthTitle>
         <CardDescription>We sent an 8-digit code to {verificationRequest?.email ?? user.email}</CardDescription>
@@ -25,6 +25,6 @@ export default async function Page() {
         <EmailVerificationForm />
         <ResendEmailVerificationCodeForm />
       </CardContent>
-    </AuthLayout>
+    </>
   );
 }

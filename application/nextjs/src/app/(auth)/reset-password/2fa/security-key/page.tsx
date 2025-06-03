@@ -8,7 +8,7 @@ import { CardContent, CardFooter, CardHeader } from '@acme/ui';
 import { encodeBase64 } from '@oslojs/encoding';
 import { redirect } from 'next/navigation';
 import { Link } from '~/components/link';
-import { AuthLayout, AuthTitle } from '~/modules/auth/components/layout';
+import { AuthTitle } from '~/components/auth-title';
 import { VerifySecurityKeyButton } from './components';
 
 export default async function Page() {
@@ -25,7 +25,7 @@ export default async function Page() {
   const credentials = await getUserSecurityKeyCredentials(user.id);
 
   return (
-    <AuthLayout>
+    <>
       <CardHeader>
         <AuthTitle>Authenticate with security keys</AuthTitle>
       </CardHeader>
@@ -47,6 +47,6 @@ export default async function Page() {
           </Link>
         )}
       </CardFooter>
-    </AuthLayout>
+    </>
   );
 }

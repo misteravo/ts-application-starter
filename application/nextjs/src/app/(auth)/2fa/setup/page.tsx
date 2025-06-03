@@ -1,8 +1,8 @@
 import { getCurrentSession, globalGETRateLimit } from '@acme/backend';
 import { Button, CardContent, CardDescription, CardHeader } from '@acme/ui';
 import { redirect } from 'next/navigation';
+import { AuthTitle } from '~/components/auth-title';
 import { Link } from '~/components/link';
-import { AuthLayout, AuthTitle } from '~/modules/auth/components/layout';
 
 export default async function Page() {
   if (!(await globalGETRateLimit())) return 'Too many requests';
@@ -13,7 +13,7 @@ export default async function Page() {
   if (user.registered2FA) return redirect('/');
 
   return (
-    <AuthLayout>
+    <>
       <CardHeader>
         <AuthTitle className="text-left">Set up two-factor authentication</AuthTitle>
         <CardDescription>Choose a method to add an extra layer of security to your account</CardDescription>
@@ -35,6 +35,6 @@ export default async function Page() {
           </Button>
         </Link>
       </CardContent>
-    </AuthLayout>
+    </>
   );
 }

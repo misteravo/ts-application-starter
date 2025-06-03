@@ -1,8 +1,8 @@
-import { Card, CardTitle, cn } from '@acme/ui';
+import { Card } from '@acme/ui';
+import { Lock, Shield } from 'lucide-react';
 import type { ReactNode } from 'react';
-import { Shield, Lock } from 'lucide-react';
 
-export function AuthLayout(props: { children: ReactNode }) {
+export default function AuthLayout(props: { children: ReactNode }) {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-950 dark:to-slate-900">
       {/* Background Pattern */}
@@ -44,8 +44,4 @@ export function AuthLayout(props: { children: ReactNode }) {
       </div>
     </div>
   );
-}
-
-export function AuthTitle(props: { children: ReactNode; className?: string }) {
-  return <CardTitle className={cn('text-center text-xl font-semibold', props.className)}>{props.children}</CardTitle>;
 }

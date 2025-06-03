@@ -2,7 +2,7 @@ import { get2FARedirect, getCurrentSession, globalGETRateLimit } from '@acme/bac
 import { Button, CardContent, CardFooter, CardHeader } from '@acme/ui';
 import { Link } from '~/components/link';
 import { redirect } from 'next/navigation';
-import { AuthLayout, AuthTitle } from '~/modules/auth/components/layout';
+import { AuthTitle } from '~/components/auth-title';
 import { SignUpForm } from './components';
 
 export default async function Page() {
@@ -17,7 +17,7 @@ export default async function Page() {
   }
 
   return (
-    <AuthLayout>
+    <>
       <CardHeader>
         <AuthTitle>Create an account</AuthTitle>
       </CardHeader>
@@ -32,6 +32,6 @@ export default async function Page() {
           </Button>
         </div>
       </CardFooter>
-    </AuthLayout>
+    </>
   );
 }

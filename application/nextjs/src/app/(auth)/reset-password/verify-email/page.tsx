@@ -1,7 +1,7 @@
 import { getCurrentPasswordResetSession, globalGETRateLimit } from '@acme/backend';
 import { CardContent, CardHeader } from '@acme/ui';
 import { redirect } from 'next/navigation';
-import { AuthLayout, AuthTitle } from '~/modules/auth/components/layout';
+import { AuthTitle } from '~/components/auth-title';
 import { PasswordResetEmailVerificationForm } from './components';
 
 export default async function Page() {
@@ -15,7 +15,7 @@ export default async function Page() {
   }
 
   return (
-    <AuthLayout>
+    <>
       <CardHeader>
         <AuthTitle>Verify your email address</AuthTitle>
       </CardHeader>
@@ -23,6 +23,6 @@ export default async function Page() {
         <p>We sent an 8-digit code to {session.email}.</p>
         <PasswordResetEmailVerificationForm />
       </CardContent>
-    </AuthLayout>
+    </>
   );
 }

@@ -2,8 +2,8 @@ import { getCurrentSession, globalGETRateLimit } from '@acme/backend';
 import { Button, CardContent, CardDescription, CardHeader } from '@acme/ui';
 import { redirect } from 'next/navigation';
 import { Link } from '~/components/link';
-import { AuthLayout, AuthTitle } from '~/modules/auth/components/layout';
 import { TotpVerificationForm } from './components';
+import { AuthTitle } from '~/components/auth-title';
 
 export default async function Page() {
   if (!(await globalGETRateLimit())) return 'Too many requests';
@@ -15,7 +15,7 @@ export default async function Page() {
   if (session.twoFactorVerified) return redirect('/');
 
   return (
-    <AuthLayout>
+    <>
       <CardHeader>
         <AuthTitle className="text-left">Authenticate with authenticator app</AuthTitle>
         <CardDescription>Enter the code from your authenticator app to continue.</CardDescription>
@@ -43,6 +43,6 @@ export default async function Page() {
           </Link>
         )}
       </CardContent>
-    </AuthLayout>
+    </>
   );
 }

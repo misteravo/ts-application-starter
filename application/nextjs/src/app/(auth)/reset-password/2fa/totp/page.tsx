@@ -3,7 +3,7 @@ import { PasswordResetTOTPForm } from './components';
 import { getCurrentPasswordResetSession, getPasswordReset2FARedirect, globalGETRateLimit } from '@acme/backend';
 import { Link } from '~/components/link';
 import { redirect } from 'next/navigation';
-import { AuthLayout, AuthTitle } from '~/modules/auth/components/layout';
+import { AuthTitle } from '~/components/auth-title';
 
 export default async function Page() {
   if (!(await globalGETRateLimit())) return 'Too many requests';
@@ -17,7 +17,7 @@ export default async function Page() {
   if (!user.registeredTOTP) return redirect(getPasswordReset2FARedirect(user));
 
   return (
-    <AuthLayout>
+    <>
       <CardHeader>
         <AuthTitle>Authenticate with authenticator app</AuthTitle>
       </CardHeader>
@@ -46,6 +46,6 @@ export default async function Page() {
           </Link>
         )}
       </CardFooter>
-    </AuthLayout>
+    </>
   );
 }

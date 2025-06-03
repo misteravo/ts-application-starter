@@ -3,7 +3,7 @@ import { PasswordResetRecoveryCodeForm } from './components';
 
 import { getCurrentPasswordResetSession, globalGETRateLimit } from '@acme/backend';
 import { redirect } from 'next/navigation';
-import { AuthLayout, AuthTitle } from '~/modules/auth/components/layout';
+import { AuthTitle } from '~/components/auth-title';
 
 export default async function Page() {
   if (!(await globalGETRateLimit())) return 'Too many requests';
@@ -16,13 +16,13 @@ export default async function Page() {
   if (session.twoFactorVerified) return redirect('/reset-password');
 
   return (
-    <AuthLayout>
+    <>
       <CardHeader>
         <AuthTitle>Use your recovery code</AuthTitle>
       </CardHeader>
       <CardContent>
         <PasswordResetRecoveryCodeForm />
       </CardContent>
-    </AuthLayout>
+    </>
   );
 }

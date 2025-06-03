@@ -1,14 +1,14 @@
 import { globalGETRateLimit } from '@acme/backend';
 import { Button, CardContent, CardDescription, CardHeader } from '@acme/ui';
 import { Link } from '~/components/link';
-import { AuthLayout, AuthTitle } from '~/modules/auth/components/layout';
+import { AuthTitle } from '~/components/auth-title';
 import { ForgotPasswordForm } from './components';
 
 export default async function Page() {
   if (!(await globalGETRateLimit())) return 'Too many requests';
 
   return (
-    <AuthLayout>
+    <>
       <CardHeader>
         <AuthTitle className="text-left">Forgot your password?</AuthTitle>
         <CardDescription>Enter your email address and we'll send you a link to reset your password.</CardDescription>
@@ -23,6 +23,6 @@ export default async function Page() {
           </Link>
         </div>
       </CardContent>
-    </AuthLayout>
+    </>
   );
 }
