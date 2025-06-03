@@ -10,6 +10,7 @@ import {
   SidebarInset,
   SidebarProvider,
   SidebarTrigger,
+  ThemeToggle,
 } from '@acme/ui';
 import * as React from 'react';
 import { AppSidebar } from './_components/app-sidebar';
@@ -34,6 +35,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 </BreadcrumbItem>
               </BreadcrumbList>
             </Breadcrumb>
+            <div className="absolute right-4 top-4">
+              <ThemeToggle />
+            </div>
           </div>
         </header>
         <main className="flex-1 space-y-4 p-4 md:p-8">{children}</main>

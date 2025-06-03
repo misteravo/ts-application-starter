@@ -1,4 +1,4 @@
-import { Card } from '@acme/ui';
+import { Card, ThemeToggle } from '@acme/ui';
 import { Lock, Shield } from 'lucide-react';
 import type { ReactNode } from 'react';
 
@@ -41,6 +41,11 @@ export default function AuthLayout(props: { children: ReactNode }) {
             </div>
           </div>
         </div>
+      </div>
+
+      {/* Theme Toggle */}
+      <div className="absolute right-4 top-4">
+        <ThemeToggle />
       </div>
     </div>
   );
