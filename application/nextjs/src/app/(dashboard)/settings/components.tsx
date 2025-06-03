@@ -271,7 +271,7 @@ export function RecoveryCodeSection(props: { recoveryCode: string }) {
         <h3 className="text-lg font-semibold">Recovery Code</h3>
       </div>
 
-      <Alert className="border-orange-200 bg-orange-50">
+      <Alert className="border-orange-200 bg-orange-50 text-orange-800">
         <AlertDescription>
           <strong>Important:</strong> Store this recovery code in a safe place. You can use it to access your account if
           you lose access to your other authentication methods.
