@@ -7,7 +7,6 @@ import { headers } from 'next/headers';
 const webauthnChallengeRateLimitBucket = new RefillingTokenBucket<string>(30, 10);
 
 export async function createWebAuthnChallengeAction(): Promise<string> {
-  console.log('create');
   const headersList = await headers();
   const clientIP = headersList.get('X-Forwarded-For');
   if (clientIP !== null && !webauthnChallengeRateLimitBucket.consume(clientIP, 1)) {
