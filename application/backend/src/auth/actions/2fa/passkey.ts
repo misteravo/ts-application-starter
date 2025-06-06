@@ -1,4 +1,4 @@
-import { safeTrySync } from '@acme/utils';
+import { safeTry, safeTrySync } from '@acme/utils';
 import {
   decodePKIXECDSASignature,
   decodeSEC1PublicKey,
@@ -71,17 +71,19 @@ export async function registerPasskey(props: {
   if (!attestationObject) return { message: 'Invalid data' };
   const attestationStatement = attestationObject.attestationStatement;
   const authenticatorData = attestationObject.authenticatorData;
-  if (attestationStatement.format !== AttestationStatementFormat.None) return { message: 'Invalid data' };
 
+  if (attestationStatement.format !== AttestationStatementFormat.None) return { message: 'Invalid data' };
   if (!authenticatorData.verifyRelyingPartyIdHash(env.SERVER_HOST)) return { message: 'Invalid data' };
-  if (!authenticatorData.userPresent || !authenticatorData.userVerified) return { message: 'Invalid data' };
+  if (!authenticatorData.userPresent) return { message: 'Invalid data' };
+  if (!authenticatorData.userVerified) return { message: 'Invalid data' };
   if (authenticatorData.credential === null) return { message: 'Invalid data' };
 
   const [clientData] = safeTrySync(() => parseClientDataJSON(props.clientData));
   if (!clientData) return { message: 'Invalid data' };
-  if (clientData.type !== ClientDataType.Create) return { message: 'Invalid data' };
-  if (!verifyWebAuthnChallenge(clientData.challenge)) return { message: 'Invalid data' };
 
+  if (clientData.type !== ClientDataType.Create) return { message: 'Invalid data' };
+
+  if (!verifyWebAuthnChallenge(clientData.challenge)) return { message: 'Invalid data' };
   if (clientData.origin !== env.SERVER_URL) return { message: 'Invalid data' };
   if (clientData.crossOrigin !== null && clientData.crossOrigin) return { message: 'Invalid data' };
 
@@ -119,7 +121,7 @@ export async function registerPasskey(props: {
   const credentials = await getUserPasskeyCredentials(user.id);
   if (credentials.length >= 5) return { message: 'Too many credentials' };
 
-  const [, error] = safeTrySync(async () => await createPasskeyCredential(credential));
+  const [, error] = await safeTry(createPasskeyCredential(credential));
   if (error) {
     // PostgreSQL unique constraint violation error code is '23505'
     if (error instanceof Error && 'code' in error && error.code === '23505') return { message: 'Invalid data' };
