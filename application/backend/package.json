@@ -40,7 +40,7 @@
     "@acme/eslint-config": "workspace:*",
     "@acme/prettier-config": "workspace:*",
     "@acme/tsconfig": "workspace:*",
-    "@types/node": "^24.0.0",
+    "@types/node": "^24.0.1",
     "@types/nodemailer": "^6.4.17",
     "@types/pg": "^8.15.4",
     "@types/react": "catalog:react19",
