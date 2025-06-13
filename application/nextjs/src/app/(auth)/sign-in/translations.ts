@@ -1,3 +1,5 @@
+import type { Translations } from '@acme/i18n';
+
 export const translations = {
   'Authenticating...': { fr: 'Authentification...' },
   "Don't have an account?": { fr: "Vous n'avez pas de compte ?" },
@@ -17,4 +19,4 @@ export const translations = {
   'Sign up': { fr: "S'inscrire" },
   'Signing in...': { fr: 'Connexion...' },
   'Unexpected error': { fr: 'Erreur inattendue' },
-} satisfies Record<string, { fr: string }>;
+} satisfies Translations<string>;
