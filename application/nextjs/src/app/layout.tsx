@@ -5,6 +5,9 @@ import type { Viewport } from 'next';
 import { cn, ThemeProvider, Toaster } from '@acme/ui';
 
 import '~/app/globals.css';
+import { LanguageProvider } from '@acme/i18n/react';
+import { cookies, headers } from 'next/headers';
+import { getLanguageCode } from '@acme/i18n';
 
 export const viewport: Viewport = {
   themeColor: [
@@ -13,7 +16,8 @@ export const viewport: Viewport = {
   ],
 };
 
-export default function RootLayout(props: { children: React.ReactNode }) {
+export default async function RootLayout(props: { children: React.ReactNode }) {
+  const languageCode = getLanguageCode(await headers(), await cookies());
   return (
     <html lang="en" suppressHydrationWarning>
       <body
@@ -24,7 +28,7 @@ export default function RootLayout(props: { children: React.ReactNode }) {
         )}
       >
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-          {props.children}
+          <LanguageProvider code={languageCode}>{props.children}</LanguageProvider>
           <Toaster />
         </ThemeProvider>
       </body>
