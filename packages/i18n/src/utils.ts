@@ -1,7 +1,7 @@
 import type { LanguageCode, Translations } from './types';
 import { supportedLanguages } from './types';
 
-export function getLanguageCode(headers: Headers) {
+export function detectBrowserLanguageCode(headers: Headers) {
   const rawLanguages = headers.get('Accept-Language')?.split(',') ?? [];
   const languages = rawLanguages
     .map((language) => {
@@ -15,7 +15,6 @@ export function getLanguageCode(headers: Headers) {
     .sort((language1, language2) => language2.quality - language1.quality);
 
   const bestLanguage = languages.find((language) => supportedLanguages.includes(language.code as LanguageCode));
-
   return (bestLanguage?.code ?? 'en') as LanguageCode;
 }
 

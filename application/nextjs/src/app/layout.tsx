@@ -4,7 +4,7 @@ import type { Viewport } from 'next';
 
 import { cn, ThemeProvider, Toaster } from '@acme/ui';
 
-import { getLanguageCode } from '@acme/i18n';
+import { detectBrowserLanguageCode } from '@acme/i18n';
 import { LanguageProvider } from '@acme/i18n/react';
 import { headers } from 'next/headers';
 import '~/app/globals.css';
@@ -17,7 +17,7 @@ export const viewport: Viewport = {
 };
 
 export default async function RootLayout(props: { children: React.ReactNode }) {
-  const languageCode = getLanguageCode(await headers());
+  const languageCode = detectBrowserLanguageCode(await headers());
   return (
     <html lang="en" suppressHydrationWarning>
       <body
