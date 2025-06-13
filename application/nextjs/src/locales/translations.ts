@@ -9,6 +9,7 @@ export const translations = {
     fr: 'Échec de la connexion avec la clé de sécurité. Veuillez réessayer.',
   },
   'Forgot password?': { fr: 'Mot de passe oublié ?' },
+  Or: { fr: 'Ou' },
   Password: { fr: 'Mot de passe' },
   'Sign in': { fr: 'Se connecter' },
   'Sign in to your account': { fr: 'Se connecter à votre compte' },

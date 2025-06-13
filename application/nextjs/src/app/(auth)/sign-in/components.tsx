@@ -85,7 +85,7 @@ export function LoginForm() {
 
         <div className="flex items-center gap-2 text-xs uppercase text-muted-foreground">
           <div className="h-px flex-1 bg-border" />
-          <span>Or</span>
+          <span>{tr('Or')}</span>
           <div className="h-px flex-1 bg-border" />
         </div>
 
