@@ -151,6 +151,9 @@ importers:
       '@acme/backend':
         specifier: workspace:*
         version: link:../backend
+      '@acme/i18n':
+        specifier: workspace:*
+        version: link:../../packages/i18n
       '@acme/ui':
         specifier: workspace:*
         version: link:../../packages/ui

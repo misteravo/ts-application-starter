@@ -15,6 +15,7 @@
   },
   "dependencies": {
     "@acme/backend": "workspace:*",
+    "@acme/i18n": "workspace:*",
     "@acme/ui": "workspace:*",
     "@acme/utils": "workspace:*",
     "@oslojs/binary": "^1.0.0",
