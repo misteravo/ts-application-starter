@@ -1,27 +1,7 @@
 import type { LanguageCode, Translations } from './types';
 import { supportedLanguages } from './types';
 
-type CookiesManager = {
-  get: (name: string) => CookieValue | undefined;
-  set: (name: string, value: string, attributes: CookieAttributes) => void;
-  delete: (name: string) => void;
-};
-
-type CookieValue = {
-  value: string | null;
-};
-
-type CookieAttributes = {
-  secure?: boolean;
-  path?: string;
-  domain?: string;
-  sameSite?: 'lax' | 'strict' | 'none';
-  httpOnly?: boolean;
-  maxAge?: number;
-  expires?: Date;
-};
-
-export function getLanguageCode(headers: Headers, cookiesManager?: CookiesManager) {
+export function getLanguageCode(headers: Headers) {
   const rawLanguages = headers.get('Accept-Language')?.split(',') ?? [];
   const languages = rawLanguages
     .map((language) => {
@@ -34,11 +14,7 @@ export function getLanguageCode(headers: Headers, cookiesManager?: CookiesManage
     .filter((language) => language.code)
     .sort((language1, language2) => language2.quality - language1.quality);
 
-  const languageCode = cookiesManager?.get('language')?.value ?? undefined;
-
-  const bestLanguage = supportedLanguages.includes(languageCode ?? '')
-    ? { code: languageCode as LanguageCode }
-    : languages.find((language) => supportedLanguages.includes(language.code));
+  const bestLanguage = languages.find((language) => supportedLanguages.includes(language.code as LanguageCode));
 
   return (bestLanguage?.code ?? 'en') as LanguageCode;
 }
