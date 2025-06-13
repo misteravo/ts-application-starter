@@ -4,9 +4,13 @@ import { Link } from '~/components/link';
 import { redirect } from 'next/navigation';
 import { AuthTitle } from '~/components/auth-title';
 import { SignUpForm } from './components';
+import { getTranslate } from '~/lib/translate';
+import { translations } from './translations';
 
 export default async function Page() {
   if (!(await globalGETRateLimit())) return 'Too many requests';
+
+  const tr = await getTranslate(translations);
 
   const { session, user } = await getCurrentSession();
   if (session) {
@@ -19,16 +23,16 @@ export default async function Page() {
   return (
     <>
       <CardHeader>
-        <AuthTitle>Create an account</AuthTitle>
+        <AuthTitle>{tr('Create an account')}</AuthTitle>
       </CardHeader>
       <CardContent>
         <SignUpForm />
       </CardContent>
       <CardFooter className="flex flex-col gap-4">
         <div className="flex items-center gap-2">
-          <span className="text-sm text-muted-foreground">Already have an account?</span>
+          <span className="text-sm text-muted-foreground">{tr('Already have an account?')}</span>
           <Button variant="link" className="p-0" asChild>
-            <Link href="/sign-in">Sign in</Link>
+            <Link href="/sign-in">{tr('Sign in')}</Link>
           </Button>
         </div>
       </CardFooter>

@@ -15,6 +15,8 @@ import {
   Users,
   Lock,
 } from 'lucide-react';
+import { getTranslate } from '~/lib/translate';
+import { translations } from './translations';
 
 export default async function DashboardPage() {
   const { session, user } = await getCurrentSession();
@@ -22,6 +24,8 @@ export default async function DashboardPage() {
   if (user.registered2FA && !session.twoFactorVerified) {
     return redirect(get2FARedirect(user));
   }
+
+  const tr = await getTranslate(translations);
 
   // Get security info for dashboard
   const passkeyCredentials = await getUserPasskeyCredentials(user.id);
@@ -49,7 +53,11 @@ export default async function DashboardPage() {
 
   const currentTime = new Date();
   const greeting =
-    currentTime.getHours() < 12 ? 'Good morning' : currentTime.getHours() < 18 ? 'Good afternoon' : 'Good evening';
+    currentTime.getHours() < 12
+      ? tr('Good morning')
+      : currentTime.getHours() < 18
+        ? tr('Good afternoon')
+        : tr('Good evening');
 
   return (
     <div className="space-y-8">
@@ -60,7 +68,7 @@ export default async function DashboardPage() {
             {greeting}, {user.email.split('@')[0]}! 👋
           </h1>
           <p className="text-muted-foreground">
-            Welcome back to your dashboard. Here's what's happening with your account.
+            {tr('Welcome back to your dashboard.')} {tr("Here's what's happening with your account.")}
           </p>
         </div>
         <Avatar className="h-16 w-16">
@@ -74,17 +82,19 @@ export default async function DashboardPage() {
           <CardHeader className="pb-3">
             <div className="flex items-center space-x-2">
               <AlertTriangle className="h-5 w-5 text-orange-600" />
-              <CardTitle className="text-lg text-orange-800">Enhance Your Security</CardTitle>
+              <CardTitle className="text-lg text-orange-800">{tr('Enhance Your Security')}</CardTitle>
             </div>
           </CardHeader>
           <CardContent>
             <p className="mb-4 text-orange-700">
-              Your account security can be improved. Enable two-factor authentication to better protect your account.
+              {tr(
+                'Your account security can be improved. Enable two-factor authentication to better protect your account.',
+              )}
             </p>
             <Button asChild className="bg-orange-600 hover:bg-orange-700">
               <Link href="/2fa/totp/setup">
                 <Shield className="mr-2 h-4 w-4" />
-                Set up 2FA
+                {tr('Set up 2FA')}
               </Link>
             </Button>
           </CardContent>
@@ -95,13 +105,17 @@ export default async function DashboardPage() {
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Security Score</CardTitle>
+            <CardTitle className="text-sm font-medium">{tr('Security Score')}</CardTitle>
             <Shield className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{securityScore}%</div>
             <p className="text-xs text-muted-foreground">
-              {securityScore >= 80 ? 'Excellent security' : securityScore >= 60 ? 'Good security' : 'Needs improvement'}
+              {securityScore >= 80
+                ? tr('Excellent security')
+                : securityScore >= 60
+                  ? tr('Good security')
+                  : tr('Needs improvement')}
             </p>
             <div className="mt-2 h-2 overflow-hidden rounded-full bg-muted">
               <div
@@ -116,39 +130,41 @@ export default async function DashboardPage() {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Passkeys</CardTitle>
+            <CardTitle className="text-sm font-medium">{tr('Passkeys')}</CardTitle>
             <Key className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{passkeyCredentials.length}</div>
-            <p className="text-xs text-muted-foreground">Active passkey{passkeyCredentials.length !== 1 ? 's' : ''}</p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Security Keys</CardTitle>
-            <Lock className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{securityKeyCredentials.length}</div>
             <p className="text-xs text-muted-foreground">
-              Registered security key{securityKeyCredentials.length !== 1 ? 's' : ''}
+              {passkeyCredentials.length !== 1 ? tr('Active passkeys') : tr('Active passkey')}
             </p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Account Status</CardTitle>
+            <CardTitle className="text-sm font-medium">{tr('Security Keys')}</CardTitle>
+            <Lock className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{securityKeyCredentials.length}</div>
+            <p className="text-xs text-muted-foreground">
+              {securityKeyCredentials.length !== 1 ? tr('Registered security keys') : tr('Registered security key')}
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">{tr('Account Status')}</CardTitle>
             <Activity className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="flex items-center space-x-2">
               <div className="h-2 w-2 rounded-full bg-green-500" />
-              <span className="text-sm font-medium">Active</span>
+              <span className="text-sm font-medium">{tr('Active')}</span>
             </div>
-            <p className="mt-1 text-xs text-muted-foreground">All systems operational</p>
+            <p className="mt-1 text-xs text-muted-foreground">{tr('All systems operational')}</p>
           </CardContent>
         </Card>
       </div>
@@ -159,14 +175,14 @@ export default async function DashboardPage() {
           <CardHeader>
             <CardTitle className="flex items-center">
               <Settings className="mr-2 h-5 w-5" />
-              Quick Actions
+              {tr('Quick Actions')}
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <Button asChild variant="outline" className="w-full justify-start">
               <Link href="/settings">
                 <Settings className="mr-2 h-4 w-4" />
-                Manage Account Settings
+                {tr('Manage Account Settings')}
                 <ArrowRight className="ml-auto h-4 w-4" />
               </Link>
             </Button>
@@ -175,7 +191,7 @@ export default async function DashboardPage() {
               <Button asChild variant="outline" className="w-full justify-start">
                 <Link href="/2fa/totp/setup">
                   <Shield className="mr-2 h-4 w-4" />
-                  Set up Authenticator App
+                  {tr('Set up Authenticator App')}
                   <ArrowRight className="ml-auto h-4 w-4" />
                 </Link>
               </Button>
@@ -184,7 +200,7 @@ export default async function DashboardPage() {
             <Button asChild variant="outline" className="w-full justify-start">
               <Link href="/2fa/passkey/register">
                 <Key className="mr-2 h-4 w-4" />
-                Add New Passkey
+                {tr('Add New Passkey')}
                 <ArrowRight className="ml-auto h-4 w-4" />
               </Link>
             </Button>
@@ -192,7 +208,7 @@ export default async function DashboardPage() {
             <Button asChild variant="outline" className="w-full justify-start">
               <Link href="/2fa/security-key/register">
                 <Lock className="mr-2 h-4 w-4" />
-                Register Security Key
+                {tr('Register Security Key')}
                 <ArrowRight className="ml-auto h-4 w-4" />
               </Link>
             </Button>
@@ -204,14 +220,14 @@ export default async function DashboardPage() {
           <CardHeader>
             <CardTitle className="flex items-center">
               <Users className="mr-2 h-5 w-5" />
-              Account Overview
+              {tr('Account Overview')}
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-2">
                 <Mail className="h-4 w-4 text-muted-foreground" />
-                <span className="text-sm">Email</span>
+                <span className="text-sm">{tr('Email')}</span>
               </div>
               <div className="flex items-center space-x-2">
                 <span className="text-sm font-medium">{user.email}</span>
@@ -226,10 +242,10 @@ export default async function DashboardPage() {
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-2">
                 <Shield className="h-4 w-4 text-muted-foreground" />
-                <span className="text-sm">Two-Factor Auth</span>
+                <span className="text-sm">{tr('Two-Factor Auth')}</span>
               </div>
               <div className="flex items-center space-x-2">
-                <span className="text-sm font-medium">{user.registered2FA ? 'Enabled' : 'Disabled'}</span>
+                <span className="text-sm font-medium">{user.registered2FA ? tr('Enabled') : tr('Disabled')}</span>
                 {user.registered2FA ? (
                   <CheckCircle className="h-4 w-4 text-green-500" />
                 ) : (
@@ -241,17 +257,17 @@ export default async function DashboardPage() {
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-2">
                 <Key className="h-4 w-4 text-muted-foreground" />
-                <span className="text-sm">WebAuthn Credentials</span>
+                <span className="text-sm">{tr('WebAuthn Credentials')}</span>
               </div>
               <span className="text-sm font-medium">
-                {passkeyCredentials.length + securityKeyCredentials.length} total
+                {passkeyCredentials.length + securityKeyCredentials.length} {tr('total')}
               </span>
             </div>
 
             <div className="border-t pt-4">
               <Button asChild variant="link" className="w-full p-0">
                 <Link href="/settings">
-                  View All Settings
+                  {tr('View All Settings')}
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Link>
               </Button>

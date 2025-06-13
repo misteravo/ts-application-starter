@@ -1,0 +1,47 @@
+import type { Translations } from '@acme/i18n';
+
+export const translations = {
+  '2FA Disabled': { fr: 'Authentification à deux facteurs désactivée' },
+  '2FA Enabled': { fr: 'Authentification à deux facteurs activée' },
+  'Account Security': { fr: 'Sécurité du compte' },
+  Active: { fr: 'Actif' },
+  'Authenticator App': { fr: "Application d'authentification" },
+  'Change Password': { fr: 'Changer le mot de passe' },
+  'Confirm new password': { fr: 'Confirmer le nouveau mot de passe' },
+  'Current password': { fr: 'Mot de passe actuel' },
+  Delete: { fr: 'Supprimer' },
+  Disconnect: { fr: 'Déconnecter' },
+  'Disconnecting...': { fr: 'Déconnexion...' },
+  'Email Address': { fr: 'Adresse email' },
+  'Enter current password': { fr: 'Entrez le mot de passe actuel' },
+  'Enter new email': { fr: 'Entrez le nouvel email' },
+  'Enter new password': { fr: 'Entrez le nouveau mot de passe' },
+  'Manage your account settings and security preferences.': {
+    fr: 'Gérez les paramètres de votre compte et vos préférences de sécurité.',
+  },
+  'New email': { fr: 'Nouvel email' },
+  'New password': { fr: 'Nouveau mot de passe' },
+  Passkeys: { fr: 'Clés de sécurité' },
+  'Passkeys are WebAuthn credentials that validate your identity using your device.': {
+    fr: 'Les clés de sécurité sont des identifiants WebAuthn qui valident votre identité en utilisant votre appareil.',
+  },
+  Password: { fr: 'Mot de passe' },
+  'Recovery Codes': { fr: 'Codes de récupération' },
+  'Register new passkey': { fr: 'Enregistrer une nouvelle clé de sécurité' },
+  'Register new security key': { fr: 'Enregistrer une nouvelle clé de sécurité' },
+  'Security Keys': { fr: 'Clés de sécurité' },
+  'Security keys are physical devices that provide an extra layer of security.': {
+    fr: 'Les clés de sécurité sont des appareils physiques qui fournissent une couche de sécurité supplémentaire.',
+  },
+  'Set up TOTP': { fr: 'Configurer TOTP' },
+  Settings: { fr: 'Paramètres' },
+  'Too many requests': { fr: 'Trop de requêtes' },
+  'Two-Factor Authentication': { fr: 'Authentification à deux facteurs' },
+  'Update Email': { fr: "Mettre à jour l'email" },
+  'Update TOTP': { fr: 'Mettre à jour TOTP' },
+  'Updating...': { fr: 'Mise à jour...' },
+  'Use an authenticator app to generate secure verification codes.': {
+    fr: "Utilisez une application d'authentification pour générer des codes de vérification sécurisés.",
+  },
+  Verified: { fr: 'Vérifié' },
+} satisfies Translations<string>;

@@ -20,9 +20,13 @@ import { Avatar, AvatarFallback, Card, CardContent, CardHeader, CardTitle, Separ
 import { encodeBase64 } from '@oslojs/encoding';
 import { redirect } from 'next/navigation';
 import { Mail, Lock, Shield, Key, Smartphone, Plus, CheckCircle, XCircle, AlertTriangle } from 'lucide-react';
+import { getTranslate } from '~/lib/translate';
+import { translations } from './translations';
 
 export default async function Page() {
   if (!(await globalGETRateLimit())) return 'Too many requests';
+
+  const tr = await getTranslate(translations);
 
   const { session, user } = await getCurrentSession();
   if (!session) return redirect('/sign-in');
@@ -48,8 +52,8 @@ export default async function Page() {
     <div className="mx-auto w-full max-w-4xl space-y-8">
       {/* Header Section */}
       <div className="space-y-2">
-        <h1 className="text-3xl font-bold tracking-tight">Settings</h1>
-        <p className="text-muted-foreground">Manage your account settings and security preferences.</p>
+        <h1 className="text-3xl font-bold tracking-tight">{tr('Settings')}</h1>
+        <p className="text-muted-foreground">{tr('Manage your account settings and security preferences.')}</p>
       </div>
 
       {/* Profile Overview Card */}
@@ -69,13 +73,13 @@ export default async function Page() {
                     <XCircle className="h-4 w-4 text-orange-500" />
                   )}
                   <span className="text-sm text-muted-foreground">
-                    {user.registered2FA ? '2FA Enabled' : '2FA Disabled'}
+                    {user.registered2FA ? tr('2FA Enabled') : tr('2FA Disabled')}
                   </span>
                 </div>
                 <Separator orientation="vertical" className="h-4" />
                 <div className="flex items-center space-x-1">
                   <div className="h-2 w-2 rounded-full bg-green-500" />
-                  <span className="text-sm text-muted-foreground">Active</span>
+                  <span className="text-sm text-muted-foreground">{tr('Active')}</span>
                 </div>
               </div>
             </div>
@@ -89,7 +93,7 @@ export default async function Page() {
           <div>
             <h2 className="mb-4 flex items-center text-xl font-semibold">
               <Lock className="mr-2 h-5 w-5" />
-              Account Security
+              {tr('Account Security')}
             </h2>
 
             {/* Update Email */}
@@ -97,13 +101,13 @@ export default async function Page() {
               <CardHeader className="pb-3">
                 <CardTitle className="flex items-center text-base">
                   <Mail className="mr-2 h-4 w-4" />
-                  Email Address
+                  {tr('Email Address')}
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="bg-muted/50 flex items-center justify-between rounded-lg p-3">
                   <span className="text-sm font-medium">{user.email}</span>
-                  <span className="rounded-full bg-green-100 px-2 py-1 text-xs text-green-700">Verified</span>
+                  <span className="rounded-full bg-green-100 px-2 py-1 text-xs text-green-700">{tr('Verified')}</span>
                 </div>
                 <UpdateEmailForm />
               </CardContent>
@@ -114,7 +118,7 @@ export default async function Page() {
               <CardHeader className="pb-3">
                 <CardTitle className="flex items-center text-base">
                   <Key className="mr-2 h-4 w-4" />
-                  Password
+                  {tr('Password')}
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -129,7 +133,7 @@ export default async function Page() {
           <div>
             <h2 className="mb-4 flex items-center text-xl font-semibold">
               <Shield className="mr-2 h-5 w-5" />
-              Two-Factor Authentication
+              {tr('Two-Factor Authentication')}
             </h2>
 
             {/* Authenticator App */}
@@ -138,16 +142,16 @@ export default async function Page() {
                 <CardTitle className="flex items-center justify-between text-base">
                   <div className="flex items-center">
                     <Smartphone className="mr-2 h-4 w-4" />
-                    Authenticator App
+                    {tr('Authenticator App')}
                   </div>
                   {user.registeredTOTP && (
-                    <span className="rounded-full bg-green-100 px-2 py-1 text-xs text-green-700">Active</span>
+                    <span className="rounded-full bg-green-100 px-2 py-1 text-xs text-green-700">{tr('Active')}</span>
                   )}
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
                 <p className="text-sm text-muted-foreground">
-                  Use an authenticator app to generate secure verification codes.
+                  {tr('Use an authenticator app to generate secure verification codes.')}
                 </p>
                 <div className="flex flex-wrap gap-2">
                   {user.registeredTOTP ? (
@@ -157,7 +161,7 @@ export default async function Page() {
                         className="inline-flex items-center gap-1 text-sm text-primary hover:underline"
                       >
                         <Key className="h-3 w-3" />
-                        Update TOTP
+                        {tr('Update TOTP')}
                       </Link>
                       <DisconnectTOTPButton />
                     </>
@@ -167,7 +171,7 @@ export default async function Page() {
                       className="inline-flex items-center gap-1 text-sm text-primary hover:underline"
                     >
                       <Plus className="h-3 w-3" />
-                      Set up TOTP
+                      {tr('Set up TOTP')}
                     </Link>
                   )}
                 </div>
@@ -180,18 +184,18 @@ export default async function Page() {
                 <CardTitle className="flex items-center justify-between text-base">
                   <div className="flex items-center">
                     <Key className="mr-2 h-4 w-4" />
-                    Passkeys
+                    {tr('Passkeys')}
                   </div>
                   {passkeyCredentials.length > 0 && (
                     <span className="rounded-full bg-blue-100 px-2 py-1 text-xs text-blue-700">
-                      {passkeyCredentials.length} Active
+                      {passkeyCredentials.length} {tr('Active')}
                     </span>
                   )}
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <p className="text-sm text-muted-foreground">
-                  Passkeys are WebAuthn credentials that validate your identity using your device.
+                  {tr('Passkeys are WebAuthn credentials that validate your identity using your device.')}
                 </p>
                 {passkeyCredentials.length > 0 ? (
                   <div className="space-y-2">
@@ -214,7 +218,7 @@ export default async function Page() {
                   className="inline-flex items-center gap-1 text-sm text-primary hover:underline"
                 >
                   <Plus className="h-3 w-3" />
-                  Add Passkey
+                  {tr('Register new passkey')}
                 </Link>
               </CardContent>
             </Card>
@@ -225,18 +229,18 @@ export default async function Page() {
                 <CardTitle className="flex items-center justify-between text-base">
                   <div className="flex items-center">
                     <Shield className="mr-2 h-4 w-4" />
-                    Security Keys
+                    {tr('Security Keys')}
                   </div>
                   {securityKeyCredentials.length > 0 && (
                     <span className="rounded-full bg-purple-100 px-2 py-1 text-xs text-purple-700">
-                      {securityKeyCredentials.length} Active
+                      {securityKeyCredentials.length} {tr('Active')}
                     </span>
                   )}
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <p className="text-sm text-muted-foreground">
-                  Security keys are WebAuthn credentials that can only be used for two-factor authentication.
+                  {tr('Security keys are physical devices that provide an extra layer of security.')}
                 </p>
                 {securityKeyCredentials.length > 0 ? (
                   <div className="space-y-2">
@@ -259,7 +263,7 @@ export default async function Page() {
                   className="inline-flex items-center gap-1 text-sm text-primary hover:underline"
                 >
                   <Plus className="h-3 w-3" />
-                  Add Security Key
+                  {tr('Register new security key')}
                 </Link>
               </CardContent>
             </Card>

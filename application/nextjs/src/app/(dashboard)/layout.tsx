@@ -14,8 +14,12 @@ import {
 } from '@acme/ui';
 import * as React from 'react';
 import { AppSidebar } from './_components/app-sidebar';
+import { useTranslate } from '@acme/i18n/react';
+import { translations } from './translations';
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+  const tr = useTranslate(translations);
+
   return (
     <SidebarProvider>
       <AppSidebar />
@@ -27,11 +31,11 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             <Breadcrumb>
               <BreadcrumbList>
                 <BreadcrumbItem>
-                  <BreadcrumbLink href="/">Dashboard</BreadcrumbLink>
+                  <BreadcrumbLink href="/">{tr('Dashboard')}</BreadcrumbLink>
                 </BreadcrumbItem>
                 <BreadcrumbSeparator />
                 <BreadcrumbItem>
-                  <BreadcrumbLink href="/settings">Settings</BreadcrumbLink>
+                  <BreadcrumbLink href="/settings">{tr('Settings')}</BreadcrumbLink>
                 </BreadcrumbItem>
               </BreadcrumbList>
             </Breadcrumb>

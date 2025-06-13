@@ -11,6 +11,8 @@ import {
   updateEmailAction,
   updatePasswordAction,
 } from './actions';
+import { useTranslate } from '@acme/i18n/react';
+import { translations } from './translations';
 
 const initialUpdatePasswordState = {
   message: '',
@@ -20,12 +22,13 @@ export function UpdatePasswordForm() {
   const [state, action, pending] = useActionState(updatePasswordAction, initialUpdatePasswordState);
   const [showPassword, setShowPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
+  const tr = useTranslate(translations);
 
   return (
     <form action={action} className="space-y-4">
       <div className="space-y-2">
         <Label htmlFor="form-password.password" className="text-sm font-medium">
-          Current password
+          {tr('Current password')}
         </Label>
         <div className="relative">
           <Input
@@ -34,6 +37,7 @@ export function UpdatePasswordForm() {
             name="password"
             autoComplete="current-password"
             className="pr-10"
+            placeholder={tr('Enter current password')}
             required
           />
           <button
@@ -51,7 +55,7 @@ export function UpdatePasswordForm() {
       </div>
       <div className="space-y-2">
         <Label htmlFor="form-password.new-password" className="text-sm font-medium">
-          New password
+          {tr('New password')}
         </Label>
         <div className="relative">
           <Input
@@ -60,6 +64,7 @@ export function UpdatePasswordForm() {
             name="newPassword"
             autoComplete="new-password"
             className="pr-10"
+            placeholder={tr('Enter new password')}
             required
           />
           <button
@@ -79,10 +84,10 @@ export function UpdatePasswordForm() {
         {pending ? (
           <>
             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            Updating...
+            {tr('Updating...')}
           </>
         ) : (
-          'Update Password'
+          tr('Change Password')
         )}
       </Button>
       {state.message && (
@@ -100,23 +105,24 @@ const initialUpdateFormState = {
 
 export function UpdateEmailForm() {
   const [state, action, pending] = useActionState(updateEmailAction, initialUpdateFormState);
+  const tr = useTranslate(translations);
 
   return (
     <form action={action} className="space-y-4">
       <div className="space-y-2">
         <Label htmlFor="form-email.email" className="text-sm font-medium">
-          New email address
+          {tr('New email')}
         </Label>
-        <Input type="email" id="form-email.email" name="email" placeholder="Enter new email address" required />
+        <Input type="email" id="form-email.email" name="email" placeholder={tr('Enter new email')} required />
       </div>
       <Button type="submit" disabled={pending} className="w-full">
         {pending ? (
           <>
             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            Updating...
+            {tr('Updating...')}
           </>
         ) : (
-          'Update Email'
+          tr('Update Email')
         )}
       </Button>
       {state.message && (
@@ -134,6 +140,7 @@ const initialDisconnectTOTPState = {
 
 export function DisconnectTOTPButton() {
   const [state, formAction, pending] = useActionState(disconnectTOTPAction, initialDisconnectTOTPState);
+  const tr = useTranslate(translations);
 
   return (
     <form action={formAction}>
@@ -141,12 +148,12 @@ export function DisconnectTOTPButton() {
         {pending ? (
           <>
             <Loader2 className="mr-1 h-3 w-3 animate-spin" />
-            Disconnecting...
+            {tr('Disconnecting...')}
           </>
         ) : (
           <>
             <Trash2 className="mr-1 h-3 w-3" />
-            Disconnect
+            {tr('Disconnect')}
           </>
         )}
       </Button>
@@ -165,6 +172,7 @@ const initialPasskeyState = {
 
 export function PasskeyCredentialListItem(props: { encodedId: string; name: string }) {
   const [state, formAction, pending] = useActionState(deletePasskeyAction, initialPasskeyState);
+  const tr = useTranslate(translations);
 
   return (
     <div className="bg-muted/30 flex items-center justify-between rounded-lg border p-3">
@@ -174,7 +182,7 @@ export function PasskeyCredentialListItem(props: { encodedId: string; name: stri
         </div>
         <div>
           <p className="text-sm font-medium">{props.name}</p>
-          <p className="text-xs text-muted-foreground">Passkey credential</p>
+          <p className="text-xs text-muted-foreground">{tr('Passkeys')}</p>
         </div>
       </div>
       <form action={formAction}>
@@ -204,6 +212,7 @@ const initialSecurityKeyState = {
 
 export function SecurityKeyCredentialListItem(props: { encodedId: string; name: string }) {
   const [state, formAction, pending] = useActionState(deleteSecurityKeyAction, initialSecurityKeyState);
+  const tr = useTranslate(translations);
 
   return (
     <div className="bg-muted/30 flex items-center justify-between rounded-lg border p-3">
@@ -213,7 +222,7 @@ export function SecurityKeyCredentialListItem(props: { encodedId: string; name: 
         </div>
         <div>
           <p className="text-sm font-medium">{props.name}</p>
-          <p className="text-xs text-muted-foreground">Security key credential</p>
+          <p className="text-xs text-muted-foreground">{tr('Security Keys')}</p>
         </div>
       </div>
       <form action={formAction}>
@@ -241,6 +250,7 @@ export function RecoveryCodeSection(props: { recoveryCode: string }) {
   const [recoveryCode, setRecoveryCode] = useState(props.recoveryCode);
   const [copied, setCopied] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
+  const tr = useTranslate(translations);
 
   async function handleGenerateNewCode() {
     setIsGenerating(true);
@@ -268,7 +278,7 @@ export function RecoveryCodeSection(props: { recoveryCode: string }) {
     <div className="space-y-4 p-6">
       <div className="flex items-center space-x-2">
         <Shield className="h-5 w-5 text-orange-600" />
-        <h3 className="text-lg font-semibold">Recovery Code</h3>
+        <h3 className="text-lg font-semibold">{tr('Recovery Codes')}</h3>
       </div>
 
       <Alert className="border-orange-200 bg-orange-50 text-orange-800">
