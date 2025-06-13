@@ -7,6 +7,7 @@ import { Link } from '~/components/link';
 import { useActionState, useState } from 'react';
 import { createChallenge } from '~/lib/webauthn';
 import { signInAction, signInWithPasskeyAction } from './actions';
+import { useTranslate } from '~/lib/translate/client';
 
 const initialState = {
   message: '',
@@ -15,6 +16,7 @@ const initialState = {
 export function LoginForm() {
   const [state, action, pending] = useActionState(signInAction, initialState);
   const [showPassword, setShowPassword] = useState(false);
+  const tr = useTranslate();
 
   return (
     <form action={action} className="space-y-6">
@@ -22,14 +24,14 @@ export function LoginForm() {
         <div className="space-y-2">
           <Label htmlFor="email" className="flex items-center text-sm font-medium">
             <Mail className="mr-2 h-4 w-4" />
-            Email
+            {tr('Email')}
           </Label>
           <Input
             id="form-login.email"
             name="email"
             type="email"
             autoComplete="username"
-            placeholder="Enter your email address"
+            placeholder={tr('Enter your email address')}
             className="h-11"
             required
           />
@@ -39,13 +41,13 @@ export function LoginForm() {
           <div className="flex items-center justify-between">
             <Label htmlFor="password" className="flex items-center text-sm font-medium">
               <Lock className="mr-2 h-4 w-4" />
-              Password
+              {tr('Password')}
             </Label>
             <Link
               href="forgot-password"
               className="hover:text-primary/80 text-sm text-primary underline-offset-4 hover:underline"
             >
-              Forgot password?
+              {tr('Forgot password?')}
             </Link>
           </div>
           <div className="relative">
@@ -54,7 +56,7 @@ export function LoginForm() {
               name="password"
               type={showPassword ? 'text' : 'password'}
               autoComplete="current-password"
-              placeholder="Enter your password"
+              placeholder={tr('Enter your password')}
               className="h-11 pr-10"
               required
             />
@@ -74,10 +76,10 @@ export function LoginForm() {
           {pending ? (
             <>
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              Signing in...
+              {tr('Signing in...')}
             </>
           ) : (
-            'Sign in'
+            tr('Sign in')
           )}
         </Button>
 
@@ -102,6 +104,7 @@ export function LoginForm() {
 export function PasskeyLoginButton() {
   const [message, setMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const tr = useTranslate();
 
   async function handleLogin() {
     setIsLoading(true);
@@ -118,10 +121,10 @@ export function PasskeyLoginButton() {
       });
 
       if (!(credential instanceof PublicKeyCredential)) {
-        throw new Error('Failed to create public key');
+        throw new Error(tr('Failed to create public key'));
       }
       if (!(credential.response instanceof AuthenticatorAssertionResponse)) {
-        throw new Error('Unexpected error');
+        throw new Error(tr('Unexpected error'));
       }
 
       const result = await signInWithPasskeyAction({
@@ -132,7 +135,7 @@ export function PasskeyLoginButton() {
       });
       setMessage(result.message);
     } catch {
-      setMessage('Failed to sign in with passkey. Please try again.');
+      setMessage(tr('Failed to sign in with passkey. Please try again.'));
     } finally {
       setIsLoading(false);
     }
@@ -149,12 +152,12 @@ export function PasskeyLoginButton() {
         {isLoading ? (
           <>
             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            Authenticating...
+            {tr('Authenticating...')}
           </>
         ) : (
           <>
             <Fingerprint className="mr-2 h-4 w-4" />
-            Sign in with passkey
+            {tr('Sign in with passkey')}
           </>
         )}
       </Button>
