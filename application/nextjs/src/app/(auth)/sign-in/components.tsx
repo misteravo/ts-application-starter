@@ -7,7 +7,8 @@ import { Link } from '~/components/link';
 import { useActionState, useState } from 'react';
 import { createChallenge } from '~/lib/webauthn';
 import { signInAction, signInWithPasskeyAction } from './actions';
-import { useTranslate } from '~/lib/translate/client';
+import { translations } from './translations';
+import { useTranslate } from '@acme/i18n/react';
 
 const initialState = {
   message: '',
@@ -16,7 +17,7 @@ const initialState = {
 export function LoginForm() {
   const [state, action, pending] = useActionState(signInAction, initialState);
   const [showPassword, setShowPassword] = useState(false);
-  const tr = useTranslate();
+  const tr = useTranslate(translations);
 
   return (
     <form action={action} className="space-y-6">
@@ -104,7 +105,7 @@ export function LoginForm() {
 export function PasskeyLoginButton() {
   const [message, setMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const tr = useTranslate();
+  const tr = useTranslate(translations);
 
   async function handleLogin() {
     setIsLoading(true);

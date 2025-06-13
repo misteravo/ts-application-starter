@@ -4,12 +4,13 @@ import { Link } from '~/components/link';
 import { redirect } from 'next/navigation';
 import { AuthTitle } from '~/components/auth-title';
 import { LoginForm } from './components';
-import { getTranslate } from '~/lib/translate/server';
+import { getTranslate } from '~/lib/translate';
+import { translations } from './translations';
 
 export default async function Page() {
   if (!(await globalGETRateLimit())) return 'Too many requests';
 
-  const tr = await getTranslate();
+  const tr = await getTranslate(translations);
 
   const { session, user } = await getCurrentSession();
   if (session) {

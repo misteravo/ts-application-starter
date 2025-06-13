@@ -1,4 +1,4 @@
-import type { LanguageCode } from './types';
+import type { LanguageCode, Translations } from './types';
 import { supportedLanguages } from './types';
 
 type CookiesManager = {
@@ -46,4 +46,9 @@ export function getLanguageCode(headers: Headers, cookiesManager?: CookiesManage
 export function toTr(text: string) {
   console.warn('Missing translation:', text);
   return text;
+}
+
+export function translate<K extends string>(code: LanguageCode, text: K, translations: Translations<K>) {
+  if (code === 'en') return text;
+  return translations[text][code];
 }
