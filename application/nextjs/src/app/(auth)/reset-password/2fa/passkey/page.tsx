@@ -10,9 +10,13 @@ import { redirect } from 'next/navigation';
 import { Link } from '~/components/link';
 import { AuthTitle } from '~/components/auth-title';
 import { VerifyPasskeyButton } from './components';
+import { getTranslate } from '~/lib/translate';
+import { translations } from './translations';
 
 export default async function Page() {
   if (!(await globalGETRateLimit())) return 'Too many requests';
+
+  const tr = await getTranslate(translations);
 
   const { session, user } = await getCurrentPasswordResetSession();
 
@@ -27,23 +31,23 @@ export default async function Page() {
   return (
     <>
       <CardHeader>
-        <AuthTitle>Authenticate with passkeys</AuthTitle>
+        <AuthTitle>{tr('Authenticate with passkeys')}</AuthTitle>
       </CardHeader>
       <CardContent>
         <VerifyPasskeyButton encodedCredentialIds={credentials.map((credential) => encodeBase64(credential.id))} />
       </CardContent>
       <CardFooter className="flex flex-col gap-2">
         <Link href="/reset-password/2fa/recovery-code" className="text-blue-500">
-          Use recovery code
+          {tr('Use recovery code')}
         </Link>
         {user.registeredTOTP && (
           <Link href="/reset-password/2fa/totp" className="text-blue-500">
-            Use authenticator apps
+            {tr('Use authenticator apps')}
           </Link>
         )}
         {user.registeredSecurityKey && (
           <Link href="/reset-password/2fa/security-key" className="text-blue-500">
-            Use security keys
+            {tr('Use security keys')}
           </Link>
         )}
       </CardFooter>

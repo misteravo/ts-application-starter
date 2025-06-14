@@ -3,9 +3,13 @@ import { CardContent, CardHeader } from '@acme/ui';
 import { redirect } from 'next/navigation';
 import { AuthTitle } from '~/components/auth-title';
 import { PasswordResetEmailVerificationForm } from './components';
+import { getTranslate } from '~/lib/translate';
+import { translations } from './translations';
 
 export default async function Page() {
   if (!(await globalGETRateLimit())) return 'Too many requests';
+
+  const tr = await getTranslate(translations);
 
   const { session } = await getCurrentPasswordResetSession();
   if (!session) return redirect('/forgot-password');
@@ -17,10 +21,12 @@ export default async function Page() {
   return (
     <>
       <CardHeader>
-        <AuthTitle>Verify your email address</AuthTitle>
+        <AuthTitle>{tr('Verify your email address')}</AuthTitle>
       </CardHeader>
       <CardContent>
-        <p>We sent an 8-digit code to {session.email}.</p>
+        <p>
+          {tr('We sent an 8-digit code to')} {session.email}.
+        </p>
         <PasswordResetEmailVerificationForm />
       </CardContent>
     </>
