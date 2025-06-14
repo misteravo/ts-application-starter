@@ -1,8 +1,12 @@
 import { Card, ThemeToggle } from '@acme/ui';
 import { Lock, Shield } from 'lucide-react';
 import type { ReactNode } from 'react';
+import { getTranslate } from '~/lib/translate';
+import { translations } from './translations';
 
-export default function AuthLayout(props: { children: ReactNode }) {
+export default async function AuthLayout(props: { children: ReactNode }) {
+  const tr = await getTranslate(translations);
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-950 dark:to-slate-900">
       {/* Background Pattern */}
@@ -25,8 +29,8 @@ export default function AuthLayout(props: { children: ReactNode }) {
                 </div>
               </div>
             </div>
-            <h1 className="mt-4 text-2xl font-bold tracking-tight">SecureAuth</h1>
-            <p className="mt-2 text-sm text-muted-foreground">Secure authentication platform</p>
+            <h1 className="mt-4 text-2xl font-bold tracking-tight">{tr('SecureAuth')}</h1>
+            <p className="mt-2 text-sm text-muted-foreground">{tr('Secure authentication platform')}</p>
           </div>
 
           {/* Main Card */}
@@ -34,10 +38,10 @@ export default function AuthLayout(props: { children: ReactNode }) {
 
           {/* Footer */}
           <div className="text-center text-xs text-muted-foreground">
-            <p>Protected by enterprise-grade security</p>
+            <p>{tr('Protected by enterprise-grade security')}</p>
             <div className="mt-2 flex items-center justify-center space-x-1">
               <Lock className="h-3 w-3" />
-              <span>End-to-end encrypted</span>
+              <span>{tr('End-to-end encrypted')}</span>
             </div>
           </div>
         </div>
