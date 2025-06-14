@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslate } from '@acme/i18n/react';
 import {
   Avatar,
   AvatarFallback,
@@ -19,6 +20,7 @@ import {
 import { BadgeCheck, ChevronsUpDown, CreditCard, LogOut, Settings, Sparkles } from 'lucide-react';
 import type { ReactNode } from 'react';
 import { Link } from '~/components/link';
+import { translations } from './translations';
 
 export function NavUser({
   user,
@@ -30,6 +32,7 @@ export function NavUser({
   };
 }) {
   const { isMobile } = useSidebar();
+  const tr = useTranslate(translations);
 
   return (
     <SidebarMenu>
@@ -72,24 +75,24 @@ export function NavUser({
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
               <DropdownMenuItem>
-                <Sparkles className="mr-2" /> Upgrade to Pro
+                <Sparkles className="mr-2" /> {tr('Upgrade to Pro')}
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
               <DropdownMenuItem>
-                <BadgeCheck className="mr-2" /> Account
+                <BadgeCheck className="mr-2" /> {tr('Account')}
               </DropdownMenuItem>
               <DropdownMenuItem>
-                <CreditCard className="mr-2" /> Billing
+                <CreditCard className="mr-2" /> {tr('Billing')}
               </DropdownMenuItem>
               <DropdownMenuLink href="/settings">
-                <Settings className="mr-2" /> Settings
+                <Settings className="mr-2" /> {tr('Settings')}
               </DropdownMenuLink>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuLink href="/sign-out">
-              <LogOut className="mr-2" /> Sign out
+              <LogOut className="mr-2" /> {tr('Sign out')}
             </DropdownMenuLink>
           </DropdownMenuContent>
         </DropdownMenu>
