@@ -299,13 +299,11 @@ export function RecoveryCodeSection(props: { recoveryCode: string }) {
           <Button type="button" variant="outline" size="sm" onClick={() => void copyToClipboard()} disabled={copied}>
             {copied ? (
               <>
-                <Check className="mr-1 h-3 w-3" />
-                Copied
+                <Check className="mr-1 h-3 w-3" /> {tr('Copied')}
               </>
             ) : (
               <>
-                <Copy className="mr-1 h-3 w-3" />
-                Copy
+                <Copy className="mr-1 h-3 w-3" /> {tr('Copy')}
               </>
             )}
           </Button>
@@ -319,13 +317,11 @@ export function RecoveryCodeSection(props: { recoveryCode: string }) {
         >
           {isGenerating ? (
             <>
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              {tr('Generating...')}
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" /> {tr('Generating...')}
             </>
           ) : (
             <>
-              <RefreshCw className="mr-2 h-4 w-4" />
-              {tr('Generate New Recovery Code')}
+              <RefreshCw className="mr-2 h-4 w-4" /> {tr('Generate New Recovery Code')}
             </>
           )}
         </Button>

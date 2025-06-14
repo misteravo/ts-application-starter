@@ -7,6 +7,8 @@ export const translations = {
   Active: { fr: 'Actif' },
   'Authenticator App': { fr: "Application d'authentification" },
   'Change Password': { fr: 'Changer le mot de passe' },
+  Copied: { fr: 'Copié' },
+  Copy: { fr: 'Copier' },
   'Confirm new password': { fr: 'Confirmer le nouveau mot de passe' },
   'Current password': { fr: 'Mot de passe actuel' },
   Delete: { fr: 'Supprimer' },
