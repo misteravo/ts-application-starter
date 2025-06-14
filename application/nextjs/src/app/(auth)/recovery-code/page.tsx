@@ -3,9 +3,13 @@ import { Link } from '~/components/link';
 import { get2FARedirect, getCurrentSession, getUserRecoverCode, globalGETRateLimit } from '@acme/backend';
 import { redirect } from 'next/navigation';
 import { AuthTitle } from '~/components/auth-title';
+import { getTranslate } from '~/lib/translate';
+import { translations } from './translations';
 
 export default async function Page() {
   if (!(await globalGETRateLimit())) return 'Too many requests';
+
+  const tr = await getTranslate(translations);
 
   const { session, user } = await getCurrentSession();
   if (!session) return redirect('/sign-in');
@@ -18,16 +22,16 @@ export default async function Page() {
   return (
     <>
       <CardHeader>
-        <AuthTitle>Recovery Code</AuthTitle>
+        <AuthTitle>{tr('Recovery Code')}</AuthTitle>
       </CardHeader>
       <CardContent className="space-y-4">
         <p>
-          Your recovery code is: <strong>{recoveryCode}</strong>
+          {tr('Your recovery code is:')} <strong>{recoveryCode}</strong>
         </p>
-        <p>You can use this recovery code if you lose access to your second factors.</p>
+        <p>{tr('You can use this recovery code if you lose access to your second factors.')}</p>
         <div className="flex justify-end">
           <Link href="/" className="text-blue-500 hover:underline">
-            Next
+            {tr('Next')}
           </Link>
         </div>
       </CardContent>

@@ -5,9 +5,13 @@ import { encodeBase64 } from '@oslojs/encoding';
 import { redirect } from 'next/navigation';
 import { AuthTitle } from '~/components/auth-title';
 import { RegisterPasskeyForm } from './components';
+import { getTranslate } from '~/lib/translate';
+import { translations } from './translations';
 
 export default async function Page() {
   if (!(await globalGETRateLimit())) return 'Too many requests';
+
+  const tr = await getTranslate(translations);
 
   const { session, user } = await getCurrentSession();
   if (!session) return redirect('/sign-in');
@@ -21,7 +25,7 @@ export default async function Page() {
   return (
     <>
       <CardHeader>
-        <AuthTitle>Register Passkey</AuthTitle>
+        <AuthTitle>{tr('Register Passkey')}</AuthTitle>
       </CardHeader>
       <CardContent>
         <RegisterPasskeyForm

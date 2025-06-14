@@ -5,9 +5,13 @@ import { redirect } from 'next/navigation';
 import { Link } from '~/components/link';
 import { AuthTitle } from '~/components/auth-title';
 import { VerifySecurityKeyButton } from './components';
+import { getTranslate } from '~/lib/translate';
+import { translations } from './translations';
 
 export default async function Page() {
   if (!(await globalGETRateLimit())) return 'Too many requests';
+
+  const tr = await getTranslate(translations);
 
   const { session, user } = await getCurrentSession();
   if (!session) return redirect('/sign-in');
@@ -21,27 +25,27 @@ export default async function Page() {
   return (
     <>
       <CardHeader>
-        <AuthTitle>Authenticate with Security Keys</AuthTitle>
+        <AuthTitle>{tr('Authenticate with Security Keys')}</AuthTitle>
       </CardHeader>
       <CardContent>
         <VerifySecurityKeyButton encodedCredentialIds={credentials.map((credential) => encodeBase64(credential.id))} />
         <div className="space-y-2">
           <Link href="/2fa/reset">
             <Button variant="outline" className="mt-2 w-full">
-              Use recovery code
+              {tr('Use recovery code')}
             </Button>
           </Link>
           {user.registeredTOTP && (
             <Link href="/2fa/totp">
               <Button variant="outline" className="mt-2 w-full">
-                Use authenticator apps
+                {tr('Use authenticator apps')}
               </Button>
             </Link>
           )}
           {user.registeredPasskey && (
             <Link href="/2fa/passkey">
               <Button variant="outline" className="mt-2 w-full">
-                Use passkeys
+                {tr('Use passkeys')}
               </Button>
             </Link>
           )}

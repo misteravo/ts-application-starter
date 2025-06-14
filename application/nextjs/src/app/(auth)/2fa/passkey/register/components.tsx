@@ -6,6 +6,8 @@ import { decodeBase64, encodeBase64 } from '@oslojs/encoding';
 import { useActionState, useState } from 'react';
 import { createChallenge } from '~/lib/webauthn';
 import { registerPasskeyAction } from './actions';
+import { translations } from './translations';
+import { useTranslate } from '@acme/i18n/react';
 
 const initialRegisterPasskeyState = {
   message: '',
@@ -19,6 +21,7 @@ export function RegisterPasskeyForm(props: {
   const [encodedAttestationObject, setEncodedAttestationObject] = useState<string | null>(null);
   const [encodedClientDataJSON, setEncodedClientDataJSON] = useState<string | null>(null);
   const [formState, action] = useActionState(registerPasskeyAction, initialRegisterPasskeyState);
+  const tr = useTranslate(translations);
 
   async function handleCreateCredential() {
     const challenge = await createChallenge();
@@ -67,14 +70,14 @@ export function RegisterPasskeyForm(props: {
         disabled={encodedAttestationObject !== null && encodedClientDataJSON !== null}
         onClick={() => void handleCreateCredential()}
       >
-        Create credential
+        {tr('Create credential')}
       </Button>
       <form action={action} className="space-y-4">
-        <Label htmlFor="form-register-credential.name">Credential name</Label>
+        <Label htmlFor="form-register-credential.name">{tr('Credential name')}</Label>
         <Input id="form-register-credential.name" name="name" required />
         <input type="hidden" name="attestationObject" value={encodedAttestationObject ?? ''} />
         <input type="hidden" name="clientDataJSON" value={encodedClientDataJSON ?? ''} />
-        <Button disabled={encodedAttestationObject === null && encodedClientDataJSON === null}>Continue</Button>
+        <Button disabled={encodedAttestationObject === null && encodedClientDataJSON === null}>{tr('Continue')}</Button>
         {formState.message && <Alert>{formState.message}</Alert>}
       </form>
     </div>
