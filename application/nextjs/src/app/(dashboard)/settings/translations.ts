@@ -16,6 +16,9 @@ export const translations = {
   'Enter current password': { fr: 'Entrez le mot de passe actuel' },
   'Enter new email': { fr: 'Entrez le nouvel email' },
   'Enter new password': { fr: 'Entrez le nouveau mot de passe' },
+  'Generate New Recovery Code': { fr: 'Générer un nouveau code de récupération' },
+  'Generating...': { fr: 'Génération...' },
+  'Important:': { fr: 'Important:' },
   'Manage your account settings and security preferences.': {
     fr: 'Gérez les paramètres de votre compte et vos préférences de sécurité.',
   },
@@ -35,6 +38,10 @@ export const translations = {
   },
   'Set up TOTP': { fr: 'Configurer TOTP' },
   Settings: { fr: 'Paramètres' },
+  'Store this recovery code in a safe place. You can use it to access your account if you lose access to your other authentication methods.':
+    {
+      fr: "Stockez ce code de récupération dans un endroit sécurisé. Vous pouvez l'utiliser pour accéder à votre compte si vous perdez l’accès à vos autres méthodes d’authentification.",
+    },
   'Too many requests': { fr: 'Trop de requêtes' },
   'Two-Factor Authentication': { fr: 'Authentification à deux facteurs' },
   'Update Email': { fr: "Mettre à jour l'email" },
@@ -44,4 +51,5 @@ export const translations = {
     fr: "Utilisez une application d'authentification pour générer des codes de vérification sécurisés.",
   },
   Verified: { fr: 'Vérifié' },
+  'Your recovery code:': { fr: 'Votre code de récupération:' },
 } satisfies Translations<string>;

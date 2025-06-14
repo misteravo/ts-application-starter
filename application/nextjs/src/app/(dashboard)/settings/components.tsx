@@ -283,13 +283,15 @@ export function RecoveryCodeSection(props: { recoveryCode: string }) {
 
       <Alert className="border-orange-200 bg-orange-50 text-orange-800">
         <AlertDescription>
-          <strong>Important:</strong> Store this recovery code in a safe place. You can use it to access your account if
-          you lose access to your other authentication methods.
+          <strong>{tr('Important:')}</strong>{' '}
+          {tr(
+            'Store this recovery code in a safe place. You can use it to access your account if you lose access to your other authentication methods.',
+          )}
         </AlertDescription>
       </Alert>
 
       <div className="space-y-3">
-        <Label className="text-sm font-medium">Your recovery code:</Label>
+        <Label className="text-sm font-medium">{tr('Your recovery code:')}</Label>
         <div className="flex items-center space-x-2">
           <div className="flex-1 rounded-lg border bg-background p-3">
             <code className="break-all font-mono text-sm">{recoveryCode}</code>
@@ -318,12 +320,12 @@ export function RecoveryCodeSection(props: { recoveryCode: string }) {
           {isGenerating ? (
             <>
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              Generating...
+              {tr('Generating...')}
             </>
           ) : (
             <>
               <RefreshCw className="mr-2 h-4 w-4" />
-              Generate New Recovery Code
+              {tr('Generate New Recovery Code')}
             </>
           )}
         </Button>
