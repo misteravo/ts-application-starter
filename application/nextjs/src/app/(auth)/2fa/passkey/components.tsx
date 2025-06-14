@@ -6,10 +6,13 @@ import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { createChallenge } from '~/lib/webauthn';
 import { verifyPasskeyAction } from './actions';
+import { translations } from './translations';
+import { useTranslate } from '@acme/i18n/react';
 
 export function VerifyPasskeyButton(props: { encodedCredentialIds: string[] }) {
   const router = useRouter();
   const [message, setMessage] = useState('');
+  const tr = useTranslate(translations);
 
   async function handleAuthentication() {
     const challenge = await createChallenge();
@@ -49,7 +52,7 @@ export function VerifyPasskeyButton(props: { encodedCredentialIds: string[] }) {
   return (
     <div className="space-y-4">
       <Button className="w-full" onClick={handleAuthentication}>
-        Authenticate
+        {tr('Authenticate')}
       </Button>
       {message && <Alert variant="destructive">{message}</Alert>}
     </div>

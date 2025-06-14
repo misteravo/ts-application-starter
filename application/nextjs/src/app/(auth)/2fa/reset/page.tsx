@@ -4,9 +4,13 @@ import { TwoFactorResetForm } from './components';
 import { getCurrentSession, globalGETRateLimit } from '@acme/backend';
 import { redirect } from 'next/navigation';
 import { AuthTitle } from '~/components/auth-title';
+import { getTranslate } from '~/lib/translate';
+import { translations } from './translations';
 
 export default async function Page() {
   if (!(await globalGETRateLimit())) return 'Too many requests';
+
+  const tr = await getTranslate(translations);
 
   const { session, user } = await getCurrentSession();
   if (!session) return redirect('/sign-in');
@@ -17,7 +21,7 @@ export default async function Page() {
   return (
     <>
       <CardHeader>
-        <AuthTitle>Recover your account</AuthTitle>
+        <AuthTitle>{tr('Recover your account')}</AuthTitle>
       </CardHeader>
       <CardContent>
         <TwoFactorResetForm />

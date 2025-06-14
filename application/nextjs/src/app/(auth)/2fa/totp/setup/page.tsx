@@ -7,9 +7,13 @@ import { createTOTPKeyURI } from '@oslojs/otp';
 import { redirect } from 'next/navigation';
 import { renderSVG } from 'uqr';
 import { AuthTitle } from '~/components/auth-title';
+import { getTranslate } from '~/lib/translate';
+import { translations } from './translations';
 
 export default async function Page() {
   if (!(await globalGETRateLimit())) return 'Too many requests';
+
+  const tr = await getTranslate(translations);
 
   const { session, user } = await getCurrentSession();
   if (!session) return redirect('/sign-in');
@@ -25,8 +29,8 @@ export default async function Page() {
   return (
     <>
       <CardHeader>
-        <AuthTitle className="text-left">Set up authenticator app</AuthTitle>
-        <CardDescription>Scan the QR code below with your authenticator app to get started</CardDescription>
+        <AuthTitle className="text-left">{tr('Set up authenticator app')}</AuthTitle>
+        <CardDescription>{tr('Scan the QR code below with your authenticator app to get started')}</CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
         <div className="flex justify-center">

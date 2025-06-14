@@ -4,9 +4,13 @@ import { PasswordResetForm } from './components';
 import { getCurrentPasswordResetSession, globalGETRateLimit } from '@acme/backend';
 import { redirect } from 'next/navigation';
 import { AuthTitle } from '~/components/auth-title';
+import { getTranslate } from '~/lib/translate';
+import { translations } from './translations';
 
 export default async function Page() {
   if (!(await globalGETRateLimit())) return 'Too many requests';
+
+  const tr = await getTranslate(translations);
 
   const { session, user } = await getCurrentPasswordResetSession();
   if (!session) return redirect('/forgot-password');
@@ -16,7 +20,7 @@ export default async function Page() {
   return (
     <>
       <CardHeader>
-        <AuthTitle>Enter your new password</AuthTitle>
+        <AuthTitle>{tr('Enter your new password')}</AuthTitle>
       </CardHeader>
       <CardContent>
         <PasswordResetForm />
