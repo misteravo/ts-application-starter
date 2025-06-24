@@ -1,5 +1,5 @@
 import { Card, ThemeToggle } from '@acme/ui';
-import { Lock, Shield } from 'lucide-react';
+import { Shield } from 'lucide-react';
 import type { ReactNode } from 'react';
 import { getTranslate } from '~/lib/translate';
 import { translations } from './translations';
@@ -35,15 +35,6 @@ export default async function AuthLayout(props: { children: ReactNode }) {
 
           {/* Main Card */}
           <Card className="bg-background/95 border-2 shadow-xl backdrop-blur-sm">{props.children}</Card>
-
-          {/* Footer */}
-          <div className="text-center text-xs text-muted-foreground">
-            <p>{tr('Protected by enterprise-grade security')}</p>
-            <div className="mt-2 flex items-center justify-center space-x-1">
-              <Lock className="h-3 w-3" />
-              <span>{tr('End-to-end encrypted')}</span>
-            </div>
-          </div>
         </div>
       </div>
 
