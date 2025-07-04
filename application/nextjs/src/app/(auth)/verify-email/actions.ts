@@ -10,12 +10,9 @@ const verifyEmailSchema = zfd.formData({
 });
 export const verifyEmailAction = formAction(verifyEmailSchema, async ({ code }) => {
   const result = await verifyEmail({ code });
-  if ('redirect' in result) return redirect(result.redirect);
-  return result;
+  redirect(result.redirect);
 });
 
 export const resendEmailVerificationCodeAction = formAction(zfd.formData({}), async () => {
-  const result = await resendEmailVerificationCode();
-  if ('redirect' in result) return redirect(result.redirect);
-  return result;
+  return await resendEmailVerificationCode();
 });

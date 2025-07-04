@@ -1,3 +1,4 @@
+import { ClientError } from '@acme/utils';
 import { getClientIP } from '../../lib/headers';
 import { checkEmailAvailability, verifyEmailInput } from '../services/email';
 import {
@@ -12,8 +13,6 @@ import { createUser, verifyUsernameInput } from '../services/user';
 
 const ipBucket = new RefillingTokenBucket<string>(3, 10);
 
-type Result = { message: string } | { redirect: string };
-
 export async function signUp({
   username,
   email,
@@ -22,22 +21,21 @@ export async function signUp({
   username: string;
   email: string;
   password: string;
-}): Promise<Result> {
+}): Promise<{ redirect: string }> {
   const clientIP = await getClientIP();
-  if (clientIP && !ipBucket.check(clientIP, 1)) return { message: 'Too many requests' };
+  if (clientIP && !ipBucket.check(clientIP, 1)) throw new ClientError('Too many requests');
 
-  if (email === '' || password === '' || username === '') {
-    return { message: 'Please enter your username, email, and password' };
-  }
-  if (!verifyEmailInput(email)) return { message: 'Invalid email' };
+  if (email === '' || password === '' || username === '')
+    throw new ClientError('Please enter your username, email, and password');
+  if (!verifyEmailInput(email)) throw new ClientError('Invalid email');
 
   const emailAvailable = await checkEmailAvailability(email);
-  if (!emailAvailable) return { message: 'Email is already used' };
-  if (!verifyUsernameInput(username)) return { message: 'Invalid username' };
+  if (!emailAvailable) throw new ClientError('Email is already used');
+  if (!verifyUsernameInput(username)) throw new ClientError('Invalid username');
 
   const strongPassword = await verifyPasswordStrength(password);
-  if (!strongPassword) return { message: 'Weak password' };
-  if (clientIP !== null && !ipBucket.consume(clientIP, 1)) return { message: 'Too many requests' };
+  if (!strongPassword) throw new ClientError('Weak password');
+  if (clientIP !== null && !ipBucket.consume(clientIP, 1)) throw new ClientError('Too many requests');
 
   const user = await createUser(email, username, password);
   const emailVerificationRequest = await createEmailVerificationRequest(user.id, user.email);

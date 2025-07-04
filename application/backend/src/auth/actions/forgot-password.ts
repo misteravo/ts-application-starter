@@ -1,5 +1,6 @@
 'use server';
 
+import { ClientError } from '@acme/utils';
 import { getClientIP } from '../../lib/headers';
 import { verifyEmailInput } from '../services/email';
 import {
@@ -15,19 +16,17 @@ import { getUserFromEmail } from '../services/user';
 const passwordResetEmailIPBucket = new RefillingTokenBucket<string>(3, 60);
 const passwordResetEmailUserBucket = new RefillingTokenBucket<number>(3, 60);
 
-type Result = { message: string } | { redirect: string };
-
-export async function forgotPassword({ email }: { email: string }): Promise<Result> {
+export async function forgotPassword({ email }: { email: string }): Promise<{ redirect: string }> {
   const clientIP = await getClientIP();
-  if (clientIP && !passwordResetEmailIPBucket.check(clientIP, 1)) return { message: 'Too many requests' };
+  if (clientIP && !passwordResetEmailIPBucket.check(clientIP, 1)) throw new ClientError('Too many requests');
 
-  if (!verifyEmailInput(email)) return { message: 'Invalid email' };
+  if (!verifyEmailInput(email)) throw new ClientError('Invalid email');
 
   const user = await getUserFromEmail(email);
-  if (!user) return { message: 'Account does not exist' };
+  if (!user) throw new ClientError('Account does not exist');
 
-  if (clientIP !== null && !passwordResetEmailIPBucket.consume(clientIP, 1)) return { message: 'Too many requests' };
-  if (!passwordResetEmailUserBucket.consume(user.id, 1)) return { message: 'Too many requests' };
+  if (clientIP !== null && !passwordResetEmailIPBucket.consume(clientIP, 1)) throw new ClientError('Too many requests');
+  if (!passwordResetEmailUserBucket.consume(user.id, 1)) throw new ClientError('Too many requests');
 
   await invalidateUserPasswordResetSessions(user.id);
   const sessionToken = generateSessionToken();

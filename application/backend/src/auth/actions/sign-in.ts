@@ -1,4 +1,4 @@
-import { safeTry, safeTrySync } from '@acme/utils';
+import { ClientError, safeTry, safeTrySync } from '@acme/utils';
 import { decodePKIXECDSASignature, decodeSEC1PublicKey, p256, verifyECDSASignature } from '@oslojs/crypto/ecdsa';
 import { decodePKCS1RSAPublicKey, sha256ObjectIdentifier, verifyRSASSAPKCS1v15Signature } from '@oslojs/crypto/rsa';
 import { sha256 } from '@oslojs/crypto/sha2';
@@ -23,26 +23,24 @@ import { getPasskeyCredential, verifyWebAuthnChallenge } from '../services/webau
 const throttler = new Throttler<number>([1, 2, 4, 8, 16, 30, 60, 180, 300]);
 const ipBucket = new RefillingTokenBucket<string>(20, 1);
 
-type Result = { message: string } | { redirect: string };
-
-export async function signIn(props: { email: string; password: string }): Promise<Result> {
+export async function signIn(props: { email: string; password: string }): Promise<{ redirect: string }> {
   const { email, password } = props;
 
   const clientIP = await getClientIP();
-  if (clientIP && !ipBucket.check(clientIP, 1)) return { message: 'Too many requests' };
+  if (clientIP && !ipBucket.check(clientIP, 1)) throw new ClientError('Too many requests');
 
-  if (email === '' || password === '') return { message: 'Please enter your email and password.' };
-  if (!verifyEmailInput(email)) return { message: 'Invalid email' };
+  if (email === '' || password === '') throw new ClientError('Please enter your email and password.');
+  if (!verifyEmailInput(email)) throw new ClientError('Invalid email');
 
   const [user] = await safeTry(getUserFromEmail(email));
-  if (!user) return { message: 'Account does not exist' };
+  if (!user) throw new ClientError('Account does not exist');
 
-  if (clientIP !== null && !ipBucket.consume(clientIP, 1)) return { message: 'Too many requests' };
-  if (!throttler.consume(user.id)) return { message: 'Too many requests' };
+  if (clientIP !== null && !ipBucket.consume(clientIP, 1)) throw new ClientError('Too many requests');
+  if (!throttler.consume(user.id)) throw new ClientError('Too many requests');
 
   const passwordHash = await getUserPasswordHash(user.id);
   const validPassword = await verifyPasswordHash(passwordHash, password);
-  if (!validPassword) return { message: 'Invalid password' };
+  if (!validPassword) throw new ClientError('Invalid password');
 
   throttler.reset(user.id);
   const sessionToken = generateSessionToken();
@@ -59,24 +57,24 @@ export async function signInWithPasskey(props: {
   clientData: Uint8Array;
   credentialId: Uint8Array;
   signature: Uint8Array;
-}): Promise<Result> {
+}): Promise<{ redirect: string }> {
   const [authenticatorData] = safeTrySync(() => parseAuthenticatorData(props.authenticatorData));
-  if (!authenticatorData) return { message: 'Invalid data' };
+  if (!authenticatorData) throw new ClientError('Invalid data');
 
-  if (!authenticatorData.verifyRelyingPartyIdHash(env.SERVER_HOST)) return { message: 'Invalid data' };
-  if (!authenticatorData.userPresent || !authenticatorData.userVerified) return { message: 'Invalid data' };
+  if (!authenticatorData.verifyRelyingPartyIdHash(env.SERVER_HOST)) throw new ClientError('Invalid data');
+  if (!authenticatorData.userPresent || !authenticatorData.userVerified) throw new ClientError('Invalid data');
 
   const [clientData] = safeTrySync(() => parseClientDataJSON(props.clientData));
-  if (!clientData) return { message: 'Invalid data' };
+  if (!clientData) throw new ClientError('Invalid data');
 
-  if (clientData.type !== ClientDataType.Get) return { message: 'Invalid data' };
+  if (clientData.type !== ClientDataType.Get) throw new ClientError('Invalid data');
 
-  if (!verifyWebAuthnChallenge(clientData.challenge)) return { message: 'Invalid data' };
-  if (clientData.origin !== env.SERVER_URL) return { message: 'Invalid data' };
-  if (clientData.crossOrigin !== null && clientData.crossOrigin) return { message: 'Invalid data' };
+  if (!verifyWebAuthnChallenge(clientData.challenge)) throw new ClientError('Invalid data');
+  if (clientData.origin !== env.SERVER_URL) throw new ClientError('Invalid data');
+  if (clientData.crossOrigin !== null && clientData.crossOrigin) throw new ClientError('Invalid data');
 
   const credential = await getPasskeyCredential(props.credentialId);
-  if (credential === null) return { message: 'Invalid credential' };
+  if (credential === null) throw new ClientError('Invalid credential');
 
   let validSignature: boolean;
   if (credential.algorithmId === coseAlgorithmES256) {
@@ -89,10 +87,10 @@ export async function signInWithPasskey(props: {
     const hash = sha256(createAssertionSignatureMessage(props.authenticatorData, props.clientData));
     validSignature = verifyRSASSAPKCS1v15Signature(rsaPublicKey, sha256ObjectIdentifier, hash, props.signature);
   } else {
-    return { message: 'Internal error' };
+    throw new ClientError('Internal error');
   }
 
-  if (!validSignature) return { message: 'Invalid signature' };
+  if (!validSignature) throw new ClientError('Invalid signature');
 
   const sessionToken = generateSessionToken();
   const session = await createSession(sessionToken, credential.userId, { twoFactorVerified: true });

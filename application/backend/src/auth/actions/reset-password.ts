@@ -1,5 +1,6 @@
 'use server';
 
+import { ClientError } from '@acme/utils';
 import { verifyPasswordStrength } from '../services/password';
 import {
   deletePasswordResetSessionTokenCookie,
@@ -16,16 +17,14 @@ import {
 } from '../services/session';
 import { setUserAsEmailVerifiedIfEmailMatches, updateUserPassword } from '../services/user';
 
-type Result = { message: string } | { redirect: string };
-
-export async function resetPassword({ password }: { password: string }): Promise<Result> {
+export async function resetPassword({ password }: { password: string }): Promise<{ redirect: string }> {
   const { session: passwordResetSession, user } = await getCurrentPasswordResetSession();
-  if (!passwordResetSession) return { message: 'Not authenticated' };
-  if (!passwordResetSession.emailVerified) return { message: 'Forbidden' };
-  if (user.registered2FA && !passwordResetSession.twoFactorVerified) return { message: 'Forbidden' };
+  if (!passwordResetSession) throw new ClientError('Not authenticated');
+  if (!passwordResetSession.emailVerified) throw new ClientError('Forbidden');
+  if (user.registered2FA && !passwordResetSession.twoFactorVerified) throw new ClientError('Forbidden');
 
   const strongPassword = await verifyPasswordStrength(password);
-  if (!strongPassword) return { message: 'Weak password' };
+  if (!strongPassword) throw new ClientError('Weak password');
 
   await invalidateUserPasswordResetSessions(passwordResetSession.userId);
   await invalidateUserSessions(passwordResetSession.userId);
@@ -42,24 +41,24 @@ export async function resetPassword({ password }: { password: string }): Promise
 
 const emailVerificationBucket = new ExpiringTokenBucket<number>(5, 60 * 30);
 
-export async function verifyPasswordResetEmail({ code }: { code: string }): Promise<Result> {
+export async function verifyPasswordResetEmail({ code }: { code: string }): Promise<{ redirect: string }> {
   const { session } = await getCurrentPasswordResetSession();
-  if (!session) return { message: 'Not authenticated' };
-  if (session.emailVerified) return { message: 'Forbidden' };
+  if (!session) throw new ClientError('Not authenticated');
+  if (session.emailVerified) throw new ClientError('Forbidden');
 
-  if (!emailVerificationBucket.check(session.userId, 1)) return { message: 'Too many requests' };
+  if (!emailVerificationBucket.check(session.userId, 1)) throw new ClientError('Too many requests');
 
-  if (code === '') return { message: 'Please enter your code' };
+  if (code === '') throw new ClientError('Please enter your code');
 
-  if (!emailVerificationBucket.consume(session.userId, 1)) return { message: 'Too many requests' };
+  if (!emailVerificationBucket.consume(session.userId, 1)) throw new ClientError('Too many requests');
 
-  if (code !== session.code) return { message: 'Incorrect code' };
+  if (code !== session.code) throw new ClientError('Incorrect code');
 
   emailVerificationBucket.reset(session.userId);
   await setPasswordResetSessionAsEmailVerified(session.id);
 
   const emailMatches = await setUserAsEmailVerifiedIfEmailMatches(session.userId, session.email);
-  if (!emailMatches) return { message: 'Please restart the process' };
+  if (!emailMatches) throw new ClientError('Please restart the process');
 
   return { redirect: '/reset-password/2fa' };
 }

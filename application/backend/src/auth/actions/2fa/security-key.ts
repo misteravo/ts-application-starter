@@ -1,4 +1,4 @@
-import { safeTry, safeTrySync } from '@acme/utils';
+import { ClientError, safeTry, safeTrySync } from '@acme/utils';
 import {
   decodePKIXECDSASignature,
   decodeSEC1PublicKey,
@@ -36,22 +36,19 @@ import {
 } from '../../services/webauthn';
 import type { User } from '../../services/user';
 
-type Result = { message: string } | { redirect: string };
-
 export async function verifySecurityKey(props: {
   authenticatorData: Uint8Array;
   clientData: Uint8Array;
   credentialId: Uint8Array;
   signature: Uint8Array;
-}): Promise<Result> {
+}): Promise<{ redirect: string }> {
   const { session, user } = await getCurrentSession();
-  if (!session) return { message: 'Not authenticated' };
-  if (!user.emailVerified) return { message: 'Forbidden' };
-  if (!user.registeredPasskey) return { message: 'Forbidden' };
-  if (session.twoFactorVerified) return { message: 'Forbidden' };
+  if (!session) throw new ClientError('Not authenticated');
+  if (!user.emailVerified) throw new ClientError('Forbidden');
+  if (!user.registeredPasskey) throw new ClientError('Forbidden');
+  if (session.twoFactorVerified) throw new ClientError('Forbidden');
 
-  const result = await verifySecurityKeyHelper({ user, ...props });
-  if (result.message !== null) return { message: result.message };
+  await verifySecurityKeyHelper({ user, ...props });
 
   await setSessionAs2FAVerified(session.id);
   return { redirect: '/2fa/security-key' };
@@ -61,37 +58,37 @@ export async function registerSecurityKey(props: {
   name: string;
   attestationObject: Uint8Array;
   clientData: Uint8Array;
-}): Promise<Result> {
+}): Promise<{ redirect: string }> {
   const { session, user } = await getCurrentSession();
-  if (!session) return { message: 'Not authenticated' };
-  if (!user.emailVerified) return { message: 'Forbidden' };
-  if (user.registered2FA && !session.twoFactorVerified) return { message: 'Forbidden' };
+  if (!session) throw new ClientError('Not authenticated');
+  if (!user.emailVerified) throw new ClientError('Forbidden');
+  if (user.registered2FA && !session.twoFactorVerified) throw new ClientError('Forbidden');
 
   const [attestationObject] = safeTrySync(() => parseAttestationObject(props.attestationObject));
-  if (!attestationObject) return { message: 'Invalid data' };
+  if (!attestationObject) throw new ClientError('Invalid data');
 
   const attestationStatement = attestationObject.attestationStatement;
   const authenticatorData = attestationObject.authenticatorData;
 
-  if (attestationStatement.format !== AttestationStatementFormat.None) return { message: 'Invalid data' };
-  if (!authenticatorData.verifyRelyingPartyIdHash(env.SERVER_HOST)) return { message: 'Invalid data' };
-  if (!authenticatorData.userPresent) return { message: 'Invalid data' };
-  if (authenticatorData.credential === null) return { message: 'Invalid data' };
+  if (attestationStatement.format !== AttestationStatementFormat.None) throw new ClientError('Invalid data');
+  if (!authenticatorData.verifyRelyingPartyIdHash(env.SERVER_HOST)) throw new ClientError('Invalid data');
+  if (!authenticatorData.userPresent) throw new ClientError('Invalid data');
+  if (authenticatorData.credential === null) throw new ClientError('Invalid data');
 
   const [clientData] = safeTrySync(() => parseClientDataJSON(props.clientData));
-  if (!clientData) return { message: 'Invalid data' };
+  if (!clientData) throw new ClientError('Invalid data');
 
-  if (clientData.type !== ClientDataType.Create) return { message: 'Invalid data' };
+  if (clientData.type !== ClientDataType.Create) throw new ClientError('Invalid data');
 
-  if (!verifyWebAuthnChallenge(clientData.challenge)) return { message: 'Invalid data' };
-  if (clientData.origin !== env.SERVER_URL) return { message: 'Invalid data' };
-  if (clientData.crossOrigin !== null && clientData.crossOrigin) return { message: 'Invalid data' };
+  if (!verifyWebAuthnChallenge(clientData.challenge)) throw new ClientError('Invalid data');
+  if (clientData.origin !== env.SERVER_URL) throw new ClientError('Invalid data');
+  if (clientData.crossOrigin !== null && clientData.crossOrigin) throw new ClientError('Invalid data');
 
   let credential: WebAuthnUserCredential;
   if (authenticatorData.credential.publicKey.algorithm() === coseAlgorithmES256) {
     const [cosePublicKey] = safeTrySync(() => authenticatorData.credential?.publicKey.ec2());
-    if (!cosePublicKey) return { message: 'Invalid data' };
-    if (cosePublicKey.curve !== coseEllipticCurveP256) return { message: 'Unsupported algorithm' };
+    if (!cosePublicKey) throw new ClientError('Invalid data');
+    if (cosePublicKey.curve !== coseEllipticCurveP256) throw new ClientError('Unsupported algorithm');
 
     const encodedPublicKey = new ECDSAPublicKey(p256, cosePublicKey.x, cosePublicKey.y).encodeSEC1Uncompressed();
     credential = {
@@ -103,7 +100,7 @@ export async function registerSecurityKey(props: {
     };
   } else if (authenticatorData.credential.publicKey.algorithm() === coseAlgorithmRS256) {
     const [cosePublicKey] = safeTrySync(() => authenticatorData.credential?.publicKey.rsa());
-    if (!cosePublicKey) return { message: 'Invalid data' };
+    if (!cosePublicKey) throw new ClientError('Invalid data');
 
     const encodedPublicKey = new RSAPublicKey(cosePublicKey.n, cosePublicKey.e).encodePKCS1();
     credential = {
@@ -114,18 +111,18 @@ export async function registerSecurityKey(props: {
       publicKey: encodedPublicKey,
     };
   } else {
-    return { message: 'Unsupported algorithm' };
+    throw new ClientError('Unsupported algorithm');
   }
 
   // We don't have to worry about race conditions since queries are synchronous
   const credentials = await getUserSecurityKeyCredentials(user.id);
-  if (credentials.length >= 5) return { message: 'Too many credentials' };
+  if (credentials.length >= 5) throw new ClientError('Too many credentials');
 
   const [, error] = await safeTry(createSecurityKeyCredential(credential));
   if (error) {
     // PostgreSQL unique constraint violation error code is '23505'
-    if (error instanceof Error && 'code' in error && error.code === '23505') return { message: 'Invalid data' };
-    return { message: 'Internal error' };
+    if (error instanceof Error && 'code' in error && error.code === '23505') throw new ClientError('Invalid data');
+    throw new ClientError('Internal error');
   }
 
   if (!session.twoFactorVerified) await setSessionAs2FAVerified(session.id);
@@ -139,15 +136,14 @@ export async function verifyResetSecurityKey(props: {
   clientData: Uint8Array;
   credentialId: Uint8Array;
   signature: Uint8Array;
-}): Promise<Result> {
+}): Promise<{ redirect: string }> {
   const { session, user } = await getCurrentPasswordResetSession();
-  if (!session) return { message: 'Not authenticated' };
-  if (!session.emailVerified) return { message: 'Forbidden' };
-  if (!user.registeredSecurityKey) return { message: 'Forbidden' };
-  if (session.twoFactorVerified) return { message: 'Forbidden' };
+  if (!session) throw new ClientError('Not authenticated');
+  if (!session.emailVerified) throw new ClientError('Forbidden');
+  if (!user.registeredSecurityKey) throw new ClientError('Forbidden');
+  if (session.twoFactorVerified) throw new ClientError('Forbidden');
 
-  const result = await verifySecurityKeyHelper({ user, ...props });
-  if (result.message !== null) return { message: result.message };
+  await verifySecurityKeyHelper({ user, ...props });
 
   await setPasswordResetSessionAs2FAVerified(session.id);
   return { redirect: '/reset-password' };
@@ -161,20 +157,20 @@ async function verifySecurityKeyHelper(props: {
   signature: Uint8Array;
 }) {
   const [authenticatorData] = safeTrySync(() => parseAuthenticatorData(props.authenticatorData));
-  if (!authenticatorData) return { message: 'Invalid data' };
+  if (!authenticatorData) throw new ClientError('Invalid data');
 
-  if (!authenticatorData.verifyRelyingPartyIdHash(env.SERVER_HOST)) return { message: 'Invalid data' };
-  if (!authenticatorData.userPresent) return { message: 'Invalid data' };
+  if (!authenticatorData.verifyRelyingPartyIdHash(env.SERVER_HOST)) throw new ClientError('Invalid data');
+  if (!authenticatorData.userPresent) throw new ClientError('Invalid data');
 
   const [clientData] = safeTrySync(() => parseClientDataJSON(props.clientData));
-  if (!clientData) return { message: 'Invalid data' };
+  if (!clientData) throw new ClientError('Invalid data');
 
-  if (clientData.type !== ClientDataType.Get) return { message: 'Invalid data' };
+  if (clientData.type !== ClientDataType.Get) throw new ClientError('Invalid data');
 
-  if (!verifyWebAuthnChallenge(clientData.challenge)) return { message: 'Invalid data' };
+  if (!verifyWebAuthnChallenge(clientData.challenge)) throw new ClientError('Invalid data');
 
-  if (clientData.origin !== env.SERVER_URL) return { message: 'Invalid data' };
-  if (clientData.crossOrigin !== null && clientData.crossOrigin) return { message: 'Invalid data' };
+  if (clientData.origin !== env.SERVER_URL) throw new ClientError('Invalid data');
+  if (clientData.crossOrigin !== null && clientData.crossOrigin) throw new ClientError('Invalid data');
 
   const credential = await getUserSecurityKeyCredential(props.user.id, props.credentialId);
   if (credential === null) return { message: 'Invalid credential' };
@@ -190,10 +186,8 @@ async function verifySecurityKeyHelper(props: {
     const hash = sha256(createAssertionSignatureMessage(props.authenticatorData, props.clientData));
     validSignature = verifyRSASSAPKCS1v15Signature(rsaPublicKey, sha256ObjectIdentifier, hash, props.signature);
   } else {
-    return { message: 'Internal error' };
+    throw new ClientError('Internal error');
   }
 
-  if (!validSignature) return { message: 'Invalid data' };
-
-  return { message: null };
+  if (!validSignature) throw new ClientError('Invalid data');
 }

@@ -4,8 +4,8 @@ import { signIn, signInWithPasskey } from '@acme/backend';
 import { safeTrySync } from '@acme/utils';
 import { decodeBase64 } from '@oslojs/encoding';
 import { redirect } from 'next/navigation';
-import { z } from 'zod/v4';
 import { zfd } from 'zod-form-data';
+import { z } from 'zod/v4';
 import { formAction, schemaAction } from '~/lib/safe-action';
 
 const signInSchema = zfd.formData({
@@ -14,8 +14,7 @@ const signInSchema = zfd.formData({
 });
 export const signInAction = formAction(signInSchema, async (props) => {
   const result = await signIn(props);
-  if ('redirect' in result) return redirect(result.redirect);
-  return result;
+  redirect(result.redirect);
 });
 
 const signInWithPassKeySchema = z.object({

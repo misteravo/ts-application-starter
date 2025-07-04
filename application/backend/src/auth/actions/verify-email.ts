@@ -1,5 +1,6 @@
 'use server';
 
+import { ClientError } from '@acme/utils';
 import {
   createEmailVerificationRequest,
   deleteEmailVerificationRequestCookie,
@@ -16,26 +17,24 @@ import { updateUserEmailAndSetEmailAsVerified } from '../services/user';
 
 const bucket = new ExpiringTokenBucket<number>(5, 60 * 30);
 
-type Result = { message: string } | { redirect: string };
-
-export async function verifyEmail({ code }: { code: string }): Promise<Result> {
+export async function verifyEmail({ code }: { code: string }): Promise<{ redirect: string }> {
   const { session, user } = await getCurrentSession();
-  if (!session) return { message: 'Not authenticated' };
-  if (user.registered2FA && !session.twoFactorVerified) return { message: 'Forbidden' };
-  if (!bucket.check(user.id, 1)) return { message: 'Too many requests' };
+  if (!session) throw new ClientError('Not authenticated');
+  if (user.registered2FA && !session.twoFactorVerified) throw new ClientError('Forbidden');
+  if (!bucket.check(user.id, 1)) throw new ClientError('Too many requests');
 
   let verificationRequest = await getCurrentUserEmailVerificationRequest();
-  if (!verificationRequest) return { message: 'Not authenticated' };
+  if (!verificationRequest) throw new ClientError('Not authenticated');
 
-  if (!code) return { message: 'Enter your code' };
-  if (!bucket.consume(user.id, 1)) return { message: 'Too many requests' };
+  if (!code) throw new ClientError('Enter your code');
+  if (!bucket.consume(user.id, 1)) throw new ClientError('Too many requests');
 
   if (Date.now() >= verificationRequest.expiresAt.getTime()) {
     verificationRequest = await createEmailVerificationRequest(verificationRequest.userId, verificationRequest.email);
     await sendVerificationEmail(verificationRequest.email, verificationRequest.code);
-    return { message: 'The verification code was expired. We sent another code to your inbox.' };
+    throw new ClientError('The verification code was expired. We sent another code to your inbox.');
   }
-  if (verificationRequest.code !== code) return { message: 'Incorrect code.' };
+  if (verificationRequest.code !== code) throw new ClientError('Incorrect code.');
 
   await deleteUserEmailVerificationRequest(user.id);
   await invalidateUserPasswordResetSessions(user.id);
@@ -46,19 +45,19 @@ export async function verifyEmail({ code }: { code: string }): Promise<Result> {
   return { redirect: '/' };
 }
 
-export async function resendEmailVerificationCode(): Promise<Result> {
+export async function resendEmailVerificationCode(): Promise<{ message: string }> {
   const { session, user } = await getCurrentSession();
-  if (!session) return { message: 'Not authenticated' };
-  if (user.registered2FA && !session.twoFactorVerified) return { message: 'Forbidden' };
-  if (!sendVerificationEmailBucket.check(user.id, 1)) return { message: 'Too many requests' };
+  if (!session) throw new ClientError('Not authenticated');
+  if (user.registered2FA && !session.twoFactorVerified) throw new ClientError('Forbidden');
+  if (!sendVerificationEmailBucket.check(user.id, 1)) throw new ClientError('Too many requests');
 
   let verificationRequest = await getCurrentUserEmailVerificationRequest();
   if (!verificationRequest) {
-    if (user.emailVerified) return { message: 'Forbidden' };
-    if (!sendVerificationEmailBucket.consume(user.id, 1)) return { message: 'Too many requests' };
+    if (user.emailVerified) throw new ClientError('Forbidden');
+    if (!sendVerificationEmailBucket.consume(user.id, 1)) throw new ClientError('Too many requests');
     verificationRequest = await createEmailVerificationRequest(user.id, user.email);
   } else {
-    if (!sendVerificationEmailBucket.consume(user.id, 1)) return { message: 'Too many requests' };
+    if (!sendVerificationEmailBucket.consume(user.id, 1)) throw new ClientError('Too many requests');
     verificationRequest = await createEmailVerificationRequest(user.id, verificationRequest.email);
   }
 

@@ -26,8 +26,7 @@ const updateEmailSchema = zfd.formData({
 });
 export const updateEmailAction = formAction(updateEmailSchema, async ({ email }) => {
   const result = await updateEmail({ email });
-  if ('redirect' in result) return redirect(result.redirect);
-  return result;
+  redirect(result.redirect);
 });
 
 export const disconnectTOTPAction = simpleAction(async () => {
