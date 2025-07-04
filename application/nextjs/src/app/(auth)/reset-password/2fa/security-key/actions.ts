@@ -4,7 +4,7 @@ import { decodeBase64 } from '@oslojs/encoding';
 
 import { safeTrySync } from '@acme/utils';
 import { redirect } from 'next/navigation';
-import { z } from 'zod';
+import { z } from 'zod/v4';
 import { schemaAction } from '~/lib/safe-action';
 import { verifyResetSecurityKey } from '@acme/backend';
 

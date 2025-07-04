@@ -4,7 +4,7 @@ import { signIn, signInWithPasskey } from '@acme/backend';
 import { safeTrySync } from '@acme/utils';
 import { decodeBase64 } from '@oslojs/encoding';
 import { redirect } from 'next/navigation';
-import { z } from 'zod';
+import { z } from 'zod/v4';
 import { zfd } from 'zod-form-data';
 import { formAction, schemaAction } from '~/lib/safe-action';
 

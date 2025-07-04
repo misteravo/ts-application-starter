@@ -1,9 +1,9 @@
 import { safeTry } from '@acme/utils';
 import { globalPOSTRateLimit } from '@acme/backend';
-import type { Schema, z } from 'zod';
+import type { z } from 'zod/v4';
 
 type ErrorMessage = { message: string };
-type ActionFunction<S extends Schema, R> = (props: z.infer<S>) => Promise<R>;
+type ActionFunction<S extends z.ZodType, R> = (props: z.infer<S>) => Promise<R>;
 
 export function simpleAction<R>(actionFn: () => Promise<R>) {
   return async function (): Promise<R | ErrorMessage> {
@@ -17,19 +17,19 @@ export function simpleAction<R>(actionFn: () => Promise<R>) {
   };
 }
 
-export function schemaAction<S extends Schema, R>(schema: S, actionFn: ActionFunction<S, R>) {
+export function schemaAction<S extends z.ZodType, R>(schema: S, actionFn: ActionFunction<S, R>) {
   return async function (props: z.infer<S>): Promise<R | ErrorMessage> {
     return runAction(schema, props, actionFn);
   };
 }
 
-export function formAction<S extends Schema, R>(schema: S, actionFn: ActionFunction<S, R>) {
+export function formAction<S extends z.ZodType, R>(schema: S, actionFn: ActionFunction<S, R>) {
   return async function (_prev: R, formData: FormData): Promise<R | ErrorMessage> {
     return runAction(schema, formData, actionFn);
   };
 }
 
-async function runAction<S extends Schema, P, R>(schema: S, props: P, actionFn: ActionFunction<S, R>) {
+async function runAction<S extends z.ZodType, P, R>(schema: S, props: P, actionFn: ActionFunction<S, R>) {
   try {
     if (!(await globalPOSTRateLimit())) return { message: 'Too many requests' };
     const [data] = await safeTry(schema.parseAsync(props));
