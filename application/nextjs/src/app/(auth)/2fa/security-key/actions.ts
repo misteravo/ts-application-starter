@@ -4,7 +4,7 @@ import { verifySecurityKey } from '@acme/backend';
 import { safeTrySync } from '@acme/utils';
 import { decodeBase64 } from '@oslojs/encoding';
 import { redirect } from 'next/navigation';
-import { z } from 'zod/v4';
+import { z } from 'zod';
 import { schemaAction } from '~/lib/safe-action';
 
 const schema = z.object({

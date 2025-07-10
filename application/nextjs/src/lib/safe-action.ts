@@ -1,6 +1,6 @@
 import { safeTry, ClientError } from '@acme/utils';
 import { globalPOSTRateLimit } from '@acme/backend';
-import type { z } from 'zod/v4';
+import type { z } from 'zod';
 
 type ErrorMessage = { message: string };
 type ActionFunction<S extends z.ZodType, R> = (props: z.infer<S>) => Promise<R>;

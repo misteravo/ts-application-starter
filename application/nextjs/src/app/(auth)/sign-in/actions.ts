@@ -5,7 +5,7 @@ import { safeTrySync } from '@acme/utils';
 import { decodeBase64 } from '@oslojs/encoding';
 import { redirect } from 'next/navigation';
 import { zfd } from 'zod-form-data';
-import { z } from 'zod/v4';
+import { z } from 'zod';
 import { formAction, schemaAction } from '~/lib/safe-action';
 
 const signInSchema = zfd.formData({
