@@ -20,14 +20,14 @@
     "@acme/eslint-config": "workspace:*",
     "@acme/prettier-config": "workspace:*",
     "@acme/tsconfig": "workspace:*",
-    "@types/node": "^24.0.15",
-    "@types/react": "^19.1.8",
+    "@types/node": "^24.1.0",
+    "@types/react": "^19.1.9",
     "eslint": "catalog:",
     "prettier": "catalog:",
     "typescript": "catalog:"
   },
   "prettier": "@acme/prettier-config",
   "dependencies": {
-    "react": "^19.1.0"
+    "react": "^19.1.1"
   }
 }
