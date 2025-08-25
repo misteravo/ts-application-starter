@@ -21,7 +21,7 @@
     "@acme/prettier-config": "workspace:*",
     "@acme/tsconfig": "workspace:*",
     "@types/node": "^24.1.0",
-    "@types/react": "^19.1.9",
+    "@types/react": "^19.1.11",
     "eslint": "catalog:",
     "prettier": "catalog:",
     "typescript": "catalog:"
