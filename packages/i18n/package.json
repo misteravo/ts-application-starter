@@ -20,8 +20,8 @@
     "@acme/eslint-config": "workspace:*",
     "@acme/prettier-config": "workspace:*",
     "@acme/tsconfig": "workspace:*",
-    "@types/node": "^24.3.0",
-    "@types/react": "^19.1.11",
+    "@types/node": "^24.6.0",
+    "@types/react": "^19.1.16",
     "eslint": "catalog:",
     "prettier": "catalog:",
     "typescript": "catalog:"
