@@ -16,7 +16,7 @@
   },
   "dependencies": {
     "@eslint/compat": "^1.4.0",
-    "@eslint/js": "^9.36.0",
+    "@eslint/js": "^9.39.1",
     "@next/eslint-plugin-next": "^15.5.4",
     "eslint-plugin-import": "^2.32.0",
     "eslint-plugin-jsx-a11y": "^6.10.2",
@@ -24,9 +24,9 @@
     "eslint-plugin-react-hooks": "^5.2.0",
     "eslint-plugin-sonarjs": "^3.0.5",
     "eslint-plugin-tailwindcss": "^3.18.2",
-    "eslint-plugin-turbo": "^2.5.8",
+    "eslint-plugin-turbo": "^2.6.2",
     "eslint-plugin-unicorn": "^61.0.2",
-    "typescript-eslint": "^8.45.0"
+    "typescript-eslint": "^8.48.1"
   },
   "devDependencies": {
     "@acme/prettier-config": "workspace:*",

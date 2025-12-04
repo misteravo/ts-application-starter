@@ -27,11 +27,11 @@
     "@t3-oss/env-nextjs": "^0.13.8",
     "@tanstack/react-query": "catalog:",
     "geist": "^1.5.1",
-    "lucide-react": "^0.544.0",
+    "lucide-react": "^0.555.0",
     "next": "^15.5.4",
     "react": "catalog:react19",
     "react-dom": "catalog:react19",
-    "superjson": "2.2.2",
+    "superjson": "2.2.6",
     "uqr": "^0.1.2",
     "zod": "catalog:",
     "zod-form-data": "^3.0.1"
