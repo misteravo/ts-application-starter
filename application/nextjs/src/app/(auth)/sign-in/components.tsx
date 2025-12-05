@@ -116,7 +116,7 @@ export function PasskeyLoginButton() {
 
       const credential = await navigator.credentials.get({
         publicKey: {
-          challenge,
+          challenge: challenge as BufferSource,
           userVerification: 'required',
         },
       });

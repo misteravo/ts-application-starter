@@ -19,10 +19,10 @@ export function VerifyPasskeyButton(props: { encodedCredentialIds: string[] }) {
 
     const credential = await navigator.credentials.get({
       publicKey: {
-        challenge,
+        challenge: challenge as BufferSource,
         userVerification: 'discouraged',
         allowCredentials: props.encodedCredentialIds.map((encoded) => ({
-          id: decodeBase64(encoded),
+          id: decodeBase64(encoded) as BufferSource,
           type: 'public-key',
         })),
       },

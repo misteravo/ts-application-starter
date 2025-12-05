@@ -27,10 +27,10 @@ export function RegisterPasskeyForm(props: {
     const challenge = await createChallenge();
     const credential = await navigator.credentials.create({
       publicKey: {
-        challenge,
+        challenge: challenge as BufferSource,
         user: {
           displayName: props.user.username,
-          id: decodeBase64(props.encodedCredentialUserId),
+          id: decodeBase64(props.encodedCredentialUserId) as BufferSource,
           name: props.user.email,
         },
         rp: {
@@ -47,7 +47,7 @@ export function RegisterPasskeyForm(props: {
           requireResidentKey: true,
         },
         excludeCredentials: props.encodedCredentialIds.map((encoded) => ({
-          id: decodeBase64(encoded),
+          id: decodeBase64(encoded) as BufferSource,
           type: 'public-key',
         })),
       },

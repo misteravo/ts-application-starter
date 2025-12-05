@@ -16,10 +16,10 @@ export function VerifyPasskeyButton({ encodedCredentialIds }: { encodedCredentia
 
     const credential = await navigator.credentials.get({
       publicKey: {
-        challenge,
+        challenge: challenge as BufferSource,
         userVerification: 'discouraged',
         allowCredentials: encodedCredentialIds.map((encoded) => ({
-          id: decodeBase64(encoded),
+          id: decodeBase64(encoded) as BufferSource,
           type: 'public-key',
         })),
       },
