@@ -7,8 +7,8 @@ settings:
 catalogs:
   default:
     '@tanstack/react-query':
-      specifier: ^5.90.11
-      version: 5.90.11
+      specifier: ^5.90.12
+      version: 5.90.12
     eslint:
       specifier: ^9.39.1
       version: 9.39.1
@@ -46,14 +46,14 @@ importers:
         specifier: workspace:*
         version: link:tooling/prettier
       '@turbo/gen':
-        specifier: ^2.6.2
-        version: 2.6.2(@types/node@24.10.1)(typescript@5.9.3)
+        specifier: ^2.6.3
+        version: 2.6.3(@types/node@24.10.1)(typescript@5.9.3)
       prettier:
         specifier: 'catalog:'
         version: 3.7.4
       turbo:
-        specifier: ^2.6.2
-        version: 2.6.2
+        specifier: ^2.6.3
+        version: 2.6.3
       typescript:
         specifier: 'catalog:'
         version: 5.9.3
@@ -88,11 +88,11 @@ importers:
         specifier: ^3.0.3
         version: 3.0.3
       drizzle-orm:
-        specifier: ^0.44.7
-        version: 0.44.7(@types/better-sqlite3@7.6.13)(@types/pg@8.15.6)(@vercel/postgres@0.10.0)(better-sqlite3@11.10.0)(gel@2.0.2)(pg@8.16.3)
+        specifier: ^0.45.0
+        version: 0.45.0(@types/better-sqlite3@7.6.13)(@types/pg@8.15.6)(@vercel/postgres@0.10.0)(better-sqlite3@11.10.0)(gel@2.0.2)(pg@8.16.3)
       drizzle-zod:
         specifier: ^0.8.3
-        version: 0.8.3(drizzle-orm@0.44.7(@types/better-sqlite3@7.6.13)(@types/pg@8.15.6)(@vercel/postgres@0.10.0)(better-sqlite3@11.10.0)(gel@2.0.2)(pg@8.16.3))(zod@4.1.13)
+        version: 0.8.3(drizzle-orm@0.45.0(@types/better-sqlite3@7.6.13)(@types/pg@8.15.6)(@vercel/postgres@0.10.0)(better-sqlite3@11.10.0)(gel@2.0.2)(pg@8.16.3))(zod@4.1.13)
       next:
         specifier: ^16.0.7
         version: 16.0.7(react-dom@19.2.1(react@19.2.1))(react@19.2.1)(sass@1.88.0)
@@ -134,8 +134,8 @@ importers:
         specifier: ^11.0.0
         version: 11.0.0
       drizzle-kit:
-        specifier: ^0.31.7
-        version: 0.31.7
+        specifier: ^0.31.8
+        version: 0.31.8
       eslint:
         specifier: 'catalog:'
         version: 9.39.1(jiti@2.4.2)
@@ -183,13 +183,13 @@ importers:
         version: 0.13.8(arktype@2.1.20)(typescript@5.8.3)(zod@4.1.13)
       '@tanstack/react-query':
         specifier: 'catalog:'
-        version: 5.90.11(react@19.2.1)
+        version: 5.90.12(react@19.2.1)
       geist:
         specifier: ^1.5.1
         version: 1.5.1(next@16.0.7(react-dom@19.2.1(react@19.2.1))(react@19.2.1)(sass@1.88.0))
       lucide-react:
-        specifier: ^0.555.0
-        version: 0.555.0(react@19.2.1)
+        specifier: ^0.556.0
+        version: 0.556.0(react@19.2.1)
       next:
         specifier: ^16.0.7
         version: 16.0.7(react-dom@19.2.1(react@19.2.1))(react@19.2.1)(sass@1.88.0)
@@ -319,8 +319,8 @@ importers:
         specifier: ^0.7.1
         version: 0.7.1
       lucide-react:
-        specifier: ^0.555.0
-        version: 0.555.0(react@19.2.1)
+        specifier: ^0.556.0
+        version: 0.556.0(react@19.2.1)
       next-themes:
         specifier: ^0.4.6
         version: 0.4.6(react-dom@19.2.1(react@19.2.1))(react@19.2.1)
@@ -416,8 +416,8 @@ importers:
         specifier: ^3.18.2
         version: 3.18.2(tailwindcss@3.4.18(ts-node@10.9.2(@types/node@24.10.1)(typescript@5.8.3)))
       eslint-plugin-turbo:
-        specifier: ^2.6.2
-        version: 2.6.2(eslint@9.39.1(jiti@2.4.2))(turbo@2.6.2)
+        specifier: ^2.6.3
+        version: 2.6.3(eslint@9.39.1(jiti@2.4.2))(turbo@2.6.3)
       eslint-plugin-unicorn:
         specifier: ^62.0.0
         version: 62.0.0(eslint@9.39.1(jiti@2.4.2))
@@ -2191,11 +2191,11 @@ packages:
       zod:
         optional: true
 
-  '@tanstack/query-core@5.90.11':
-    resolution: {integrity: sha512-f9z/nXhCgWDF4lHqgIE30jxLe4sYv15QodfdPDKYAk7nAEjNcndy4dHz3ezhdUaR23BpWa4I2EH4/DZ0//Uf8A==}
+  '@tanstack/query-core@5.90.12':
+    resolution: {integrity: sha512-T1/8t5DhV/SisWjDnaiU2drl6ySvsHj1bHBCWNXd+/T+Hh1cf6JodyEYMd5sgwm+b/mETT4EV3H+zCVczCU5hg==}
 
-  '@tanstack/react-query@5.90.11':
-    resolution: {integrity: sha512-3uyzz01D1fkTLXuxF3JfoJoHQMU2fxsfJwE+6N5hHy0dVNoZOvwKP8Z2k7k1KDeD54N20apcJnG75TBAStIrBA==}
+  '@tanstack/react-query@5.90.12':
+    resolution: {integrity: sha512-graRZspg7EoEaw0a8faiUASCyJrqjKPdqJ9EwuDRUF9mEYJ1YPczI9H+/agJ0mOJkPCJDk0lsz5QTrLZ/jQ2rg==}
     peerDependencies:
       react: ^18 || ^19
 
@@ -2214,12 +2214,12 @@ packages:
   '@tsconfig/node16@1.0.4':
     resolution: {integrity: sha512-vxhUy4J8lyeyinH7Azl1pdd43GJhZH/tP2weN8TntQblOY+A0XbT8DJk1/oCPuOOyg/Ja757rG0CgHcWC8OfMA==}
 
-  '@turbo/gen@2.6.2':
-    resolution: {integrity: sha512-B3iJNuUa7OHHdquuyOYFRjHf7Zw3+VPYEv3K4bTx7VIyMvOFxa3i6N2UuViFxk3t3nQE17fJAbE/q9pi3BoxTA==}
+  '@turbo/gen@2.6.3':
+    resolution: {integrity: sha512-q1QrS6ukleoCoNV0eTflMeDxJSdDJkQt0idfN/8TrMqrcOl1oRI3iYpizZR0paiPWe7lTpRr6fG7pGSKGZ+15A==}
     hasBin: true
 
-  '@turbo/workspaces@2.6.2':
-    resolution: {integrity: sha512-9aiMWXgGk9h30OD6DA3KyzWM7nNS8GncIjKihueHrV8q1BZqFjO+eOvaZGCpvNXUuJPwdKUWIa5mw+n1lY7QNw==}
+  '@turbo/workspaces@2.6.3':
+    resolution: {integrity: sha512-RLOjHQIZeCGwVBCRr8pfyshUJn2wx8s5n1H0O9fhpsL6qaWKi9gKoUJMr8BMVJApJGrspJ/QkQzsL8gLicpZbQ==}
     hasBin: true
 
   '@tybys/wasm-util@0.9.0':
@@ -2828,12 +2828,12 @@ packages:
     resolution: {integrity: sha512-JVUnt+DUIzu87TABbhPmNfVdBDt18BLOWjMUFJMSi/Qqg7NTYtabbvSNJGOJ7afbRuv9D/lngizHtP7QyLQ+9w==}
     engines: {node: '>=12'}
 
-  drizzle-kit@0.31.7:
-    resolution: {integrity: sha512-hOzRGSdyKIU4FcTSFYGKdXEjFsncVwHZ43gY3WU5Bz9j5Iadp6Rh6hxLSQ1IWXpKLBKt/d5y1cpSPcV+FcoQ1A==}
+  drizzle-kit@0.31.8:
+    resolution: {integrity: sha512-O9EC/miwdnRDY10qRxM8P3Pg8hXe3LyU4ZipReKOgTwn4OqANmftj8XJz1UPUAS6NMHf0E2htjsbQujUTkncCg==}
     hasBin: true
 
-  drizzle-orm@0.44.7:
-    resolution: {integrity: sha512-quIpnYznjU9lHshEOAYLoZ9s3jweleHlZIAWR/jX9gAWNg/JhQ1wj0KGRf7/Zm+obRrYd9GjPVJg790QY9N5AQ==}
+  drizzle-orm@0.45.0:
+    resolution: {integrity: sha512-lyd9VRk3SXKRjV/gQckQzmJgkoYMvVG3A2JAV0vh3L+Lwk+v9+rK5Gj0H22y+ZBmxsrRBgJ5/RbQCN7DWd1dtQ==}
     peerDependencies:
       '@aws-sdk/client-rds-data': '>=3'
       '@cloudflare/workers-types': '>=4'
@@ -3080,8 +3080,8 @@ packages:
     peerDependencies:
       tailwindcss: ^3.4.0
 
-  eslint-plugin-turbo@2.6.2:
-    resolution: {integrity: sha512-FTJOLo8SXLbGgEyFCu0CzrVzEObH2GGJt+cLT6R3oXLK8Bv1i0wOuHYecXjA0RVxZ3t1YUP/9tQNQ3LhTYRd5A==}
+  eslint-plugin-turbo@2.6.3:
+    resolution: {integrity: sha512-91WZ+suhT/pk+qNS0/rqT43xLUlUblsa3a8jKmAStGhkJCmR2uX0oWo/e0Edb+It8MdnteXuYpCkvsK4Vw8FtA==}
     peerDependencies:
       eslint: '>6.6.0'
       turbo: '>2.0.0'
@@ -3740,8 +3740,8 @@ packages:
     resolution: {integrity: sha512-jumlc0BIUrS3qJGgIkWZsyfAM7NCWiBcCDhnd+3NNM5KbBmLTgHVfWBcg6W+rLUsIpzpERPsvwUP7CckAQSOoA==}
     engines: {node: '>=12'}
 
-  lucide-react@0.555.0:
-    resolution: {integrity: sha512-D8FvHUGbxWBRQM90NZeIyhAvkFfsh3u9ekrMvJ30Z6gnpBHS6HC6ldLg7tL45hwiIz/u66eKDtdA23gwwGsAHA==}
+  lucide-react@0.556.0:
+    resolution: {integrity: sha512-iOb8dRk7kLaYBZhR2VlV1CeJGxChBgUthpSP8wom9jfj79qovgG6qcSdiy6vkoREKPnbUYzJsCn4o4PtG3Iy+A==}
     peerDependencies:
       react: ^16.5.1 || ^17.0.0 || ^18.0.0 || ^19.0.0
 
@@ -4686,38 +4686,38 @@ packages:
   tunnel-agent@0.6.0:
     resolution: {integrity: sha512-McnNiV1l8RYeY8tBgEpuodCC1mLUdbSN+CYBL7kJsJNInOP8UjDDEwdk6Mw60vdLLrr5NHKZhMAOSrR2NZuQ+w==}
 
-  turbo-darwin-64@2.6.2:
-    resolution: {integrity: sha512-nF9d/YAyrNkyXn9lp3ZtgXPb7fZsik3cUNe/sBvUO0G5YezUS/kDYYw77IdjizDzairz8pL2ITCTUreG2d5iZQ==}
+  turbo-darwin-64@2.6.3:
+    resolution: {integrity: sha512-BlJJDc1CQ7SK5Y5qnl7AzpkvKSnpkfPmnA+HeU/sgny3oHZckPV2776ebO2M33CYDSor7+8HQwaodY++IINhYg==}
     cpu: [x64]
     os: [darwin]
 
-  turbo-darwin-arm64@2.6.2:
-    resolution: {integrity: sha512-mmm0jFaVramST26XE1Lk2qjkjvLJHOe9f3TFjqY+aByjMK/ZmKE5WFPuCWo4L3xhwx+16T37rdPP//76loB3oA==}
+  turbo-darwin-arm64@2.6.3:
+    resolution: {integrity: sha512-MwVt7rBKiOK7zdYerenfCRTypefw4kZCue35IJga9CH1+S50+KTiCkT6LBqo0hHeoH2iKuI0ldTF2a0aB72z3w==}
     cpu: [arm64]
     os: [darwin]
 
-  turbo-linux-64@2.6.2:
-    resolution: {integrity: sha512-IUMHjkVRJDUABGpi+iS1Le59aOl5DX88U5UT/mKaE7nNEjG465+a8UtYno56cZnLP+C6BkX4I93LFgYf9syjGQ==}
+  turbo-linux-64@2.6.3:
+    resolution: {integrity: sha512-cqpcw+dXxbnPtNnzeeSyWprjmuFVpHJqKcs7Jym5oXlu/ZcovEASUIUZVN3OGEM6Y/OTyyw0z09tOHNt5yBAVg==}
     cpu: [x64]
     os: [linux]
 
-  turbo-linux-arm64@2.6.2:
-    resolution: {integrity: sha512-0qQdZiimMUZj2Gfq87thYu0E02NaNcsB3lcEK/TD70Zzi7AxQoxye664Gis0Uao2j2L9/+05wC2btZ7SoFX3Gw==}
+  turbo-linux-arm64@2.6.3:
+    resolution: {integrity: sha512-MterpZQmjXyr4uM7zOgFSFL3oRdNKeflY7nsjxJb2TklsYqiu3Z9pQ4zRVFFH8n0mLGna7MbQMZuKoWqqHb45w==}
     cpu: [arm64]
     os: [linux]
 
-  turbo-windows-64@2.6.2:
-    resolution: {integrity: sha512-BmMfFmt0VaoZL4NbtDq/dzGfjHsPoGU2+vFiZtkiYsttHY3fd/Dmgnu9PuRyJN1pv2M22q88rXO+dqYRHztLMw==}
+  turbo-windows-64@2.6.3:
+    resolution: {integrity: sha512-biDU70v9dLwnBdLf+daoDlNJVvqOOP8YEjqNipBHzgclbQlXbsi6Gqqelp5er81Qo3BiRgmTNx79oaZQTPb07Q==}
     cpu: [x64]
     os: [win32]
 
-  turbo-windows-arm64@2.6.2:
-    resolution: {integrity: sha512-0r4s4M/FgLxfjrdLPdqQUur8vZAtaWEi4jhkQ6wCIN2xzA9aee9IKwM53w7CQcjaLvWhT0AU7LTQHjFaHwxiKw==}
+  turbo-windows-arm64@2.6.3:
+    resolution: {integrity: sha512-dDHVKpSeukah3VsI/xMEKeTnV9V9cjlpFSUs4bmsUiLu3Yv2ENlgVEZv65wxbeE0bh0jjpmElDT+P1KaCxArQQ==}
     cpu: [arm64]
     os: [win32]
 
-  turbo@2.6.2:
-    resolution: {integrity: sha512-LiQAFS6iWvnY8ViGtoPgduWBeuGH9B32XR4p8H8jxU5PudwyHiiyf1jQW0fCC8gCCTz9itkIbqZLIyUu5AG33w==}
+  turbo@2.6.3:
+    resolution: {integrity: sha512-bf6YKUv11l5Xfcmg76PyWoy/e2vbkkxFNBGJSnfdSXQC33ZiUfutYh6IXidc5MhsnrFkWfdNNLyaRk+kHMLlwA==}
     hasBin: true
 
   type-check@0.4.0:
@@ -6759,11 +6759,11 @@ snapshots:
       typescript: 5.8.3
       zod: 4.1.13
 
-  '@tanstack/query-core@5.90.11': {}
+  '@tanstack/query-core@5.90.12': {}
 
-  '@tanstack/react-query@5.90.11(react@19.2.1)':
+  '@tanstack/react-query@5.90.12(react@19.2.1)':
     dependencies:
-      '@tanstack/query-core': 5.90.11
+      '@tanstack/query-core': 5.90.12
       react: 19.2.1
 
   '@tootallnate/quickjs-emscripten@0.23.0': {}
@@ -6776,9 +6776,9 @@ snapshots:
 
   '@tsconfig/node16@1.0.4': {}
 
-  '@turbo/gen@2.6.2(@types/node@24.10.1)(typescript@5.9.3)':
+  '@turbo/gen@2.6.3(@types/node@24.10.1)(typescript@5.9.3)':
     dependencies:
-      '@turbo/workspaces': 2.6.2(@types/node@24.10.1)
+      '@turbo/workspaces': 2.6.3(@types/node@24.10.1)
       commander: 10.0.1
       fs-extra: 10.1.0
       inquirer: 8.2.7(@types/node@24.10.1)
@@ -6796,7 +6796,7 @@ snapshots:
       - supports-color
       - typescript
 
-  '@turbo/workspaces@2.6.2(@types/node@24.10.1)':
+  '@turbo/workspaces@2.6.3(@types/node@24.10.1)':
     dependencies:
       commander: 10.0.1
       execa: 5.1.1
@@ -7502,7 +7502,7 @@ snapshots:
 
   dotenv@17.2.3: {}
 
-  drizzle-kit@0.31.7:
+  drizzle-kit@0.31.8:
     dependencies:
       '@drizzle-team/brocli': 0.10.2
       '@esbuild-kit/esm-loader': 2.6.5
@@ -7511,7 +7511,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  drizzle-orm@0.44.7(@types/better-sqlite3@7.6.13)(@types/pg@8.15.6)(@vercel/postgres@0.10.0)(better-sqlite3@11.10.0)(gel@2.0.2)(pg@8.16.3):
+  drizzle-orm@0.45.0(@types/better-sqlite3@7.6.13)(@types/pg@8.15.6)(@vercel/postgres@0.10.0)(better-sqlite3@11.10.0)(gel@2.0.2)(pg@8.16.3):
     optionalDependencies:
       '@types/better-sqlite3': 7.6.13
       '@types/pg': 8.15.6
@@ -7520,9 +7520,9 @@ snapshots:
       gel: 2.0.2
       pg: 8.16.3
 
-  drizzle-zod@0.8.3(drizzle-orm@0.44.7(@types/better-sqlite3@7.6.13)(@types/pg@8.15.6)(@vercel/postgres@0.10.0)(better-sqlite3@11.10.0)(gel@2.0.2)(pg@8.16.3))(zod@4.1.13):
+  drizzle-zod@0.8.3(drizzle-orm@0.45.0(@types/better-sqlite3@7.6.13)(@types/pg@8.15.6)(@vercel/postgres@0.10.0)(better-sqlite3@11.10.0)(gel@2.0.2)(pg@8.16.3))(zod@4.1.13):
     dependencies:
-      drizzle-orm: 0.44.7(@types/better-sqlite3@7.6.13)(@types/pg@8.15.6)(@vercel/postgres@0.10.0)(better-sqlite3@11.10.0)(gel@2.0.2)(pg@8.16.3)
+      drizzle-orm: 0.45.0(@types/better-sqlite3@7.6.13)(@types/pg@8.15.6)(@vercel/postgres@0.10.0)(better-sqlite3@11.10.0)(gel@2.0.2)(pg@8.16.3)
       zod: 4.1.13
 
   dunder-proto@1.0.1:
@@ -7842,11 +7842,11 @@ snapshots:
       postcss: 8.5.6
       tailwindcss: 3.4.18(ts-node@10.9.2(@types/node@24.10.1)(typescript@5.8.3))
 
-  eslint-plugin-turbo@2.6.2(eslint@9.39.1(jiti@2.4.2))(turbo@2.6.2):
+  eslint-plugin-turbo@2.6.3(eslint@9.39.1(jiti@2.4.2))(turbo@2.6.3):
     dependencies:
       dotenv: 16.0.3
       eslint: 9.39.1(jiti@2.4.2)
-      turbo: 2.6.2
+      turbo: 2.6.3
 
   eslint-plugin-unicorn@62.0.0(eslint@9.39.1(jiti@2.4.2)):
     dependencies:
@@ -8586,7 +8586,7 @@ snapshots:
 
   lru-cache@7.18.3: {}
 
-  lucide-react@0.555.0(react@19.2.1):
+  lucide-react@0.556.0(react@19.2.1):
     dependencies:
       react: 19.2.1
 
@@ -9689,32 +9689,32 @@ snapshots:
       safe-buffer: 5.2.1
     optional: true
 
-  turbo-darwin-64@2.6.2:
+  turbo-darwin-64@2.6.3:
     optional: true
 
-  turbo-darwin-arm64@2.6.2:
+  turbo-darwin-arm64@2.6.3:
     optional: true
 
-  turbo-linux-64@2.6.2:
+  turbo-linux-64@2.6.3:
     optional: true
 
-  turbo-linux-arm64@2.6.2:
+  turbo-linux-arm64@2.6.3:
     optional: true
 
-  turbo-windows-64@2.6.2:
+  turbo-windows-64@2.6.3:
     optional: true
 
-  turbo-windows-arm64@2.6.2:
+  turbo-windows-arm64@2.6.3:
     optional: true
 
-  turbo@2.6.2:
+  turbo@2.6.3:
     optionalDependencies:
-      turbo-darwin-64: 2.6.2
-      turbo-darwin-arm64: 2.6.2
-      turbo-linux-64: 2.6.2
-      turbo-linux-arm64: 2.6.2
-      turbo-windows-64: 2.6.2
-      turbo-windows-arm64: 2.6.2
+      turbo-darwin-64: 2.6.3
+      turbo-darwin-arm64: 2.6.3
+      turbo-linux-64: 2.6.3
+      turbo-linux-arm64: 2.6.3
+      turbo-windows-64: 2.6.3
+      turbo-windows-arm64: 2.6.3
 
   type-check@0.4.0:
     dependencies:

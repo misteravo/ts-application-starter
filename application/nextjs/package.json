@@ -27,7 +27,7 @@
     "@t3-oss/env-nextjs": "^0.13.8",
     "@tanstack/react-query": "catalog:",
     "geist": "^1.5.1",
-    "lucide-react": "^0.555.0",
+    "lucide-react": "^0.556.0",
     "next": "^16.0.7",
     "react": "catalog:react19",
     "react-dom": "catalog:react19",
