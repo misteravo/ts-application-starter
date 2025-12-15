@@ -4,7 +4,5 @@
     "esbenp.prettier-vscode",
     "yoavbls.pretty-ts-errors",
     "bradlc.vscode-tailwindcss",
-    "angular.ng-template",
-    "analogjs.vscode-analog"
   ]
 }
